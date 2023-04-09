@@ -1,0 +1,36 @@
+2023-04-09 20:51:36 INFO  TGBot:42 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 20:51:42 INFO  TGBot:47 - get Message: hi
+2023-04-09 20:52:17 INFO  TGBot:42 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 20:54:30 INFO  TGBot:42 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 20:54:38 DEBUG TGBot:47 - get Message: 123
+2023-04-09 21:13:43 INFO  TGBot:59 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 21:13:47 DEBUG TGBot:64 - get Message: /help
+2023-04-09 21:13:51 DEBUG TGBot:64 - get Message: /registration
+2023-04-09 21:13:53 DEBUG TGBot:64 - get Message: /profile
+2023-04-09 21:47:49 INFO  TGBot:70 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 21:48:23 DEBUG TGBot:75 - get Message: /help
+2023-04-09 21:49:59 DEBUG TGBot:75 - get Message: /help
+2023-04-09 21:50:07 DEBUG TGBot:79 - get Message: /registration
+2023-04-09 21:50:12 DEBUG TGBot:79 - get Message: /car_registration
+2023-04-09 21:51:42 DEBUG TGBot:79 - get Message: /new_trip
+2023-04-09 21:52:03 DEBUG TGBot:75 - get Message: /help
+2023-04-09 21:52:06 DEBUG TGBot:79 - get Message: /new_trip
+2023-04-09 21:52:09 DEBUG TGBot:79 - get Message: /profile
+2023-04-09 21:52:11 DEBUG TGBot:79 - get Message: /car_registration
+2023-04-09 21:52:14 DEBUG TGBot:79 - get Message: /registration
+2023-04-09 21:52:17 INFO  TGBot:70 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 21:53:27 INFO  TGBot:70 - Start Bot with @null. ChatId: 884944442
+2023-04-09 21:54:07 DEBUG TGBot:75 - get Message: /help
+2023-04-09 21:55:26 DEBUG TGBot:79 - get Message: /registration
+2023-04-09 21:55:37 INFO  TGBot:70 - Start Bot with @null. ChatId: 884944442
+2023-04-09 21:55:43 DEBUG TGBot:79 - get Message: /car_registration
+2023-04-09 21:55:49 DEBUG TGBot:79 - get Message: /profile
+2023-04-09 21:55:52 DEBUG TGBot:79 - get Message: /new_trip
+2023-04-09 21:58:37 INFO  TGBot:70 - Start Bot with @ivam_IvanMochalov. ChatId: 785703113
+2023-04-09 21:58:42 DEBUG TGBot:75 - get Message: /help
+2023-04-09 21:58:56 DEBUG TGBot:79 - get Message: /registration
+2023-04-09 21:59:00 DEBUG TGBot:79 - get Message: /car_registration
+2023-04-09 21:59:04 DEBUG TGBot:79 - get Message: /new_trip
+2023-04-09 22:00:17 DEBUG TGBot:79 - get Message: /registration
+2023-04-09 22:00:23 INFO  TGBot:70 - Start Bot with @Paytonlil. ChatId: 2098699781
+2023-04-09 22:00:34 DEBUG TGBot:75 - get Message: /help
