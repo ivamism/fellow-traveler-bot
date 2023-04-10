@@ -23,13 +23,22 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     final BotConfig botConfig;
 
-    static final String HELP_TEXT = "Это бот для поиска попутных пассажиров или машин из деревень Королево, Озеро и Дещенка в Минск и обратно.\n\n" +
-            "Меню для работы с ботом на синей кнопке внизу экрана\n\n" +
-            "выберите /start для запуска бота\n\n" +
-            "Type /registration для регистрации нового пользователя\n\n" +
-            "Type /car_registration для добавления автомобиля\n\n" +
-            "Type /profile для просмотра сохраненных данных о себе\"\n\n" +
-            "Type /new_trip что бы начать поиск попутчиков\n\n";
+    static final String HELP_TEXT = """
+            Это бот для поиска попутных пассажиров или машин из деревень Королево, Озеро и Дещенка в Минск и обратно.
+
+            Меню для работы с ботом на синей кнопке внизу экрана
+
+            выберите /start для запуска бота
+
+            Type /registration для регистрации нового пользователя
+
+            Type /car_registration для добавления автомобиля
+
+            Type /profile для просмотра сохраненных данных о себе"
+
+            Type /new_trip что бы начать поиск попутчиков
+
+            """;
 
 //            +"Type /help to see this message again";
 
@@ -86,7 +95,6 @@ public class TGBot extends TelegramLongPollingBot {
         String answer = "Hi," + firstName + "!";
 
         sendMessage(chatId, answer);
-
 
     }
 
