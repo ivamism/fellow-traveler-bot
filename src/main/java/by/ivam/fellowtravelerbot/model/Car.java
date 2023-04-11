@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @EqualsAndHashCode(exclude = "id")
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Entity
 public class Car {
     @Id
@@ -16,10 +18,8 @@ public class Car {
     private Long id;
     private String model;
     private String color;
+    private String commentary;
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_chat_id")
-    private User user;
 
 }

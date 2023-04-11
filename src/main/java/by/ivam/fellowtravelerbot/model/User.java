@@ -1,10 +1,7 @@
 package by.ivam.fellowtravelerbot.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +18,7 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
+    @Column(nullable = false)
     private Long chatId;
     private String firstName;
 
@@ -30,8 +28,8 @@ public class User {
 
     private LocalDateTime registeredAt;
 
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL})
     private List<Car> cars = new ArrayList<>();
+
 
 }
