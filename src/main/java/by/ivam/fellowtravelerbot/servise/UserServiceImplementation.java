@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService{
@@ -14,8 +15,14 @@ public class UserServiceImplementation implements UserService{
 
 
     @Override
-    public User findById() {
+    public User findUserById(long chatId) {
         return null;
+    }
+
+    @Override
+    public Optional<User> findById(long chatId) {
+
+        return userRepository.findById(chatId);
     }
 
     @Override
@@ -24,12 +31,12 @@ public class UserServiceImplementation implements UserService{
     }
 
     @Override
-    public void registerNewUser() {
+    public void registerNewUser(User user) {
 
     }
 
     @Override
-    public void deleteUser() {
+    public void deleteUser(long chatId) {
 
     }
 }
