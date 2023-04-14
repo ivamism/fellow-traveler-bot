@@ -1,6 +1,8 @@
 package by.ivam.fellowtravelerbot.controller;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
+import by.ivam.fellowtravelerbot.servise.CarService;
+import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -23,24 +27,35 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     final BotConfig botConfig;
 
+    @Autowired
+    CarService carService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    Keyboards keyboards;
+
     static final String HELP_TEXT = """
             Это бот для поиска попутных пассажиров или машин из деревень Королево, Озеро и Дещенка в Минск и обратно.
 
             Меню для работы с ботом на синей кнопке внизу экрана
 
-            выберите /start для запуска бота
+            Выберите /start для запуска бота
 
-            Type /registration для регистрации нового пользователя
+            Выберите /registration для регистрации нового пользователя
 
-            Type /car_registration для добавления автомобиля
+            Выберите /car_registration для добавления автомобиля
 
-            Type /profile для просмотра сохраненных данных о себе"
+            Выберите /profile для просмотра сохраненных данных о себе"
 
-            Type /new_trip что бы начать поиск попутчиков
+            Выберите /new_trip что бы начать поиск попутчиков             
+                         
+            Выберите /feedback для связи с разработчиком
 
             """;
+    static final String ERROR_TEXT = "ERROR: ";
 
-//            +"Type /help to see this message again";
 
     public TGBot(BotConfig botConfig) {
         this.botConfig = botConfig;
@@ -51,6 +66,7 @@ public class TGBot extends TelegramLongPollingBot {
         botCommandList.add(new BotCommand("/car_registration", "добавление автомобиля"));
         botCommandList.add(new BotCommand("/profile", "Посмотреть сохраненые данные"));
         botCommandList.add(new BotCommand("/new_trip", "Запланировать новую поездку"));
+        botCommandList.add(new BotCommand("//feedback", "связаться с разработчиком"));
         try {
             this.execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -76,12 +92,17 @@ public class TGBot extends TelegramLongPollingBot {
             switch (messageText) {
                 case "/start" -> {
                     startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
-                    log.info("Start Bot with @" + update.getMessage().getChat().getUserName()
-                            + ". ChatId: " + update.getMessage().getChatId());
+                    log.info("Start Bot with " + update.getMessage().getChat().getUserName()
+                            + ". ChatId: " + messageText);
                 }
                 case "/help" -> {
                     sendMessage(chatId, HELP_TEXT);
-                    log.debug("get Message: " + update.getMessage().getText());
+                    log.debug("get Message: " + messageText);
+                }
+
+                case "/registration" -> {
+                    log.debug("get Message: " + messageText + " - Start registration process");
+                    registerUser(chatId, );
                 }
                 default -> {
                     sendMessage(chatId, "Sorry this option still doesn't work");
@@ -92,7 +113,7 @@ public class TGBot extends TelegramLongPollingBot {
     }
 
     private void startCommandReceived(long chatId, String firstName) {
-        String answer = "Hi," + firstName + "!";
+       String answer = "Hi," + firstName + "!";
 
         sendMessage(chatId, answer);
 
@@ -107,6 +128,34 @@ public class TGBot extends TelegramLongPollingBot {
             execute(message);
         } catch (TelegramApiException e) {
             log.error("Error: " + e.getMessage());
+        }
+    }
+
+    private void registerUser(long chatId) {
+
+
+
+
+//        {
+//            SendMessage message = new SendMessage();
+////            String userFirstName =
+//            message.setChatId((chatId));
+//            message.setText("Поддвердите данные для регистрации: \n\n Ваше Имя - " +);
+//        }
+
+
+
+
+//        message.setReplyMarkup(markupInLine);
+
+//        executeMessage(message);
+    }
+
+    private void executeMessage(SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error(ERROR_TEXT + e.getMessage());
         }
     }
 }

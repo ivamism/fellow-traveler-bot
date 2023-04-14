@@ -1,12 +1,16 @@
 package by.ivam.fellowtravelerbot.controller;
 
+import lombok.Data;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Keyboards {
+@Component
+@Data
+class Keyboards {
     static final String YES_BUTTON = "YES_BUTTON";
     static final String NO_BUTTON = "NO_BUTTON";
     static final String EDIT_BUTTON = "EDIT_BUTTON";
