@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.config;
 
-import by.ivam.fellowtravelerbot.controller.TGBot;
+import by.ivam.fellowtravelerbot.bot.TGBot;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;

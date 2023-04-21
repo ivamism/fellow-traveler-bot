@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.controller;
+package by.ivam.fellowtravelerbot.bot;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

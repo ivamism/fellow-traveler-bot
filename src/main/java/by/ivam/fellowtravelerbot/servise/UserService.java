@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.handler.RegUser;
 import by.ivam.fellowtravelerbot.model.User;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface UserService {
 
     List <User> findAll();
 
-    void registerNewUser(User user);
+    void registerNewUser(RegUser regUser);
 
     void deleteUser(long chatId);
 
