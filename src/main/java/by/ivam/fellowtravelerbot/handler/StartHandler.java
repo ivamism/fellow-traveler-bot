@@ -25,7 +25,8 @@ public class StartHandler {
         String answer;
 
         if (userService.findById(chatId).isEmpty()) {
-
+            log.info("User " + incomeMessage.getChat().getUserName()
+                    + ". ChatId: " + chatId + "is new. Call registration process.");
             answer = messages.getSTART_REGISTRATION();
             registrationHandler.startRegistration(incomeMessage);
         } else {

@@ -1,10 +1,10 @@
 package by.ivam.fellowtravelerbot.bot;
 
-import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,10 +17,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Data
 @Log4j
 public class TGBot extends TelegramLongPollingBot {
+    public TGBot(@Value("${bot.token}") String botToken) {
+        super(botToken);
+    }
+//    @Autowired
+//    BotConfig botConfig;
 
-    @Autowired
-    BotConfig botConfig;
-
+    @Value("${bot.name}")
+    String botName;
 
     @Autowired
     StartHandler startHandler;
@@ -31,14 +35,13 @@ public class TGBot extends TelegramLongPollingBot {
     Messages messages;
 
 
+    //    @Override
+//    public String getBotUsername() {
+//        return botConfig.getBotName();
+//    }
     @Override
     public String getBotUsername() {
-        return botConfig.getBotName();
-    }
-
-
-    public String getBotToken() {
-        return botConfig.getBotToken();
+        return botName;
     }
 
 
@@ -52,14 +55,11 @@ public class TGBot extends TelegramLongPollingBot {
                 case "/start" -> {
 
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
-                    log.info("Start Bot with " + incomeMessage.getChat().getUserName()
+                    log.info("Start chat with " + incomeMessage.getChat().getUserName()
                             + ". ChatId: " + chatId);
                     String answer = startHandler.startMessaging(chatId, incomeMessage);
 
-
                     sendMessage(prepareMessage(chatId, answer));
-
-
                 }
                 case "/help" -> {
                     prepareMessage(chatId, messages.getHELP_TEXT());
@@ -79,7 +79,7 @@ public class TGBot extends TelegramLongPollingBot {
     }
 
     private void startCommandReceived(long chatId, String firstName) {
-        String answer = "Hi, " + firstName + "!";
+        String answer = "Привет, " + firstName + "!";
         sendMessage(prepareMessage(chatId, answer));
     }
 
