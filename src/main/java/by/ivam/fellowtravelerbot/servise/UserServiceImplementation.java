@@ -13,9 +13,9 @@ import java.util.Optional;
 
 @Service
 @Log4j
-public class UserServiceImplementation implements UserService{
+public class UserServiceImplementation implements UserService {
     @Autowired
-   private UserRepository userRepository;
+    private UserRepository userRepository;
 
 
     @Override
@@ -41,11 +41,10 @@ public class UserServiceImplementation implements UserService{
                 .setFirstName(regUser.getFirstName())
                 .setUserName(regUser.getTelegramUserName())
                 .setRegisteredAt(LocalDateTime.now());
-        log.info("User: " + user + " saved to DB");
+
         userRepository.save(user);
-
+        log.info("User: " + user + " saved to DB");
     }
-
 
 
     @Override

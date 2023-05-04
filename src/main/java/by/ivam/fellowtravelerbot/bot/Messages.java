@@ -19,12 +19,15 @@ public class Messages {
 
             Выберите /profile для просмотра сохраненных данных о себе
 
-            Выберите /new_trip что бы начать поиск попутчиков             
+            Выберите /new_trip что бы начать поиск попутчиков           
                          
             Выберите /feedback для связи с разработчиком
 
             """;
    private  final String ERROR_TEXT = "ERROR: ";
    private final String CHOOSE_ACTION = "Выберите действие из меню";
+   private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
+   private final String CONFIRM_REG_DATA = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
+
 
 }

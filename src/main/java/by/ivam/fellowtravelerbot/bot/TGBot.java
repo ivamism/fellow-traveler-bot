@@ -1,9 +1,7 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
-import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
-import by.ivam.fellowtravelerbot.servise.CarService;
-import by.ivam.fellowtravelerbot.servise.UserService;
+import by.ivam.fellowtravelerbot.handler.StartHandler;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +21,9 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     BotConfig botConfig;
 
-    @Autowired
-    RegistrationHandler registrationHandler;
 
     @Autowired
-    CarService carService;
-
-    @Autowired
-    UserService userService;
+    StartHandler startHandler;
 
     @Autowired
     Keyboards keyboards;
@@ -57,20 +50,19 @@ public class TGBot extends TelegramLongPollingBot {
             long chatId = incomeMessage.getChatId();
             switch (messageText) {
                 case "/start" -> {
+
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
                     log.info("Start Bot with " + incomeMessage.getChat().getUserName()
                             + ". ChatId: " + chatId);
-                    if (userService.findById(chatId).isEmpty()) {
-                        registrationHandler.startRegistration(incomeMessage);
-                    } else {
-                        String answer = messages.getCHOOSE_ACTION();
+                    String answer = startHandler.startMessaging(chatId, incomeMessage);
 
-                        sendMessage(chatId, answer);
-                    }
+
+                    sendMessage(prepareMessage(chatId, answer));
+
 
                 }
                 case "/help" -> {
-                    sendMessage(chatId, messages.getHELP_TEXT());
+                    prepareMessage(chatId, messages.getHELP_TEXT());
                     log.debug("get Message: " + messageText);
                 }
 
@@ -79,7 +71,7 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 default -> {
-                    sendMessage(chatId, "Sorry this option still doesn't work");
+                    prepareMessage(chatId, "Sorry this option still doesn't work");
                     log.debug("get Message: " + update.getMessage().getText());
                 }
             }
@@ -87,25 +79,12 @@ public class TGBot extends TelegramLongPollingBot {
     }
 
     private void startCommandReceived(long chatId, String firstName) {
-        String answer = "Hi," + firstName + "!";
-
-        sendMessage(chatId, answer);
-
+        String answer = "Hi, " + firstName + "!";
+        sendMessage(prepareMessage(chatId, answer));
     }
 
-    private void sendMessage(long chatId, String textToSend) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(textToSend);
 
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Error: " + e.getMessage());
-        }
-    }
-
-    private void registerUser(long chatId) {
+//    private void registerUser(long chatId) {
 
 
 //        {
@@ -118,10 +97,16 @@ public class TGBot extends TelegramLongPollingBot {
 
 //        message.setReplyMarkup(markupInLine);
 
-//        executeMessage(message);
+    //        executeMessage(message);
+//    }
+    private SendMessage prepareMessage(long chatId, String textToSend) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(textToSend);
+        return message;
     }
 
-     void executeMessage(SendMessage message) {
+    public void sendMessage(SendMessage message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
