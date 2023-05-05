@@ -33,7 +33,7 @@ public class RegistrationHandler {
         log.debug("Start registration process with user: " + regUser);
         SendMessage message = new SendMessage();
         message.setChatId((chatId));
-        message.setText(messages.getCONFIRM_REG_DATA() + firstName);
+        message.setText(messages.getCONFIRM_REG_DATA_MESSAGE() + firstName);
         registerUser(chatId);
 
     }

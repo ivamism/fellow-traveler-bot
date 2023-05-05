@@ -3,41 +3,72 @@ package by.ivam.fellowtravelerbot.bot;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Data
+public
 class Keyboards {
-    static final String YES_BUTTON = "YES_BUTTON";
-    static final String NO_BUTTON = "NO_BUTTON";
-    static final String EDIT_BUTTON = "EDIT_BUTTON";
 
-    private void yesNoKeyboard(long chatId) {
+    // Клавиатура главного меню
+
+    ReplyKeyboardMarkup mainMenu() {
+    ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
+
+    List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+    KeyboardRow firstRow = new KeyboardRow();
+
+        firstRow.add("Найти машину");
+        firstRow.add("Найти пассажира");
+
+        keyboardRows.add(firstRow);
+
+        KeyboardRow secondRow = new KeyboardRow();
+
+        secondRow.add("Помощь");
+        secondRow.add("Мои данные");
+//        secondRow.add("delete my data");
+
+        keyboardRows.add(secondRow);
+
+        mainKeyboard.setKeyboard(keyboardRows);
+
+//        message.setReplyMarkup(mainKeyboard);
+//
+//    executeMessage(message);
+        return mainKeyboard;
+    }
+
+
+     public InlineKeyboardMarkup twoButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
-        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
-        InlineKeyboardButton yesButton = new InlineKeyboardButton();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
 
-        yesButton.setText("Да");
-        yesButton.setCallbackData(YES_BUTTON);
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
 
-        InlineKeyboardButton noButton = new InlineKeyboardButton();
+        InlineKeyboardButton secondButton = new InlineKeyboardButton();
 
-        noButton.setText("Нет");
-        noButton.setCallbackData(NO_BUTTON);
+        secondButton.setText(secondButtonText);
+        secondButton.setCallbackData(secondButtonCallbackData);
 
-        rowInLine.add(yesButton);
-        rowInLine.add(noButton);
+        firstRowInLine.add(firstButton);
+        firstRowInLine.add(secondButton);
 
-        rowsInLine.add(rowInLine);
+        rowsInLine.add(firstRowInLine);
 
         markupInLine.setKeyboard(rowsInLine);
+         return markupInLine;
+     }
 
 
-
-    }
 }
