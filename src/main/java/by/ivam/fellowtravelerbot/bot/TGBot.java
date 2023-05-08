@@ -1,6 +1,10 @@
 package by.ivam.fellowtravelerbot.bot;
 
+import by.ivam.fellowtravelerbot.handler.BotStateStorage;
+import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
+import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
+import jakarta.persistence.Id;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +15,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.Optional;
 
 
 @Component
@@ -28,9 +34,20 @@ public class TGBot extends TelegramLongPollingBot {
     StartHandler startHandler;
 
     @Autowired
+    RegistrationHandler registrationHandler;
+
+    @Autowired
     Keyboards keyboards;
     @Autowired
     Messages messages;
+
+    @Autowired
+    Buttons buttons;
+    @Autowired
+    BotStateStorage storage;
+
+//    @Autowired
+//    BotStatus botStatus;
 
 
     @Override
@@ -43,6 +60,7 @@ public class TGBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message incomeMessage = update.getMessage();
+            Integer messageId = incomeMessage.getMessageId();
             String messageText = incomeMessage.getText();
             long chatId = incomeMessage.getChatId();
             switch (messageText) {
@@ -67,36 +85,38 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 default -> {
-                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
+                    BotStatus botStatus = Optional.ofNullable(storage.getActiveChatsStorage().get(messageId).getBotStatus()).orElse(BotStatus.NO_STATUS);
+                    switch (botStatus) {
+                        case NO_STATUS -> {
+                            ;
+//                            sendMessage(prepareMessage(unknownCommandReceived(chatId));
+
+                        }
+                    }
+
+
+//                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
                     log.debug("get Message: " + update.getMessage().getText());
                 }
             }
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
-            long messageId = update.getCallbackQuery().getMessage().getMessageId();
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
-            String userName = update.getCallbackQuery().getMessage().getChat().getFirstName();
+            Message incomeMessage = update.getCallbackQuery().getMessage();
+            int messageId = incomeMessage.getMessageId();
+            long chatId = incomeMessage.getChatId();
+            String userName = incomeMessage.getChat().getFirstName();
 
-            switch (callbackData) {
 
-                case "CONFIRM_REGISTRATION" -> {
-                    String answer = messages.getCONFIRM_REG_DATA_MESSAGE() + userName + "?";
-                    executeEditMessageText(answer, chatId, messageId);
-
-                }
-
-                case "DENY_REGISTRATION" -> {
-                    String answer = messages.getDENY_REG_DATA_MESSAGE();
-                    executeEditMessageText(answer, chatId, messageId);
-                }
-
-//            if(callbackData.equals(YES_BUTTON)){
-//                String text = "You pressed YES button";
-////
-//            }
-//            else if(callbackData.equals(NO_BUTTON)){
-//                String text = "You pressed NO button";
-//                executeEditMessageText(text, chatId, messageId);
+            if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {
+                EditMessageText editMessageText = registrationHandler.checkRegData(messageId, chatId, userName);
+                executeEditMessageText(editMessageText);
+            } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {
+                String answer = messages.getDENY_REG_DATA_MESSAGE();
+                executeEditMessageText(answer, chatId, messageId);
+            } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {
+                registrationHandler.userRegistration(incomeMessage);
+                String answer = messages.getSUCCESS_REGISTRATION_MESSAGE();
+                executeEditMessageText(answer, chatId, messageId);
             }
         }
     }
@@ -106,6 +126,10 @@ public class TGBot extends TelegramLongPollingBot {
         sendMessage(prepareMessage(chatId, answer));
     }
 
+    private void unknownCommandReceived(long chatId) {
+        String answer = messages.getUNKNOWN_COMMAND();
+        sendMessage(prepareMessage(chatId, answer));
+    }
 
     private SendMessage prepareMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
@@ -123,11 +147,11 @@ public class TGBot extends TelegramLongPollingBot {
         }
     }
 
-    private void executeEditMessageText(String text, long chatId, long messageId){
+    private void executeEditMessageText(String text, long chatId, int messageId) {
         EditMessageText message = new EditMessageText();
         message.setChatId(chatId);
         message.setText(text);
-        message.setMessageId((int) messageId);
+        message.setMessageId(messageId);
 
         try {
             execute(message);
@@ -135,4 +159,13 @@ public class TGBot extends TelegramLongPollingBot {
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }
     }
+
+    private void executeEditMessageText(EditMessageText message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error(messages.getERROR_TEXT() + e.getMessage());
+        }
+    }
+
 }

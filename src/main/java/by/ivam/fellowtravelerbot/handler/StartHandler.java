@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.handler;
 
+import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.servise.UserService;
@@ -23,6 +24,8 @@ public class StartHandler {
     UserService userService;
     @Autowired
     Keyboards keyboards;
+    @Autowired
+    Buttons buttons;
 
 
     public SendMessage startMessaging(long chatId, Message incomeMessage) {
@@ -33,7 +36,7 @@ public class StartHandler {
         if (userService.findById(chatId).isEmpty()) {
 
             message.setText(messages.getSTART_REGISTRATION());
-            message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(messages.getYES_BUTTON_TEXT(), messages.getCONFIRM_REG_CALLBACK(), messages.getNO_BUTTON_TEXT(), messages.getDENY_REG_CALLBACK()));
+            message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_START_REG_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
 
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is new User. Call registration process.");

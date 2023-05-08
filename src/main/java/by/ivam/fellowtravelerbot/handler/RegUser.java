@@ -1,9 +1,8 @@
 package by.ivam.fellowtravelerbot.handler;
 
 import by.ivam.fellowtravelerbot.handler.enums.Handlers;
-import by.ivam.fellowtravelerbot.handler.enums.RegUserProcessStatus;
+import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ public class RegUser {
     private long chatId;
     private String firstName;
     private String telegramUserName;
-    private Handlers handler = Handlers.USER_REGISTRATION;
-    private RegUserProcessStatus regUserProcessStatus = RegUserProcessStatus.START_REGISTRATION;
+//    private Handlers handler = Handlers.USER_REGISTRATION;
+//    private BotStatus regUserProcessStatus = BotStatus.START_REGISTRATION;
 
 }

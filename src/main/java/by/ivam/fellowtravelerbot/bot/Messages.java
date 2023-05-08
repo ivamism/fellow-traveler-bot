@@ -26,21 +26,13 @@ public class Messages {
 
             """;
     private final String ERROR_TEXT = "ERROR: ";
+    private final String UNKNOWN_COMMAND = "Неизвестная команда";
     private final String CHOOSE_ACTION = "Выберите действие из меню";
     private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
     private final String CONFIRM_REG_DATA_MESSAGE = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
     private final String DENY_REG_DATA_MESSAGE = "Вы отказались от регистрации. До свидания";
+    private final String SUCCESS_REGISTRATION_MESSAGE = "Вы успешно зарегистрированны. Для дальнейшего использования выберите действие из меню";
 
-    // Buttons
-    private final String CONFIRM_REG_CALLBACK = "CONFIRM_REGISTRATION";
-    private final String DENY_REG_CALLBACK = "DENY_REGISTRATION";
-    private final String CONFIRM_REG_DATA_CALLBACK = "CONFIRM_REG_DATA";
-    private final String EDIT_REG_DATA_CALLBACK = "EDIT_REG_DATA";
 
-    // Buttons Name
-
-    private final String YES_BUTTON_TEXT = "Да";
-    private final String NO_BUTTON_TEXT = "Нет";
-    private final String EDIT_BUTTON_TEXT = "Редактировать";
 
 }

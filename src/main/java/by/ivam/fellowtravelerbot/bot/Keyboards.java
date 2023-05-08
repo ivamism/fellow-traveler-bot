@@ -1,5 +1,7 @@
 package by.ivam.fellowtravelerbot.bot;
-
+/*
+Main menu and inline keyboards
+ */
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -39,9 +41,7 @@ class Keyboards {
 
         mainKeyboard.setKeyboard(keyboardRows);
 
-//        message.setReplyMarkup(mainKeyboard);
-//
-//    executeMessage(message);
+
         return mainKeyboard;
     }
 
@@ -69,6 +69,35 @@ class Keyboards {
         markupInLine.setKeyboard(rowsInLine);
          return markupInLine;
      }
+public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData, String thirdButtonText, String thirdButtonCallbackData) {
 
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+
+        InlineKeyboardButton secondButton = new InlineKeyboardButton();
+
+        secondButton.setText(secondButtonText);
+        secondButton.setCallbackData(secondButtonCallbackData);
+
+        InlineKeyboardButton thirdButton = new InlineKeyboardButton();
+
+        thirdButton.setText(thirdButtonText);
+        thirdButton.setCallbackData(thirdButtonCallbackData);
+
+
+        firstRowInLine.add(firstButton);
+        firstRowInLine.add(secondButton);
+        firstRowInLine.add(thirdButton);
+
+        rowsInLine.add(firstRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+         return markupInLine;
+     }
 
 }

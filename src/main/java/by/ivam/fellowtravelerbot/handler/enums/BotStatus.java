@@ -3,11 +3,12 @@ package by.ivam.fellowtravelerbot.handler.enums;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 @Getter
-public enum RegUserProcessStatus {
+public enum BotStatus {
 
-    START_REGISTRATION,
+    NO_STATUS,
+    REGISTRATION_START,
     WAIT_CONFIRMATION,
-    EDIT_NAME
+    REGISTRATION_EDIT_NAME
 }
