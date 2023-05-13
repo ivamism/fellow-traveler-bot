@@ -16,8 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Log4j
 public class StartHandler {
     @Autowired
-    RegistrationHandler registrationHandler;
-    @Autowired
     Messages messages;
 
     @Autowired
@@ -41,7 +39,6 @@ public class StartHandler {
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is new User. Call registration process.");
 
-//            registrationHandler.startRegistration(incomeMessage);
         } else {
 
             message.setText(messages.getCHOOSE_ACTION());
@@ -49,6 +46,4 @@ public class StartHandler {
 
         return message;
     }
-
-
 }

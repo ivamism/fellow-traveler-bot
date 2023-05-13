@@ -3,6 +3,8 @@ package by.ivam.fellowtravelerbot.handler;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
+import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
+import by.ivam.fellowtravelerbot.handler.storage.StorageAccess;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -27,6 +29,8 @@ public class RegistrationHandler {
 
     @Autowired
     Buttons buttons;
+    @Autowired
+    StorageAccess storageAccess;
 
 
     RegUser regUser = new RegUser();
@@ -41,6 +45,8 @@ public class RegistrationHandler {
         message.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_REG_DATA_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
 
         log.debug("Send request for confirmation of registration data");
+
+        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.WAIT_CONFIRMATION));
         return message;
     }
 
@@ -52,21 +58,13 @@ public class RegistrationHandler {
                 .setFirstName(firstName)
                 .setTelegramUserName(userName);
 
-        log.debug("Start registration process with user: " + regUser);
-
-
-//        SendMessage message = new SendMessage();
-//        message.setChatId((chatId));
-//        message.setText(messages.getCONFIRM_REG_DATA_MESSAGE() + firstName);
-//        registerUser(chatId);
         userService.registerNewUser(regUser);
-
+        storageAccess.deleteChatStatus(incomeMessage.getMessageId());
+        log.debug("Start registration process with user: " + regUser);
     }
 
 
-//    private void registerUser(long chatId) {
-//        userService.registerNewUser(regUser);
-//    }
+
 
 
 }

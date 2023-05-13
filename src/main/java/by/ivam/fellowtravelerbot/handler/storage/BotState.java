@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.handler;
+package by.ivam.fellowtravelerbot.handler.storage;
 
 import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
 import lombok.Data;

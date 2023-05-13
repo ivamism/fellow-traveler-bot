@@ -1,10 +1,8 @@
 package by.ivam.fellowtravelerbot.bot;
 
-import by.ivam.fellowtravelerbot.handler.BotStateStorage;
 import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
-import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
-import jakarta.persistence.Id;
+import by.ivam.fellowtravelerbot.handler.storage.StorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +13,6 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.Optional;
 
 
 @Component
@@ -44,10 +40,7 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     Buttons buttons;
     @Autowired
-    BotStateStorage storage;
-
-//    @Autowired
-//    BotStatus botStatus;
+    StorageAccess storageAccess;
 
 
     @Override
@@ -85,13 +78,10 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 default -> {
-                    BotStatus botStatus = Optional.ofNullable(storage.getActiveChatsStorage().get(messageId).getBotStatus()).orElse(BotStatus.NO_STATUS);
-                    switch (botStatus) {
-                        case NO_STATUS -> {
-                            ;
-//                            sendMessage(prepareMessage(unknownCommandReceived(chatId));
-
-                        }
+                    String chatStatus = storageAccess.findChatStatus(messageId);
+                    switch (chatStatus) {
+                        case "NO_STATUS" ->
+                                unknownCommandReceived(chatId);
                     }
 
 
