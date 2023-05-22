@@ -46,7 +46,7 @@ public class RegistrationHandler {
 
         log.debug("Send request for confirmation of registration data");
 
-        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.WAIT_CONFIRMATION));
+//        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.WAIT_CONFIRMATION));
         return message;
     }
 
@@ -59,7 +59,7 @@ public class RegistrationHandler {
                 .setTelegramUserName(userName);
 
         userService.registerNewUser(regUser);
-        storageAccess.deleteChatStatus(incomeMessage.getMessageId());
+//        storageAccess.deleteChatStatus(incomeMessage.getMessageId());
         log.debug("Start registration process with user: " + regUser);
     }
 

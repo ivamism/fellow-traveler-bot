@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.bot;
 
+import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
 import by.ivam.fellowtravelerbot.handler.storage.StorageAccess;
@@ -15,16 +16,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
-@Component
+//@Component
 @Log4j
 public class TGBot extends TelegramLongPollingBot {
-    public TGBot(@Value("${bot.token}") String botToken) {
+    public TGBot( String botToken) {
         super(botToken);
     }
+//@Value("${bot.token}")
 
-
-    @Value("${bot.name}")
-    String botName;
+//    @Value("${bot.name}")
+//    String botName;
+    @Autowired
+    BotConfig botConfig;
 
     @Autowired
     StartHandler startHandler;
@@ -45,7 +48,8 @@ public class TGBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return botName;
+        return botConfig.getBotName();
+//                botName;
     }
 
 
@@ -78,14 +82,15 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 default -> {
-                    String chatStatus = storageAccess.findChatStatus(messageId);
-                    switch (chatStatus) {
-                        case "NO_STATUS" ->
-                                unknownCommandReceived(chatId);
-                    }
+//                    String chatStatus = "NO_STATUS";
+////                            storageAccess.findChatStatus(messageId);
+//                    switch (chatStatus) {
+//                        case "NO_STATUS" ->
+//                                unknownCommandReceived(chatId);
+//                    }
 
 
-//                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
+                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
                     log.debug("get Message: " + update.getMessage().getText());
                 }
             }

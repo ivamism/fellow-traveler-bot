@@ -11,6 +11,6 @@ import java.util.Map;
 @Data
 public class BotStateStorage {
 
-Map<Integer, String> activeChatsStorage = new HashMap<>();
+//Map<Integer, String> activeChatsStorage = new HashMap<>();
 
 }

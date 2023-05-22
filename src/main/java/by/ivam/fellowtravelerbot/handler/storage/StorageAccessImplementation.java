@@ -9,22 +9,22 @@ import java.util.Optional;
 @Component
 @Data
 public class StorageAccessImplementation implements  StorageAccess{
-    @Autowired
-    BotStateStorage storage;
-    @Override
-    public void addChatStatus(Integer messageId, String chatStatus) {
+//    @Autowired
+//    BotStateStorage storage;
+//    @Override
+//    public void addChatStatus(Integer messageId, String chatStatus) {
+//
+//    }
 
-    }
+//    @Override
+//    public void deleteChatStatus(Integer messageId) {
+//
+//    }
 
-    @Override
-    public void deleteChatStatus(Integer messageId) {
-
-    }
-
-    @Override
-    public String findChatStatus(Integer messageId) {
-        String chatStatus = Optional.ofNullable(storage.getActiveChatsStorage().get(messageId)).orElse(String.valueOf(BotStatus.NO_STATUS));
-
-        return chatStatus;
-    }
+//    @Override
+//    public String findChatStatus(Integer messageId) {
+////        String chatStatus = Optional.ofNullable(storage.getActiveChatsStorage().get(messageId)).orElse(String.valueOf(BotStatus.NO_STATUS));
+//
+//        return chatStatus;
+//    }
 }

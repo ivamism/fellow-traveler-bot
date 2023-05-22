@@ -1,7 +1,5 @@
 package by.ivam.fellowtravelerbot.handler;
 
-import by.ivam.fellowtravelerbot.handler.enums.Handlers;
-import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;

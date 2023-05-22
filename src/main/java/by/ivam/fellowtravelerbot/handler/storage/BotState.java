@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class BotState {
 //   private long chatId;
-   private int messageId;
-   private BotStatus botStatus;
+//   private int messageId;
+//   private BotStatus botStatus;
 }
