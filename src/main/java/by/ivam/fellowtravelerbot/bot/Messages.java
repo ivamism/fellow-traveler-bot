@@ -32,7 +32,7 @@ public class Messages {
     private final String CONFIRM_REG_DATA_MESSAGE = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
     private final String DENY_REG_DATA_MESSAGE = "Вы отказались от регистрации. До свидания";
     private final String SUCCESS_REGISTRATION_MESSAGE = "Вы успешно зарегистрированны. Для дальнейшего использования выберите действие из меню";
-
-
+    private final String CONFIRM_NAME = "Вы ввели имя - ";
+    private final String EDIT_NAME = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
 
 }

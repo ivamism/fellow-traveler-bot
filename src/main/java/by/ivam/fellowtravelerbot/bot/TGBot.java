@@ -16,16 +16,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
-//@Component
 @Log4j
 public class TGBot extends TelegramLongPollingBot {
-    public TGBot( String botToken) {
+    public TGBot(String botToken) {
         super(botToken);
     }
-//@Value("${bot.token}")
 
-//    @Value("${bot.name}")
-//    String botName;
     @Autowired
     BotConfig botConfig;
 
@@ -49,7 +45,6 @@ public class TGBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
-//                botName;
     }
 
 
@@ -64,8 +59,7 @@ public class TGBot extends TelegramLongPollingBot {
                 case "/start" -> {
 
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
-                    log.info("Start chat with " + incomeMessage.getChat().getUserName()
-                            + ". ChatId: " + chatId);
+                    log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
 //                    startHandler.startMessaging(chatId, incomeMessage);
 
                     sendMessage(startHandler.startMessaging(chatId, incomeMessage));
@@ -82,16 +76,24 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 default -> {
-//                    String chatStatus = "NO_STATUS";
-////                            storageAccess.findChatStatus(messageId);
-//                    switch (chatStatus) {
-//                        case "NO_STATUS" ->
-//                                unknownCommandReceived(chatId);
-//                    }
-
-
-                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
                     log.debug("get Message: " + update.getMessage().getText());
+//                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
+
+                    String chatStatus = storageAccess.findChatStatus(messageId);
+                    switch (chatStatus) {
+                        case "NO_STATUS" -> unknownCommandReceived(chatId);
+                        case "REGISTRATION_START" -> {
+                        }
+                        case "REGISTRATION_WAIT_CONFIRMATION" -> {
+                        }
+                        case "REGISTRATION_EDIT_NAME" -> {
+                            log.info("Get edited name");
+
+                            EditMessageText editMessageText = registrationHandler.confirmEditRegData(incomeMessage);
+                            executeEditMessageText(editMessageText);
+                        }
+                    }
+
                 }
             }
         } else if (update.hasCallbackQuery()) {
@@ -112,6 +114,9 @@ public class TGBot extends TelegramLongPollingBot {
                 registrationHandler.userRegistration(incomeMessage);
                 String answer = messages.getSUCCESS_REGISTRATION_MESSAGE();
                 executeEditMessageText(answer, chatId, messageId);
+            } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {
+                EditMessageText editMessageText = registrationHandler.editRegData(incomeMessage);
+                executeEditMessageText(editMessageText);
             }
         }
     }

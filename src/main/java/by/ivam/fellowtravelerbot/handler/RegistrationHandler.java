@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -34,11 +33,10 @@ public class RegistrationHandler {
 
 
     RegUser regUser = new RegUser();
-
+    EditMessageText message = new EditMessageText();
 
     public EditMessageText checkRegData(int messageId, long chatId, String userName){
 
-        EditMessageText message = new EditMessageText();
         message.setChatId(chatId);
         message.setText(messages.getCONFIRM_REG_DATA_MESSAGE() + userName + "?");
         message.setMessageId(messageId);
@@ -46,9 +44,32 @@ public class RegistrationHandler {
 
         log.debug("Send request for confirmation of registration data");
 
-//        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.WAIT_CONFIRMATION));
+//
         return message;
     }
+    public EditMessageText editRegData(Message incomeMessage) {
+        int messageId = incomeMessage.getMessageId();
+        message.setMessageId(messageId);
+        message.setText(messages.getEDIT_NAME());
+        message.setReplyMarkup(null);
+//        message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_NAME_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
+
+        log.debug("Send request to enter the first or nick name of User");
+        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
+        return message;
+    }
+       public EditMessageText confirmEditRegData(Message incomeMessage) {
+        int messageId = incomeMessage.getMessageId();
+        message.setMessageId(messageId);
+        message.setText(incomeMessage.getText());
+        message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_NAME_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
+//        storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
+           log.info("Send request to confirm edited name");
+        return message;
+    }
+
+
+
 
     public void userRegistration(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();

@@ -14,7 +14,7 @@ public class Buttons {
     private final String DENY_REG_CALLBACK = "DENY_REGISTRATION";
     private final String CONFIRM_REG_DATA_CALLBACK = "CONFIRM_REG_DATA";
     private final String EDIT_REG_DATA_CALLBACK = "EDIT_REG_DATA";
-
+    private final String CONFIRM_NAME_CALLBACK = "CONFIRM_NAME";
     // Buttons Name
 
     private final String YES_BUTTON_TEXT = "Да";

@@ -17,7 +17,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class StartHandler {
     @Autowired
     Messages messages;
-
     @Autowired
     UserService userService;
     @Autowired
@@ -33,17 +32,18 @@ public class StartHandler {
 
         if (userService.findById(chatId).isEmpty()) {
 
+// TODO Стоит ли вынести в метод в registrationHandler
+
             message.setText(messages.getSTART_REGISTRATION());
             message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_START_REG_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
 
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is new User. Call registration process.");
-
         } else {
-
             message.setText(messages.getCHOOSE_ACTION());
+            log.info("User " + incomeMessage.getChat().getUserName()
+                    + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
         }
-
         return message;
     }
 }
