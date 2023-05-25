@@ -108,6 +108,7 @@ public class TGBot extends TelegramLongPollingBot {
                 EditMessageText editMessageText = registrationHandler.checkRegData(messageId, chatId, userName);
                 executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {
+// TODO вынести в метод отказа от регистрации в RegistrationHandler
                 String answer = messages.getDENY_REG_DATA_MESSAGE();
                 executeEditMessageText(answer, chatId, messageId);
             } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {

@@ -5,8 +5,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 @Data
 @Log4j
@@ -24,10 +22,9 @@ public class StorageAccessImplementation implements  StorageAccess{
         storage.activeChatsStorage.remove(messageId);
         log.debug("Remove botStatus from storage");
     }
-// TODO Переделать проверку на null и извлечение статуса
     @Override
     public String findChatStatus(Integer messageId) {
-        String chatStatus = Optional.ofNullable(storage.getActiveChatsStorage().get(messageId)).orElse(("NO_STATUS"));
+        String chatStatus = storage.activeChatsStorage.getOrDefault(messageId, "NO_STATUS");
 
         return chatStatus;
     }

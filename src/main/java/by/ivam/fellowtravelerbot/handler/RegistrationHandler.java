@@ -47,13 +47,15 @@ public class RegistrationHandler {
 //
         return message;
     }
+
+//    TODO Выяснить почему после ответа на это сообщение messageId инкрементируется
     public EditMessageText editRegData(Message incomeMessage) {
         int messageId = incomeMessage.getMessageId();
         message.setMessageId(messageId);
         message.setText(messages.getEDIT_NAME());
-        message.setReplyMarkup(null);
+//        message.setReplyMarkup(null);
 //        message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_NAME_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-
+//
         log.debug("Send request to enter the first or nick name of User");
         storageAccess.addChatStatus(messageId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
         return message;
