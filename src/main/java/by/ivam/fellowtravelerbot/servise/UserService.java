@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.handler.RegUser;
+import by.ivam.fellowtravelerbot.DTO.RegUser;
 import by.ivam.fellowtravelerbot.model.User;
 
 import java.util.List;

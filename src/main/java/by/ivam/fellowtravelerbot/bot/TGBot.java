@@ -3,11 +3,9 @@ package by.ivam.fellowtravelerbot.bot;
 import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
-import by.ivam.fellowtravelerbot.handler.storage.StorageAccess;
+import by.ivam.fellowtravelerbot.handler.storages.StorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -79,15 +77,17 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("get Message: " + update.getMessage().getText());
 //                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
 
-                    String chatStatus = storageAccess.findChatStatus(messageId);
+                    String chatStatus = storageAccess.findBotStatusFromRegUser(chatId);
+
+                    log.debug("get chatStatus - " + chatStatus);
                     switch (chatStatus) {
                         case "NO_STATUS" -> unknownCommandReceived(chatId);
-                        case "REGISTRATION_START" -> {
-                        }
-                        case "REGISTRATION_WAIT_CONFIRMATION" -> {
-                        }
+//                        case "REGISTRATION_START" -> {
+//                        }
+//                        case "REGISTRATION_WAIT_CONFIRMATION" -> {
+//                        }
                         case "REGISTRATION_EDIT_NAME" -> {
-                            log.info("Get edited name");
+                            log.info("Get edited name" +  messageText);
 
                             EditMessageText editMessageText = registrationHandler.confirmEditRegData(incomeMessage);
                             executeEditMessageText(editMessageText);
@@ -105,20 +105,30 @@ public class TGBot extends TelegramLongPollingBot {
 
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {
+//  got confirmation of start registration process, call check up correctness of user firstname
                 EditMessageText editMessageText = registrationHandler.checkRegData(messageId, chatId, userName);
                 executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {
-// TODO вынести в метод отказа от регистрации в RegistrationHandler
+//  got denial of registration process
+// TODO вынести в метод отказа от регистрации в RegistrationHandler, реализовать возможность возврата в процесс регистрацц
+
                 String answer = messages.getDENY_REG_DATA_MESSAGE();
                 executeEditMessageText(answer, chatId, messageId);
             } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {
-                registrationHandler.userRegistration(incomeMessage);
-                String answer = messages.getSUCCESS_REGISTRATION_MESSAGE();
-                executeEditMessageText(answer, chatId, messageId);
+//  got confirmation of correctness of user firstname, call saving to DB
+                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
+                executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {
-                EditMessageText editMessageText = registrationHandler.editRegData(incomeMessage);
+//  got request of edit of user firstname, call appropriate process
+                EditMessageText editMessageText = registrationHandler.editUserName(incomeMessage);
                 executeEditMessageText(editMessageText);
             }
+//            ввод другого имени
+//            else if (callbackData.equals(buttons.getNAME_CONFIRMED_CALLBACK())) {
+//                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
+//                executeEditMessageText(editMessageText);
+//            }
+
         }
     }
 
