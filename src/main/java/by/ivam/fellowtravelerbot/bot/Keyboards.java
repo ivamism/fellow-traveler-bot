@@ -35,7 +35,6 @@ class Keyboards {
 
         secondRow.add("Помощь");
         secondRow.add("Мои данные");
-//        secondRow.add("delete my data");
 
         keyboardRows.add(secondRow);
 
@@ -45,7 +44,7 @@ class Keyboards {
         return mainKeyboard;
     }
 
-
+// Inline keyboard with 1 row of two buttons
      public InlineKeyboardMarkup twoButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
@@ -69,6 +68,8 @@ class Keyboards {
         markupInLine.setKeyboard(rowsInLine);
          return markupInLine;
      }
+
+    // Inline keyboard with 1 row of two buttons
 public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData, String thirdButtonText, String thirdButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();

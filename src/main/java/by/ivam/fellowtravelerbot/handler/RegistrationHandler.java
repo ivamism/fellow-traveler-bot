@@ -4,13 +4,14 @@ import by.ivam.fellowtravelerbot.DTO.RegUser;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.handler.enums.BotStatus;
+import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.handler.storages.StorageAccess;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -28,72 +29,56 @@ public class RegistrationHandler {
     Messages messages;
     @Autowired
     UserService userService;
-
     @Autowired
     Keyboards keyboards;
-
     @Autowired
     Buttons buttons;
     @Autowired
     StorageAccess storageAccess;
-
     @Autowired
     RegUser regUser;
     EditMessageText message = new EditMessageText();
 
-//    TODO Реализовать сохранение имени юзера после ввода до момента подтверждения и сохранения в БД
-//    создать хранилище для имен (hash map <long chatId, String userName>
-//    создать перегруженный метод регистрации юзера, принимающий параметром имя из хранилища
-//    или изменить тип ваалью мапы на ДТО хранящий и статус и имя
-
-
     // Ask user to confirm telegram user first name as UserName or edit it
-    public EditMessageText checkRegData(int messageId, long chatId, String userName) {
+    public EditMessageText confirmUserFirstName(int messageId, long chatId, String userName) {
 
         message.setChatId(chatId);
-        message.setText(messages.getCONFIRM_REG_DATA_MESSAGE() + userName + "?");
+        message.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + userName + "?");
         message.setMessageId(messageId);
         message.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_REG_DATA_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
 
-        log.debug("Send request for confirmation of registration data");
+        log.debug("method confirmUserFirstName. Send request for confirmation of registration data");
 
         return message;
     }
 
-    //    Request to send users choice of userName
-    public EditMessageText editUserName(Message incomeMessage) {
-//        int messageId = incomeMessage.getMessageId();
+    //    Request to send users choice of userFirstName
+    public EditMessageText editUserFirstName(Message incomeMessage) {
+
         long chatId = incomeMessage.getChatId();
         message.setMessageId(incomeMessage.getMessageId());
-        message.setText(messages.getEDIT_NAME());
-//        message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_CONFIRMED_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-        message.setReplyMarkup(null); //need to use null to remove not necessary inline keyboard
+        message.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
+        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
 
-
-        log.debug("Send request to enter the first or nick name of User");
-
-        regUser.setChatId(chatId)
-                .setBotStatus(BotStatus.REGISTRATION_EDIT_NAME);
-        storageAccess.addRegUser(regUser);
-//        storageAccess.addChatStatus(chatId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
+        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_EDIT_NAME));
+        log.debug("method editUserFirstName. Send request to enter the first or nick name of User");
         return message;
     }
 
-//    request user to confirm that edited userName is correct
-    public EditMessageText confirmEditRegData(Message incomeMessage) {
-//        int messageId = incomeMessage.getMessageId();
+//    request user to confirm that edited userFirstName is correct
+    public SendMessage confirmEditedUserFirstName(Message incomeMessage) {
+        SendMessage sendMessage = new SendMessage();
+        int messageId = incomeMessage.getMessageId();
         long chatId = incomeMessage.getChatId();
-        message.setMessageId(incomeMessage.getMessageId());
+        String incomeMessageText = incomeMessage.getText();
 
-        message.setText(messages.getCONFIRM_NAME() + incomeMessage.getText());
-        message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-//        storageAccess.addChatStatus(chatId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
-//        storageAccess.addChatStatus(chatId, String.valueOf(BotStatus.REGISTRATION_EDIT_NAME));
-        log.info("Send request to confirm edited name");
-        return message;
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessageText);
+        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
+        storageAccess.addUserFirstName(chatId, incomeMessageText);
+        log.info("method confirmEditedUserFirstName. Send request to confirm edited name");
+        return sendMessage;
     }
-
-
 
     // Save User to DB
     public EditMessageText userRegistration(Message incomeMessage) {
@@ -108,12 +93,40 @@ public class RegistrationHandler {
 
         message.setMessageId(incomeMessage.getMessageId());
         message.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
-        message.setReplyMarkup(null); //need to use null to remove not necessary inline keyboard
+        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
 
-        storageAccess.deleteChatStatus(incomeMessage.getChatId());
-        log.debug("Start registration process with user: " + regUser);
+        storageAccess.deleteChatStatus(chatId);
+        log.debug("method userRegistration. Call saving to DB user: " + regUser);
         return message;
     }
 
+    public EditMessageText userRegistration(Message incomeMessage, String firstName) {
+        Long chatId = incomeMessage.getChatId();
+        String userName = incomeMessage.getChat().getUserName();
+        regUser.setChatId(chatId)
+                .setFirstName(firstName)
+                .setTelegramUserName(userName);
 
+        userService.registerNewUser(regUser);
+
+        message.setMessageId(incomeMessage.getMessageId());
+        message.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
+        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+
+        storageAccess.deleteChatStatus(chatId);
+        storageAccess.deleteUserFirstName(chatId);
+        log.debug("method userRegistration. Call saving to DB with with edited firstname: " + regUser);
+        return message;
+    }
+
+    public EditMessageText denyRegistration(Message incomeMessage) {
+        message.setMessageId(incomeMessage.getMessageId());
+        message.setText(messages.getDENY_REGISTRATION_MESSAGE());
+        message.setChatId(incomeMessage.getChatId());
+        log.info("User deny registration");
+        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+        return message;
+//  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
+//  TODO Реализовать процесс возврата к регистрации
+    }
 }

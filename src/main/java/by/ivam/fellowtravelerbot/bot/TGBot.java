@@ -22,18 +22,14 @@ public class TGBot extends TelegramLongPollingBot {
 
     @Autowired
     BotConfig botConfig;
-
     @Autowired
     StartHandler startHandler;
-
     @Autowired
     RegistrationHandler registrationHandler;
-
     @Autowired
     Keyboards keyboards;
     @Autowired
     Messages messages;
-
     @Autowired
     Buttons buttons;
     @Autowired
@@ -55,18 +51,14 @@ public class TGBot extends TelegramLongPollingBot {
             long chatId = incomeMessage.getChatId();
             switch (messageText) {
                 case "/start" -> {
-
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
                     log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
-//                    startHandler.startMessaging(chatId, incomeMessage);
 
                     sendMessage(startHandler.startMessaging(chatId, incomeMessage));
                 }
                 case "/help" -> {
-
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
                     log.debug("get Message: " + messageText);
-
                 }
 
                 case "/registration" -> {
@@ -75,25 +67,20 @@ public class TGBot extends TelegramLongPollingBot {
                 }
                 default -> {
                     log.debug("get Message: " + update.getMessage().getText());
-//                    sendMessage(prepareMessage(chatId, "Sorry this option still doesn't work"));
 
-                    String chatStatus = storageAccess.findBotStatusFromRegUser(chatId);
+                    String chatStatus = storageAccess.findChatStatus(chatId);
 
                     log.debug("get chatStatus - " + chatStatus);
                     switch (chatStatus) {
                         case "NO_STATUS" -> unknownCommandReceived(chatId);
-//                        case "REGISTRATION_START" -> {
-//                        }
-//                        case "REGISTRATION_WAIT_CONFIRMATION" -> {
-//                        }
-                        case "REGISTRATION_EDIT_NAME" -> {
-                            log.info("Get edited name" +  messageText);
 
-                            EditMessageText editMessageText = registrationHandler.confirmEditRegData(incomeMessage);
-                            executeEditMessageText(editMessageText);
+                        case "REGISTRATION_EDIT_NAME" -> {
+                            log.info("Get edited name " + messageText);
+
+                            SendMessage message = registrationHandler.confirmEditedUserFirstName(incomeMessage);
+                            sendMessage(message);
                         }
                     }
-
                 }
             }
         } else if (update.hasCallbackQuery()) {
@@ -106,40 +93,40 @@ public class TGBot extends TelegramLongPollingBot {
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {
 //  got confirmation of start registration process, call check up correctness of user firstname
-                EditMessageText editMessageText = registrationHandler.checkRegData(messageId, chatId, userName);
+                EditMessageText editMessageText = registrationHandler.confirmUserFirstName(messageId, chatId, userName);
                 executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {
 //  got denial of registration process
-// TODO вынести в метод отказа от регистрации в RegistrationHandler, реализовать возможность возврата в процесс регистрацц
-
-                String answer = messages.getDENY_REG_DATA_MESSAGE();
-                executeEditMessageText(answer, chatId, messageId);
+                EditMessageText editMessageText = registrationHandler.denyRegistration(incomeMessage);
+                executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {
 //  got confirmation of correctness of user firstname, call saving to DB
                 EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
                 executeEditMessageText(editMessageText);
             } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {
 //  got request of edit of user firstname, call appropriate process
-                EditMessageText editMessageText = registrationHandler.editUserName(incomeMessage);
+                EditMessageText editMessageText = registrationHandler.editUserFirstName(incomeMessage);
                 executeEditMessageText(editMessageText);
             }
-//            ввод другого имени
-//            else if (callbackData.equals(buttons.getNAME_CONFIRMED_CALLBACK())) {
-//                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
-//                executeEditMessageText(editMessageText);
-//            }
-
+//  got confirmation of correctness of edited user firstname, call saving to DB
+            else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {
+                String firstName = storageAccess.findUserFirstName(chatId);
+                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage, firstName);
+                executeEditMessageText(editMessageText);
+            }
         }
     }
 
     private void startCommandReceived(long chatId, String firstName) {
         String answer = "Привет, " + firstName + "!";
         sendMessage(prepareMessage(chatId, answer));
+        log.info("Start command received");
     }
 
     private void unknownCommandReceived(long chatId) {
         String answer = messages.getUNKNOWN_COMMAND();
         sendMessage(prepareMessage(chatId, answer));
+        log.info("received unknown command");
     }
 
     private SendMessage prepareMessage(long chatId, String textToSend) {

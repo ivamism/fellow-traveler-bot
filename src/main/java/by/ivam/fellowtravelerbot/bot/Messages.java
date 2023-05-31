@@ -29,10 +29,10 @@ public class Messages {
     private final String UNKNOWN_COMMAND = "Неизвестная команда";
     private final String CHOOSE_ACTION = "Выберите действие из меню";
     private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
-    private final String CONFIRM_REG_DATA_MESSAGE = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
-    private final String DENY_REG_DATA_MESSAGE = "Вы отказались от регистрации. До свидания";
+    private final String CONFIRM_USER_FIRST_MESSAGE = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
+    private final String DENY_REGISTRATION_MESSAGE = "Вы отказались от регистрации. До свидания";
     private final String SUCCESS_REGISTRATION_MESSAGE = "Вы успешно зарегистрированны. Для дальнейшего использования выберите действие из меню";
-    private final String CONFIRM_NAME = "Вы ввели имя - ";
-    private final String EDIT_NAME = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
+    private final String CONFIRM_FIRSTNAME_MESSAGE = "Вы ввели имя - ";
+    private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
 
 }
