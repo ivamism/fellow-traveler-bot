@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
-import by.ivam.fellowtravelerbot.handler.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;

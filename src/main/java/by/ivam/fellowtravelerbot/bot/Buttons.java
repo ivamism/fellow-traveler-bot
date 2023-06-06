@@ -10,12 +10,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class Buttons {
     // Buttons CallBackQueries
+
+    //    User registration process
     private final String CONFIRM_START_REG_CALLBACK = "CONFIRM_START_REGISTRATION";
     private final String DENY_REG_CALLBACK = "DENY_REGISTRATION";
     private final String CONFIRM_REG_DATA_CALLBACK = "CONFIRM_REG_DATA";
     private final String EDIT_REG_DATA_CALLBACK = "EDIT_REG_DATA";
     private final String NAME_TO_CONFIRM_CALLBACK = "CONFIRM_NAME";
     private final String NAME_CONFIRMED_CALLBACK = "CONFIRM_NAME";
+
+    //    Add a car process
+    private final String ADD_CAR_START = "ADD_CAR_START";
+    private final String ADD_CAR_START_DENY = "ADD_CAR_START_DENY";
 
 
     // Buttons Name

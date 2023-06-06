@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.handler.storages;
+package by.ivam.fellowtravelerbot.storages;
 
 public interface StorageAccess {
 
@@ -9,5 +9,7 @@ public interface StorageAccess {
     void addUserFirstName(Long chatId, String chatStatus);
     void deleteUserFirstName(Long chatId);
     String findUserFirstName(Long chatId);
+
+
 
 }

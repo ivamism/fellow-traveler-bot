@@ -2,6 +2,7 @@ package by.ivam.fellowtravelerbot.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
@@ -9,13 +10,16 @@ import lombok.*;
 @EqualsAndHashCode(exclude = "id")
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Entity
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
+    private String vendor;
     private String model;
     private String color;
+    private String plateNumber;
     private String commentary;
 
     @ManyToOne(cascade = CascadeType.ALL)

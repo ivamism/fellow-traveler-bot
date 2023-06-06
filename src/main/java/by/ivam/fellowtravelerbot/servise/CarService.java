@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface CarService {
 
-    Car findById();
+    Car findById(int id);
     List<Car> findAll();
 
-    void addNewCar();
+    void addNewCar(Car car);
 
-    void deleteCar();
+    void deleteCar(int id);
 }

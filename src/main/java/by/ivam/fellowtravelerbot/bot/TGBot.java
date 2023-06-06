@@ -1,9 +1,10 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
+import by.ivam.fellowtravelerbot.handler.CarHandler;
 import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
-import by.ivam.fellowtravelerbot.handler.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -26,6 +27,8 @@ public class TGBot extends TelegramLongPollingBot {
     StartHandler startHandler;
     @Autowired
     RegistrationHandler registrationHandler;
+    @Autowired
+    CarHandler carHandler;
     @Autowired
     Keyboards keyboards;
     @Autowired
@@ -65,6 +68,10 @@ public class TGBot extends TelegramLongPollingBot {
 //                    log.debug("get Message: " + messageText + " - Start registration process");
 //                    registerUser(chatId, );
                 }
+                case "/add_car" -> {
+                    SendMessage message = carHandler.start(incomeMessage);
+                    sendMessage(message);
+                }
                 default -> {
                     log.debug("get Message: " + update.getMessage().getText());
 
@@ -78,6 +85,38 @@ public class TGBot extends TelegramLongPollingBot {
                             log.info("Get edited name " + messageText);
 
                             SendMessage message = registrationHandler.confirmEditedUserFirstName(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_VENDOR" -> {
+                            log.info("Get vendor " + messageText);
+                            carHandler.setVendor(chatId, messageText);
+                            SendMessage message = carHandler.requestModel(incomeMessage);
+//                            executeEditMessageText(editMessageText);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_MODEL" -> {
+                            log.info("Get model " + messageText);
+                            carHandler.setModel(chatId, messageText);
+                            SendMessage message = carHandler.requestColor(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_COLOR" -> {
+                            log.info("Get color " + messageText);
+                            carHandler.setColor(chatId, messageText);
+                            SendMessage message = carHandler.requestPlateNumber(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_PLATE" -> {
+                            log.info("Get plate number " + messageText);
+                            carHandler.setPlateNumber(chatId, messageText);
+                            SendMessage message = carHandler.requestCommentary(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_COMMENTARY" -> {
+                            log.info("Get commentary " + messageText);
+                            carHandler.setCommentary(chatId, messageText);
+                            carHandler.saveCar(chatId);
+                            SendMessage message = carHandler.saveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                     }
@@ -112,6 +151,14 @@ public class TGBot extends TelegramLongPollingBot {
             else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {
                 String firstName = storageAccess.findUserFirstName(chatId);
                 EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage, firstName);
+                executeEditMessageText(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_START_DENY())) {
+//  deny add car process
+                EditMessageText editMessageText = carHandler.denyStart(incomeMessage);
+                executeEditMessageText(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_START())) {
+//  start add car process
+                EditMessageText editMessageText = carHandler.requestVendor(incomeMessage);
                 executeEditMessageText(editMessageText);
             }
         }
