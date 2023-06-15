@@ -9,6 +9,6 @@ public interface AddCarStorageAccess {
     void setModel (Long chatId, String model);
     void setColor (Long chatId, String color);
     void setPlateNumber (Long chatId, String plateNumber);
-    void setCommentary(Long chatId, String plateNumber);
+    void setCommentary(Long chatId, String commentary);
 
 }

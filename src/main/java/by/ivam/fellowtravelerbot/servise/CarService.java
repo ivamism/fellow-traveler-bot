@@ -2,14 +2,13 @@ package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.model.Car;
 
-import java.util.List;
-
 public interface CarService {
 
     Car findById(int id);
-    List<Car> findAll();
+        Car addNewCar(Car car);
 
-    void addNewCar(Car car);
+    void deleteCarById(int id);
 
-    void deleteCar(int id);
+    void deleteCar(Car car);
+    void deleteAllUsersCars(long chatId);
 }

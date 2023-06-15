@@ -4,17 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode(exclude = "id")
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Accessors(chain = true)
 @Entity
 public class Car {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String vendor;
     private String model;
@@ -22,8 +18,7 @@ public class Car {
     private String plateNumber;
     private String commentary;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_chat_id")
+    @ManyToOne
+    @JoinColumn(name = "user.chat_id")
     private User user;
-
 }

@@ -20,7 +20,8 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User findUserById(long chatId) {
-        return null;
+
+        return userRepository.findById(chatId).orElseThrow();
     }
 
     @Override
@@ -31,7 +32,8 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public List<User> findAll() {
-        return null;
+
+        return userRepository.findAll();
     }
 
     @Override

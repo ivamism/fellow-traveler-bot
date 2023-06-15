@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.CarHandler;
 import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
+import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,8 +116,8 @@ public class TGBot extends TelegramLongPollingBot {
                         case "ADD_CAR_COMMENTARY" -> {
                             log.info("Get commentary " + messageText);
                             carHandler.setCommentary(chatId, messageText);
-                            carHandler.saveCar(chatId);
-                            SendMessage message = carHandler.saveCarMessage(incomeMessage);
+                            Car car = carHandler.saveCar(chatId);
+                            SendMessage message = carHandler.saveCarMessage(incomeMessage, car);
                             sendMessage(message);
                         }
                     }

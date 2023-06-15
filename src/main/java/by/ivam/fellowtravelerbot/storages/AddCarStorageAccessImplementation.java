@@ -37,21 +37,25 @@ public class AddCarStorageAccessImplementation implements AddCarStorageAccess {
 
     @Override
     public void setModel(Long chatId, String model) {
-
+        findCarDTO(chatId).setModel(model);
+        log.debug("set to carDTO model " + model);
     }
 
     @Override
     public void setColor(Long chatId, String color) {
-
+        findCarDTO(chatId).setColor(color);
+        log.debug("set to carDTO color " + color);
     }
 
     @Override
     public void setPlateNumber(Long chatId, String plateNumber) {
-
+        findCarDTO(chatId).setPlateNumber(plateNumber);
+        log.debug("set to carDTO color " + plateNumber);
     }
 
     @Override
-    public void setCommentary(Long chatId, String plateNumber) {
-
+    public void setCommentary(Long chatId, String commentary) {
+        findCarDTO(chatId).setCommentary(commentary);
+        log.debug("set to carDTO color " + commentary);
     }
 }

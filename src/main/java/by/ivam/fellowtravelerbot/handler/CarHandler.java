@@ -149,32 +149,38 @@ public class CarHandler {
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
-    public void saveCar(Long chatId) {
+    public Car saveCar(Long chatId) {
         carDTO = addCarStorageAccess.findCarDTO(chatId);
         Car car = new Car();
-        car.setVendor(car.getVendor())
-                .setModel(car.getModel())
-                .setColor(car.getColor())
-                .setPlateNumber(car.getPlateNumber())
-                .setCommentary(car.getCommentary())
+        car.setVendor(carDTO.getVendor().toUpperCase())
+                .setModel(carDTO.getModel().toUpperCase())
+                .setColor(carDTO.getColor())
+                .setPlateNumber(carDTO.getPlateNumber().toUpperCase())
+                .setCommentary(carDTO.getCommentary())
                 .setUser(userService.findUserById(chatId));
 
         carService.addNewCar(car);
         log.debug("CarHandler method addNewCar: call  carService.addNewCar to save car " + car + " to DB");
         storageAccess.deleteChatStatus(chatId);
         addCarStorageAccess.deleteCarDTO(chatId);
+        return car;
     }
-    public SendMessage saveCarMessage(Message incomeMessage) {
-        sendMessage.setChatId(incomeMessage.getChatId());
-        sendMessage.setText(messages.getADD_CAR_ADD_SUCCESS_MESSAGE());
 
-//        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATE));
+    public SendMessage saveCarMessage(Message incomeMessage, Car car) {
+        sendMessage.setChatId(incomeMessage.getChatId());
+        String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        sendMessage.setText(messageText);
+//       String s = String.format("Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s");
+//        sendMessage.setText(messages.getADD_CAR_ADD_SUCCESS_MESSAGE()
+//                + "\n\n  Марка: " + car.getVendor()
+//                + "\n  Модель: " + car.getModel()
+//                + "\n  Цвет: " + car.getColor()
+//                + "\n  Госномер: " + car.getPlateNumber()
+//                + "\n  Коментарий: " + car.getCommentary());
 
         log.info("CarHandler method saveCarMessage: message about success add car");
 
         return sendMessage;
     }
-
-
 
 }

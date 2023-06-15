@@ -19,7 +19,4 @@ public class User {
     private String firstName;
     private String userName;
     private LocalDateTime registeredAt;
-
-
-
 }

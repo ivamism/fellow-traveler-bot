@@ -45,7 +45,10 @@ public class Messages {
     private final String ADD_CAR_ADD_COLOR_MESSAGE = "Впишите цвет вашего автомобиля";
     private final String ADD_CAR_ADD_PLATE_NUMBER_MESSAGE = "Впишите регистрационный номер вашего автомобиля";
     private final String ADD_CAR_ADD_COMMENTARY_MESSAGE = "Впишите коментарий, если есть необходимость";
-    private final String ADD_CAR_ADD_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен";
+//    private final String ADD_CAR_ADD_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен ";
+    private final String ADD_CAR_ADD_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s";
+
+//    String s = String.format("Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s");
 
 
 
