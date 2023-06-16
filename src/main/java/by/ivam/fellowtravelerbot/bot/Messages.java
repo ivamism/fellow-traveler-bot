@@ -39,16 +39,19 @@ public class Messages {
 
 //    Add Car
     private final String ADD_CAR_START_MESSAGE = "Вы хотите добавить автомобиль в ваш профиль?";
+
     private final String ADD_CAR_DENY_START_MESSAGE = "Вы отказались от добавления автомобиля. Для продолжения работы с ботом выберите нужный пункт меню";
     private final String ADD_CAR_ADD_VENDOR_MESSAGE = "Впишите марку вашего автомобиля";
     private final String ADD_CAR_ADD_MODEL_MESSAGE = "Впишите модель вашего автомобиля";
     private final String ADD_CAR_ADD_COLOR_MESSAGE = "Впишите цвет вашего автомобиля";
     private final String ADD_CAR_ADD_PLATE_NUMBER_MESSAGE = "Впишите регистрационный номер вашего автомобиля";
     private final String ADD_CAR_ADD_COMMENTARY_MESSAGE = "Впишите коментарий, если есть необходимость";
-//    private final String ADD_CAR_ADD_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен ";
     private final String ADD_CAR_ADD_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s";
 
-//    String s = String.format("Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s");
+    //      DeleteCar
+    private final String DELETE_CAR_START_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей\n" +
+            "Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся\n" +
+            "Хотите удалить?";
 
 
 

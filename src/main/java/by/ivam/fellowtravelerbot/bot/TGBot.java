@@ -70,7 +70,7 @@ public class TGBot extends TelegramLongPollingBot {
 //                    registerUser(chatId, );
                 }
                 case "/add_car" -> {
-                    SendMessage message = carHandler.start(incomeMessage);
+                    SendMessage message = carHandler.startAddCarProcess(incomeMessage);
                     sendMessage(message);
                 }
                 default -> {

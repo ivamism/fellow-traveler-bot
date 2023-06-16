@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface CarRepository extends JpaRepository<Car, Integer> {
 
-    List<Car> findByUser_ChatId(Long chatId);
+    List<Car> findAllByUser_chatId(Long chatId);
+//    List<Person> findByCountry_nameLikeIgnoreCase(String country);
 
 
-    void deleteAllCarsByUserId(Long chatId);
+//    void deleteAllCarsByUserId(Long chatId);
 }

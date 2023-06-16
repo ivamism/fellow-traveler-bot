@@ -18,6 +18,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
 // This class handle operations with Car
 
 @Component
@@ -43,8 +45,19 @@ public class CarHandler {
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
+// add users car step-by-step process
 
-    public SendMessage start(Message incomeMessage) {
+    public SendMessage startAddCarProcess(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
+        if (getUsersCarsQuantity(chatId) < 3) {
+            sendMessage = startAddCarProcessMessageCreate(incomeMessage);
+        } else {
+            sendMessage = startDeleteCarProcessMessageCreate(incomeMessage);
+        }
+        return sendMessage;
+    }
+
+    private SendMessage startAddCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_START_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getADD_CAR_START(), buttons.getNO_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY()));
@@ -52,7 +65,6 @@ public class CarHandler {
         return sendMessage;
     }
 
-//    TODO add count quantity of cars of user and limit it by three or two
 
     public EditMessageText denyStart(Message incomeMessage) {
         editMessage.setMessageId(incomeMessage.getMessageId());
@@ -127,11 +139,10 @@ public class CarHandler {
     }
 
     public void setPlateNumber(Long chatId, String plateNumber) {
-
         addCarStorageAccess.setPlateNumber(chatId, plateNumber);
         log.debug("CarHandler method setPlateNumber: set plateNumber " + plateNumber + " to carDTO and send to storage");
     }
-
+//    TODO добавить кнопку отказа от коментариев
     public SendMessage requestCommentary(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
@@ -144,11 +155,11 @@ public class CarHandler {
     }
 
     public void setCommentary(Long chatId, String commentary) {
-
         addCarStorageAccess.setCommentary(chatId, commentary);
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
+    // TODO добавить инлайн клавиатуру для подтверждения и редактирования данных
     public Car saveCar(Long chatId) {
         carDTO = addCarStorageAccess.findCarDTO(chatId);
         Car car = new Car();
@@ -170,17 +181,28 @@ public class CarHandler {
         sendMessage.setChatId(incomeMessage.getChatId());
         String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         sendMessage.setText(messageText);
-//       String s = String.format("Ваш автомобиль успешно добавлен \n\n  Марка: %s \n  Модель: %s \n  Цвет: %s \n  Госномер: %s \n  Коментарий: %s");
-//        sendMessage.setText(messages.getADD_CAR_ADD_SUCCESS_MESSAGE()
-//                + "\n\n  Марка: " + car.getVendor()
-//                + "\n  Модель: " + car.getModel()
-//                + "\n  Цвет: " + car.getColor()
-//                + "\n  Госномер: " + car.getPlateNumber()
-//                + "\n  Коментарий: " + car.getCommentary());
 
         log.info("CarHandler method saveCarMessage: message about success add car");
-
         return sendMessage;
     }
+//    handling Users Cars quantity
+
+    private List<Car> getUsersCarsList(long chatId) {
+        return carService.usersCarList(chatId);
+    }
+
+    private int getUsersCarsQuantity(long chatId) {
+        return getUsersCarsList(chatId).size();
+    }
+
+//         Delete cars
+private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
+    sendMessage.setChatId(incomeMessage.getChatId());
+    sendMessage.setText(messages.getDELETE_CAR_START_MESSAGE());
+//    sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getADD_CAR_START(), buttons.getNO_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY()));
+    log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
+    return sendMessage;
+}
+
 
 }
