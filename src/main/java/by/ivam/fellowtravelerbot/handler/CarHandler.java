@@ -49,7 +49,7 @@ public class CarHandler {
 
     public SendMessage startAddCarProcess(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
-        if (getUsersCarsQuantity(chatId) < 3) {
+        if (getUsersCarsQuantity(chatId) < 2) {
             sendMessage = startAddCarProcessMessageCreate(incomeMessage);
         } else {
             sendMessage = startDeleteCarProcessMessageCreate(incomeMessage);
@@ -60,7 +60,7 @@ public class CarHandler {
     private SendMessage startAddCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_START_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getADD_CAR_START(), buttons.getNO_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY()));
+        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getADD_CAR_START_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
         log.info("CarHandler method start: send request to confirm start of process to add a new car");
         return sendMessage;
     }
@@ -146,6 +146,7 @@ public class CarHandler {
     public SendMessage requestCommentary(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getNO_COMMENT_TEXT(), buttons.getADD_CAR_NO_COMMENT_CALLBACK()));
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COMMENTARY));
 

@@ -17,7 +17,7 @@ import java.util.List;
 public
 class Keyboards {
 
-    // Клавиатура главного меню
+// Клавиатура главного меню
 
     ReplyKeyboardMarkup mainMenu() {
     ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
@@ -44,7 +44,7 @@ class Keyboards {
         return mainKeyboard;
     }
 
-// Inline keyboard with 1 row of two buttons
+// Inline keyboard two buttons - horizontal arrangement
      public InlineKeyboardMarkup twoButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
@@ -69,7 +69,8 @@ class Keyboards {
          return markupInLine;
      }
 
-    // Inline keyboard with 1 row of two buttons
+
+// Inline keyboard three buttons - horizontal arrangement
 public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData, String thirdButtonText, String thirdButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
@@ -100,5 +101,83 @@ public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, S
         markupInLine.setKeyboard(rowsInLine);
          return markupInLine;
      }
+
+//    Inline keyboard one buttons
+    public InlineKeyboardMarkup oneButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData) {
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+
+
+        rowsInLine.add(firstRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
+//    Inline keyboard two buttons - vertical arrangement
+    public InlineKeyboardMarkup twoButtonsColumnInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> secondRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+
+        InlineKeyboardButton secondButton = new InlineKeyboardButton();
+
+        secondButton.setText(secondButtonText);
+        secondButton.setCallbackData(secondButtonCallbackData);
+
+        firstRowInLine.add(firstButton);
+        secondRowInLine.add(secondButton);
+
+        rowsInLine.add(firstRowInLine);
+        rowsInLine.add(secondRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
+
+//    Inline keyboard tree buttons - vertical arrangement
+    public InlineKeyboardMarkup treeButtonsColumnInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData, String thirdButtonText, String thirdButtonCallbackData) {
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> secondRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> thirdRowInLine = new ArrayList<>();
+
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+
+        InlineKeyboardButton secondButton = new InlineKeyboardButton();
+        secondButton.setText(secondButtonText);
+        secondButton.setCallbackData(secondButtonCallbackData);
+
+        InlineKeyboardButton thirdButton = new InlineKeyboardButton();
+        thirdButton.setText(thirdButtonText);
+        thirdButton.setCallbackData(thirdButtonCallbackData);
+
+        firstRowInLine.add(firstButton);
+        secondRowInLine.add(secondButton);
+        thirdRowInLine.add(thirdButton);
+
+        rowsInLine.add(firstRowInLine);
+        rowsInLine.add(secondRowInLine);
+        rowsInLine.add(thirdRowInLine);
+
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
 
 }

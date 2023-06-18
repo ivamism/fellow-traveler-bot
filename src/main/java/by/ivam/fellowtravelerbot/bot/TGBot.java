@@ -153,11 +153,11 @@ public class TGBot extends TelegramLongPollingBot {
                 String firstName = storageAccess.findUserFirstName(chatId);
                 EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage, firstName);
                 executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_START_DENY())) {
+            } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {
 //  deny add car process
                 EditMessageText editMessageText = carHandler.denyStart(incomeMessage);
                 executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_START())) {
+            } else if (callbackData.equals(buttons.getADD_CAR_START_CALLBACK())) {
 //  start add car process
                 EditMessageText editMessageText = carHandler.requestVendor(incomeMessage);
                 executeEditMessageText(editMessageText);
