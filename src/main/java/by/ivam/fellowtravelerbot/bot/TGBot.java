@@ -117,7 +117,7 @@ public class TGBot extends TelegramLongPollingBot {
                             log.info("Get commentary " + messageText);
                             carHandler.setCommentary(chatId, messageText);
                             Car car = carHandler.saveCar(chatId);
-                            SendMessage message = carHandler.saveCarMessage(incomeMessage, car);
+                            SendMessage message = carHandler.checkDataBeforSavingCarMessage(incomeMessage, car);
                             sendMessage(message);
                         }
                     }
@@ -161,6 +161,14 @@ public class TGBot extends TelegramLongPollingBot {
 //  start add car process
                 EditMessageText editMessageText = carHandler.requestVendor(incomeMessage);
                 executeEditMessageText(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_SKIP_COMMENT_CALLBACK())) {
+//  add car process get skip comments callback
+                log.info("Get callback to skip commentary ");
+                String emptyString = "";
+                carHandler.setCommentary(chatId, emptyString);
+                Car car = carHandler.saveCar(chatId);
+                SendMessage message = carHandler.checkDataBeforSavingCarMessage(incomeMessage, car);
+                sendMessage(message);
             }
         }
     }

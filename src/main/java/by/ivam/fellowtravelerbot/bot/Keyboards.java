@@ -14,8 +14,7 @@ import java.util.List;
 
 @Component
 @Data
-public
-class Keyboards {
+public class Keyboards {
 
 // Клавиатура главного меню
 
@@ -43,8 +42,24 @@ class Keyboards {
 
         return mainKeyboard;
     }
+    //    Inline keyboard one buttons
+    public InlineKeyboardMarkup oneButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData) {
 
-// Inline keyboard two buttons - horizontal arrangement
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+        firstRowInLine.add(firstButton);
+        rowsInLine.add(firstRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
+
+    // Inline keyboard two buttons - horizontal arrangement
      public InlineKeyboardMarkup twoButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
@@ -91,7 +106,6 @@ public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, S
         thirdButton.setText(thirdButtonText);
         thirdButton.setCallbackData(thirdButtonCallbackData);
 
-
         firstRowInLine.add(firstButton);
         firstRowInLine.add(secondButton);
         firstRowInLine.add(thirdButton);
@@ -102,23 +116,7 @@ public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, S
          return markupInLine;
      }
 
-//    Inline keyboard one buttons
-    public InlineKeyboardMarkup oneButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData) {
 
-        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
-        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
-        InlineKeyboardButton firstButton = new InlineKeyboardButton();
-
-        firstButton.setText(firstButtonText);
-        firstButton.setCallbackData(firstButtonCallbackData);
-
-
-        rowsInLine.add(firstRowInLine);
-
-        markupInLine.setKeyboard(rowsInLine);
-        return markupInLine;
-    }
 //    Inline keyboard two buttons - vertical arrangement
     public InlineKeyboardMarkup twoButtonsColumnInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
 

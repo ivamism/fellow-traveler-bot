@@ -146,7 +146,7 @@ public class CarHandler {
     public SendMessage requestCommentary(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getNO_COMMENT_TEXT(), buttons.getADD_CAR_NO_COMMENT_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getSKIP_COMMENT_TEXT(), buttons.getADD_CAR_SKIP_COMMENT_CALLBACK()));
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COMMENTARY));
 
@@ -177,8 +177,36 @@ public class CarHandler {
         addCarStorageAccess.deleteCarDTO(chatId);
         return car;
     }
+//        public Car saveCar(Long chatId) {
+//        carDTO = addCarStorageAccess.findCarDTO(chatId);
+//        Car car = new Car();
+//        car.setVendor(carDTO.getVendor().toUpperCase())
+//                .setModel(carDTO.getModel().toUpperCase())
+//                .setColor(carDTO.getColor())
+//                .setPlateNumber(carDTO.getPlateNumber().toUpperCase())
+//                .setCommentary(carDTO.getCommentary())
+//                .setUser(userService.findUserById(chatId));
+//
+//        carService.addNewCar(car);
+//        log.debug("CarHandler method addNewCar: call  carService.addNewCar to save car " + car + " to DB");
+//        storageAccess.deleteChatStatus(chatId);
+//        addCarStorageAccess.deleteCarDTO(chatId);
+//        return car;
+//    }
+
+
+    public SendMessage checkDataBeforeSavingCarMessage(Message incomeMessage) {
+        CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
+        editMessage.setChatId(incomeMessage.getChatId());
+        String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        editMessage.setText(messageText);
+
+        log.info("CarHandler method saveCarMessage: message about success add car");
+        return sendMessage;
+    }
 
     public SendMessage saveCarMessage(Message incomeMessage, Car car) {
+
         sendMessage.setChatId(incomeMessage.getChatId());
         String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         sendMessage.setText(messageText);
@@ -186,6 +214,7 @@ public class CarHandler {
         log.info("CarHandler method saveCarMessage: message about success add car");
         return sendMessage;
     }
+
 //    handling Users Cars quantity
 
     private List<Car> getUsersCarsList(long chatId) {
@@ -204,6 +233,8 @@ private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
     log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
     return sendMessage;
 }
+
+// Edit car
 
 
 }
