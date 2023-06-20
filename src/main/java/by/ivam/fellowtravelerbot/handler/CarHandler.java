@@ -47,6 +47,8 @@ public class CarHandler {
 
 // add users car step-by-step process
 
+//    TODO объединить вендор и модель
+
     public SendMessage startAddCarProcess(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         if (getUsersCarsQuantity(chatId) < 2) {
@@ -70,6 +72,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setText(messages.getADD_CAR_DENY_START_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         log.info("CarHandler method denyStart: Quit add car process");
 
         return editMessage;
@@ -88,7 +91,7 @@ public class CarHandler {
     }
 
     public void setVendor(Long chatId, String vendor) {
-        carDTO.setVendor(vendor);
+        carDTO.setVendor(vendor.toUpperCase());
         addCarStorageAccess.addCarDTO(chatId, carDTO);
         log.debug("CarHandler method setVendor: set vendor " + vendor + " to carDTO and send to storage");
     }
@@ -107,7 +110,7 @@ public class CarHandler {
     }
 
     public void setModel(Long chatId, String model) {
-        addCarStorageAccess.setModel(chatId, model);
+        addCarStorageAccess.setModel(chatId, model.toUpperCase());
         log.debug("CarHandler method setModel: set model " + model + " to carDTO and send to storage");
     }
 
@@ -133,24 +136,24 @@ public class CarHandler {
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATE));
 
-        log.info("CarHandler method requestPlateNumber: request to send color");
+        log.info("CarHandler method requestPlateNumber: request to send plate number");
 
         return sendMessage;
     }
 
     public void setPlateNumber(Long chatId, String plateNumber) {
-        addCarStorageAccess.setPlateNumber(chatId, plateNumber);
+        addCarStorageAccess.setPlateNumber(chatId, plateNumber.toUpperCase());
         log.debug("CarHandler method setPlateNumber: set plateNumber " + plateNumber + " to carDTO and send to storage");
     }
-//    TODO добавить кнопку отказа от коментариев
+
     public SendMessage requestCommentary(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getSKIP_COMMENT_TEXT(), buttons.getADD_CAR_SKIP_COMMENT_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getSKIP_STEP_TEXT(), buttons.getADD_CAR_SKIP_COMMENT_CALLBACK()));
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COMMENTARY));
 
-        log.info("CarHandler method requestPlateNumber: request to send color");
+        log.info("CarHandler method requestCommentary: request to send commentary");
 
         return sendMessage;
     }
@@ -160,14 +163,37 @@ public class CarHandler {
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
-    // TODO добавить инлайн клавиатуру для подтверждения и редактирования данных
+
+    public EditMessageText checkDataBeforeSaveCarMessageSkipComment(Message incomeMessage) {
+        CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        editMessage.setText(messageText);
+        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+
+        log.info("CarHandler method checkDataBeforeSaveCarMessageSkipComment: send request to check data");
+        return editMessage;
+    }
+        public SendMessage checkDataBeforeSaveCarMessage(Message incomeMessage) {
+        CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
+        sendMessage.setChatId(incomeMessage.getChatId());
+        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        sendMessage.setText(messageText);
+        sendMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+
+        log.info("CarHandler method checkDataBeforeSaveCarMessage: send request to check data");
+        return sendMessage;
+    }
+
+
     public Car saveCar(Long chatId) {
         carDTO = addCarStorageAccess.findCarDTO(chatId);
         Car car = new Car();
-        car.setVendor(carDTO.getVendor().toUpperCase())
-                .setModel(carDTO.getModel().toUpperCase())
+        car.setVendor(carDTO.getVendor())
+                .setModel(carDTO.getModel())
                 .setColor(carDTO.getColor())
-                .setPlateNumber(carDTO.getPlateNumber().toUpperCase())
+                .setPlateNumber(carDTO.getPlateNumber())
                 .setCommentary(carDTO.getCommentary())
                 .setUser(userService.findUserById(chatId));
 
@@ -177,42 +203,18 @@ public class CarHandler {
         addCarStorageAccess.deleteCarDTO(chatId);
         return car;
     }
-//        public Car saveCar(Long chatId) {
-//        carDTO = addCarStorageAccess.findCarDTO(chatId);
-//        Car car = new Car();
-//        car.setVendor(carDTO.getVendor().toUpperCase())
-//                .setModel(carDTO.getModel().toUpperCase())
-//                .setColor(carDTO.getColor())
-//                .setPlateNumber(carDTO.getPlateNumber().toUpperCase())
-//                .setCommentary(carDTO.getCommentary())
-//                .setUser(userService.findUserById(chatId));
-//
-//        carService.addNewCar(car);
-//        log.debug("CarHandler method addNewCar: call  carService.addNewCar to save car " + car + " to DB");
-//        storageAccess.deleteChatStatus(chatId);
-//        addCarStorageAccess.deleteCarDTO(chatId);
-//        return car;
-//    }
 
 
-    public SendMessage checkDataBeforeSavingCarMessage(Message incomeMessage) {
-        CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
+    public EditMessageText saveCarMessage(Message incomeMessage, Car car) {
+
         editMessage.setChatId(incomeMessage.getChatId());
-        String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         editMessage.setText(messageText);
+        editMessage.setReplyMarkup(null);
 
         log.info("CarHandler method saveCarMessage: message about success add car");
-        return sendMessage;
-    }
-
-    public SendMessage saveCarMessage(Message incomeMessage, Car car) {
-
-        sendMessage.setChatId(incomeMessage.getChatId());
-        String messageText = String.format(messages.getADD_CAR_ADD_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
-        sendMessage.setText(messageText);
-
-        log.info("CarHandler method saveCarMessage: message about success add car");
-        return sendMessage;
+        return editMessage;
     }
 
 //    handling Users Cars quantity

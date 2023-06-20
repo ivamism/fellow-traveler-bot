@@ -58,7 +58,7 @@ public class RegistrationHandler {
         long chatId = incomeMessage.getChatId();
         message.setMessageId(incomeMessage.getMessageId());
         message.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
-        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_EDIT_NAME));
         log.debug("method editUserFirstName. Send request to enter the first or nick name of User");
@@ -93,7 +93,7 @@ public class RegistrationHandler {
 
         message.setMessageId(incomeMessage.getMessageId());
         message.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
-        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         storageAccess.deleteChatStatus(chatId);
         log.debug("method userRegistration. Call saving to DB user: " + regUser);
@@ -111,7 +111,7 @@ public class RegistrationHandler {
 
         message.setMessageId(incomeMessage.getMessageId());
         message.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
-        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         storageAccess.deleteChatStatus(chatId);
         storageAccess.deleteUserFirstName(chatId);
@@ -124,7 +124,7 @@ public class RegistrationHandler {
         message.setText(messages.getDENY_REGISTRATION_MESSAGE());
         message.setChatId(incomeMessage.getChatId());
         log.info("User deny registration");
-        message.setReplyMarkup(null); //need to use null to remove no longer necessary inline keyboard
+        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return message;
 //  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
 //  TODO Реализовать процесс возврата к регистрации

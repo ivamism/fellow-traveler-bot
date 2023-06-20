@@ -24,7 +24,7 @@ public class Buttons {
     private final String ADD_CAR_START_DENY_CALLBACK = "ADD_CAR_START_DENY";
     private final String ADD_CAR_SKIP_COMMENT_CALLBACK = "ADD_CAR_NO_COMMENT";
     private final String ADD_CAR_EDIT_CAR_CALLBACK = "ADD_CAR_EDIT_CAR";
-    private final String ADD_CAR_CONFIRM_CAR_CALLBACK = "ADD_CAR_CONFIRM_CAR";
+    private final String ADD_CAR_SAVE_CAR_CALLBACK = "ADD_CAR_CONFIRM_CAR";
 
 
 
@@ -32,9 +32,10 @@ public class Buttons {
 
     private final String YES_BUTTON_TEXT = "Да";
     private final String NO_BUTTON_TEXT = "Нет";
+    private final String SAVE_BUTTON_TEXT = "Сохранить";
     private final String EDIT_BUTTON_TEXT = "Редактировать";
     private final String CANCEL_BUTTON_TEXT = "Отменить";
     private final String SEND_BUTTON_TEXT = "Отправить";
-    private final String SKIP_COMMENT_TEXT = "Нет комментариев";
+    private final String SKIP_STEP_TEXT = "Пропустить";
 
 }

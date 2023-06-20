@@ -84,7 +84,6 @@ public class TGBot extends TelegramLongPollingBot {
 
                         case "REGISTRATION_EDIT_NAME" -> {
                             log.info("Get edited name " + messageText);
-
                             SendMessage message = registrationHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
                         }
@@ -92,7 +91,6 @@ public class TGBot extends TelegramLongPollingBot {
                             log.info("Get vendor " + messageText);
                             carHandler.setVendor(chatId, messageText);
                             SendMessage message = carHandler.requestModel(incomeMessage);
-//                            executeEditMessageText(editMessageText);
                             sendMessage(message);
                         }
                         case "ADD_CAR_MODEL" -> {
@@ -116,8 +114,7 @@ public class TGBot extends TelegramLongPollingBot {
                         case "ADD_CAR_COMMENTARY" -> {
                             log.info("Get commentary " + messageText);
                             carHandler.setCommentary(chatId, messageText);
-                            Car car = carHandler.saveCar(chatId);
-                            SendMessage message = carHandler.checkDataBeforSavingCarMessage(incomeMessage, car);
+                            SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                     }
@@ -130,45 +127,47 @@ public class TGBot extends TelegramLongPollingBot {
             long chatId = incomeMessage.getChatId();
             String userName = incomeMessage.getChat().getFirstName();
 
+            if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {     //  got confirmation of start registration process, call check up correctness of user firstname
 
-            if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {
-//  got confirmation of start registration process, call check up correctness of user firstname
                 EditMessageText editMessageText = registrationHandler.confirmUserFirstName(messageId, chatId, userName);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {
-//  got denial of registration process
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {   //  got denial of registration process
+
                 EditMessageText editMessageText = registrationHandler.denyRegistration(incomeMessage);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {
-//  got confirmation of correctness of user firstname, call saving to DB
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {   //  got confirmation of correctness of user firstname, call saving to DB
+
                 EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {
-//  got request of edit of user firstname, call appropriate process
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
+
                 EditMessageText editMessageText = registrationHandler.editUserFirstName(incomeMessage);
-                executeEditMessageText(editMessageText);
-            }
-//  got confirmation of correctness of edited user firstname, call saving to DB
-            else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
                 String firstName = storageAccess.findUserFirstName(chatId);
                 EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage, firstName);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {
-//  deny add car process
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
+
                 EditMessageText editMessageText = carHandler.denyStart(incomeMessage);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_START_CALLBACK())) {
-//  start add car process
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_START_CALLBACK())) {   //  start add car process
+
                 EditMessageText editMessageText = carHandler.requestVendor(incomeMessage);
-                executeEditMessageText(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_SKIP_COMMENT_CALLBACK())) {
-//  add car process get skip comments callback
+                sendEditMessage(editMessageText);
+            } else if (callbackData.equals(buttons.getADD_CAR_SKIP_COMMENT_CALLBACK())) {   //  add car process get skip comments callback
+
                 log.info("Get callback to skip commentary ");
                 String emptyString = "";
                 carHandler.setCommentary(chatId, emptyString);
+                EditMessageText message = carHandler.checkDataBeforeSaveCarMessageSkipComment(incomeMessage);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getADD_CAR_SAVE_CAR_CALLBACK())) { //  get callback to save car to DB
+
+                log.info("get callback to save car to DB");
                 Car car = carHandler.saveCar(chatId);
-                SendMessage message = carHandler.checkDataBeforSavingCarMessage(incomeMessage, car);
-                sendMessage(message);
+                EditMessageText message = carHandler.saveCarMessage(incomeMessage, car);
+                sendEditMessage(message);
             }
         }
     }
@@ -201,25 +200,23 @@ public class TGBot extends TelegramLongPollingBot {
         }
     }
 
-    private void executeEditMessageText(String text, long chatId, int messageId) {
-        EditMessageText message = new EditMessageText();
-        message.setChatId(chatId);
-        message.setText(text);
-        message.setMessageId(messageId);
-
+    private void sendEditMessage(EditMessageText message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }
     }
-
-    private void executeEditMessageText(EditMessageText message) {
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error(messages.getERROR_TEXT() + e.getMessage());
-        }
-    }
-
+//    private void sendEditMessage(String text, long chatId, int messageId) {
+//        EditMessageText message = new EditMessageText();
+//        message.setChatId(chatId);
+//        message.setText(text);
+//        message.setMessageId(messageId);
+//
+//        try {
+//            execute(message);
+//        } catch (TelegramApiException e) {
+//            log.error(messages.getERROR_TEXT() + e.getMessage());
+//        }
+//    }
 }
