@@ -50,15 +50,14 @@ public class Messages {
             "Для сохранения нажмите \"Сохранить\"\n" +
             "Для изменения нажмите \"Редактировать\"\n" +
             "Для отмены нажмите \"Отменить\"";
-    private final String ADD_CAR_SAVE_SUCCESS_MESSAGE = "Ваш автомобиль успешно добавлен \n\n  Модель: %s\n  Цвет: %s\n  Госномер: %s\n  Коментарий: %s\n" +
-            "Для продолжения работы с ботом выберите нужный пункт меню.";
+    private final String ADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE = "Ваш автомобиль успешно добавлен \n\n";
+    private final String ADD_CAR_SAVE_SUCCESS_POSTFIX_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
+    private final String SHOW_CAR_MESSAGE = "  Модель: %s\n  Цвет: %s\n  Госномер: %s\n  Коментарий: %s\n";
 
     //      DeleteCar
     private final String DELETE_CAR_START_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n" +
             "Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся\n" +
             "Хотите удалить?";
-
-
 
 
 }

@@ -21,4 +21,6 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "user.chat_id")
     private User user;
+
+
 }

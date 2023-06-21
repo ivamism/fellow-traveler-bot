@@ -207,12 +207,12 @@ public class CarHandler {
         return car;
     }
 
-
     public EditMessageText saveCarMessage(Message incomeMessage, Car car) {
 
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+//        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE()+sendCar(car)+messages.getADD_CAR_SAVE_SUCCESS_POSTFIX_MESSAGE();
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(null);
 
@@ -221,6 +221,20 @@ public class CarHandler {
     }
 
 //    handling Users Cars quantity
+
+private String sendCar (Car car) {
+    return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+}
+
+private String sendCarList (long chatId) {
+        String text = "";
+        int n = 1;
+        for (Car car: getUsersCarsList(chatId)){
+            text = n + sendCar(car) +"\n";
+            n++;
+    }
+    return text;
+}
 
     private List<Car> getUsersCarsList(long chatId) {
         return carService.usersCarList(chatId);
