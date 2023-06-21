@@ -72,51 +72,55 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setText(messages.getADD_CAR_DENY_START_MESSAGE());
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+//        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         log.info("CarHandler method denyStart: Quit add car process");
 
         return editMessage;
     }
 
-    public EditMessageText requestVendor(Message incomeMessage) {
-        editMessage.setMessageId(incomeMessage.getMessageId());
+//    public EditMessageText requestVendor(Message incomeMessage) {
+//        editMessage.setMessageId(incomeMessage.getMessageId());
+//        editMessage.setChatId(incomeMessage.getChatId());
+//        editMessage.setText(messages.getADD_CAR_ADD_VENDOR_MESSAGE());
+//
+//        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_VENDOR));
+//
+//        log.info("CarHandler method requestVendor: request to send car vendor");
+//
+//        return editMessage;
+//    }
+
+//    public void setVendor(Long chatId, String vendor) {
+//        carDTO.setVendor(vendor.toUpperCase());
+//        addCarStorageAccess.addCarDTO(chatId, carDTO);
+//        log.debug("CarHandler method setVendor: set vendor " + vendor + " to carDTO and send to storage");
+//    }
+
+    public EditMessageText requestModel(Message incomeMessage) {
+
         editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setText(messages.getADD_CAR_ADD_VENDOR_MESSAGE());
-
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_VENDOR));
-
-        log.info("CarHandler method requestVendor: request to send car vendor");
-
-        return editMessage;
-    }
-
-    public void setVendor(Long chatId, String vendor) {
-        carDTO.setVendor(vendor.toUpperCase());
-        addCarStorageAccess.addCarDTO(chatId, carDTO);
-        log.debug("CarHandler method setVendor: set vendor " + vendor + " to carDTO and send to storage");
-    }
-
-    public SendMessage requestModel(Message incomeMessage) {
-
-        sendMessage.setChatId(incomeMessage.getChatId());
-        sendMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
-        sendMessage.setReplyMarkup(null);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
+//        editMessage.setReplyMarkup(null);
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_MODEL));
 
         log.info("CarHandler method requestModel: request to send car model");
 
-        return sendMessage;
+        return editMessage;
     }
 
     public void setModel(Long chatId, String model) {
-        addCarStorageAccess.setModel(chatId, model.toUpperCase());
+        carDTO.setModel(model.toUpperCase());
+        addCarStorageAccess.addCarDTO(chatId, carDTO);
+
         log.debug("CarHandler method setModel: set model " + model + " to carDTO and send to storage");
     }
 
     public SendMessage requestColor(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE());
+        sendMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COLOR));
 
@@ -168,7 +172,7 @@ public class CarHandler {
         CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
 
@@ -178,7 +182,7 @@ public class CarHandler {
         public SendMessage checkDataBeforeSaveCarMessage(Message incomeMessage) {
         CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
         sendMessage.setChatId(incomeMessage.getChatId());
-        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         sendMessage.setText(messageText);
         sendMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
 
@@ -190,8 +194,7 @@ public class CarHandler {
     public Car saveCar(Long chatId) {
         carDTO = addCarStorageAccess.findCarDTO(chatId);
         Car car = new Car();
-        car.setVendor(carDTO.getVendor())
-                .setModel(carDTO.getModel())
+        car.setModel(carDTO.getModel())
                 .setColor(carDTO.getColor())
                 .setPlateNumber(carDTO.getPlateNumber())
                 .setCommentary(carDTO.getCommentary())
@@ -209,7 +212,7 @@ public class CarHandler {
 
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getVendor(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
+        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(null);
 

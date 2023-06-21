@@ -87,12 +87,12 @@ public class TGBot extends TelegramLongPollingBot {
                             SendMessage message = registrationHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
                         }
-                        case "ADD_CAR_VENDOR" -> {
-                            log.info("Get vendor " + messageText);
-                            carHandler.setVendor(chatId, messageText);
-                            SendMessage message = carHandler.requestModel(incomeMessage);
-                            sendMessage(message);
-                        }
+//                        case "ADD_CAR_VENDOR" -> {
+//                            log.info("Get vendor " + messageText);
+//                            carHandler.setVendor(chatId, messageText);
+//                            SendMessage message = carHandler.requestModel(incomeMessage);
+//                            sendMessage(message);
+//                        }
                         case "ADD_CAR_MODEL" -> {
                             log.info("Get model " + messageText);
                             carHandler.setModel(chatId, messageText);
@@ -153,9 +153,9 @@ public class TGBot extends TelegramLongPollingBot {
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getADD_CAR_START_CALLBACK())) {   //  start add car process
 
-                EditMessageText editMessageText = carHandler.requestVendor(incomeMessage);
+                EditMessageText editMessageText = carHandler.requestModel(incomeMessage);
                 sendEditMessage(editMessageText);
-            } else if (callbackData.equals(buttons.getADD_CAR_SKIP_COMMENT_CALLBACK())) {   //  add car process get skip comments callback
+            } else if (callbackData.equals(buttons.getADD_CAR_SKIP_COMMENT_CALLBACK())) {   //  add car process get skip commentary callback
 
                 log.info("Get callback to skip commentary ");
                 String emptyString = "";
