@@ -31,6 +31,8 @@ public class Buttons {
     private final String HANDLE_CAR_DELETE_CAR_CALLBACK = "DELETE_CAR";
     private final String HANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK = "REQUEST_DELETE_CAR";
     private final String HANDLE_CAR_DENY_DELETE_CAR_CALLBACK = "DENY_DELETE_CAR";
+    private final String HANDLE_CAR_DELETE_FIRST_CAR_CALLBACK = "DELETE_FIRST_CAR";
+    private final String HANDLE_CAR_DELETE_SECOND_CAR_CALLBACK = "DELETE_SECOND_CAR";
 
 
     // Buttons Names

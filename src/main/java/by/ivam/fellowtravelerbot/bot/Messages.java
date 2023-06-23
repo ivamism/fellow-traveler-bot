@@ -52,7 +52,7 @@ public class Messages {
             "Для отмены нажмите \"Отменить\"";
     private final String ADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE = "Ваш автомобиль успешно добавлен \n\n";
 
-    private final String SHOW_CAR_MESSAGE = "  Модель: %s\n  Цвет: %s\n  Госномер: %s\n  Коментарий: %s\n";
+    private final String SHOW_CAR_MESSAGE = "  Модель: %s\n    Цвет: %s\n    Госномер: %s\n    Коментарий: %s\n";
 
     //      DeleteCar
     private final String DELETE_CAR_START_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n" +

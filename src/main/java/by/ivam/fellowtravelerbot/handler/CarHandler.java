@@ -70,8 +70,8 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setText(messages.getADD_CAR_DENY_START_MESSAGE());
-//        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        log.info("CarHandler method denyStart: Quit add car process");
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        log.info("CarHandler method denyStart: Quit the process");
 
         return editMessage;
     }
@@ -223,11 +223,13 @@ private String prepareCarToSend(Car car) {
 }
 
 private String prepareCarListToSend(long chatId) {
-        String text = "";
-        int n = 1;
+        String text = new String();
+//
         for (Car car: getUsersCarsList(chatId)){
-            text = text + n  + "  "  + prepareCarToSend(car)+ "\n";
-            n++;    }
+            int n = getUsersCarsList(chatId).indexOf(car) + 1;
+            text = text + n  + prepareCarToSend(car)+ "\n";
+//            n++;
+            }
     return text;
 }
 
@@ -263,9 +265,9 @@ private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(prepareCarListToSend(chatId));
-        editMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
-
-        log.info("CarHandler method denyDeleteCarMessage: quit delete a car process");
+        editMessage.setReplyMarkup(keyboards.treeButtonsColumnInlineKeyboard(String.valueOf(1), buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK(), String.valueOf(2), buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+// TODO сделать количество кнопок на клавиатуре в зависимости от количества автомобилей в списке
+        log.info("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a cfr to delete");
         return editMessage;
     }
 
