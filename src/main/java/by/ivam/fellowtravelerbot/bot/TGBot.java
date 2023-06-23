@@ -50,7 +50,7 @@ public class TGBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message incomeMessage = update.getMessage();
-            Integer messageId = incomeMessage.getMessageId();
+//            Integer messageId = incomeMessage.getMessageId();
             String messageText = incomeMessage.getText();
             long chatId = incomeMessage.getChatId();
             switch (messageText) {
@@ -167,6 +167,18 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("get callback to save car to DB");
                 Car car = carHandler.saveCar(chatId);
                 EditMessageText message = carHandler.saveCarMessage(incomeMessage, car);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK())) { //  callback to exit delete car process
+
+                log.info("get callback to exit delete car process");
+
+                EditMessageText message = carHandler.denyDeleteCarMessage(incomeMessage);
+                sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getHANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
+
+                log.info("get callback to exit delete car process");
+
+                EditMessageText message = carHandler.sendCarListToDelete(incomeMessage);
                 sendEditMessage(message);
             }
         }

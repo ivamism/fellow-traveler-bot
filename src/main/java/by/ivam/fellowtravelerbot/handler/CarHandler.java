@@ -47,8 +47,6 @@ public class CarHandler {
 
 // add users car step-by-step process
 
-//    TODO объединить вендор и модель
-
     public SendMessage startAddCarProcess(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         if (getUsersCarsQuantity(chatId) < 2) {
@@ -101,7 +99,6 @@ public class CarHandler {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
-//        editMessage.setReplyMarkup(null);
 
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_MODEL));
 
@@ -128,7 +125,7 @@ public class CarHandler {
 
         return sendMessage;
     }
-
+// TODO сделать первую букву всегда большой
     public void setColor(Long chatId, String color) {
         addCarStorageAccess.setColor(chatId, color);
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
@@ -211,8 +208,7 @@ public class CarHandler {
 
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-//        String messageText = String.format(messages.getADD_CAR_SAVE_SUCCESS_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
-        String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE()+sendCar(car)+messages.getADD_CAR_SAVE_SUCCESS_POSTFIX_MESSAGE();
+        String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE()+ prepareCarToSend(car)+messages.getFURTHER_ACTION_MESSAGE();
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(null);
 
@@ -220,19 +216,18 @@ public class CarHandler {
         return editMessage;
     }
 
-//    handling Users Cars quantity
+//    handling User's Cars
 
-private String sendCar (Car car) {
+private String prepareCarToSend(Car car) {
     return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
 }
 
-private String sendCarList (long chatId) {
+private String prepareCarListToSend(long chatId) {
         String text = "";
         int n = 1;
         for (Car car: getUsersCarsList(chatId)){
-            text = n + sendCar(car) +"\n";
-            n++;
-    }
+            text = text + n  + "  "  + prepareCarToSend(car)+ "\n";
+            n++;    }
     return text;
 }
 
@@ -248,10 +243,33 @@ private String sendCarList (long chatId) {
 private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
     sendMessage.setChatId(incomeMessage.getChatId());
     sendMessage.setText(messages.getDELETE_CAR_START_MESSAGE());
-//    sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getADD_CAR_START(), buttons.getNO_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY()));
+    sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getHANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK()));
     log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
     return sendMessage;
 }
+
+    public EditMessageText denyDeleteCarMessage (Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
+
+        log.info("CarHandler method denyDeleteCarMessage: quit delete a car process");
+
+        return editMessage;
+    }
+    public EditMessageText sendCarListToDelete (Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(prepareCarListToSend(chatId));
+        editMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
+
+        log.info("CarHandler method denyDeleteCarMessage: quit delete a car process");
+        return editMessage;
+    }
+
+
 
 // Edit car
 

@@ -51,7 +51,7 @@ public class Messages {
             "Для изменения нажмите \"Редактировать\"\n" +
             "Для отмены нажмите \"Отменить\"";
     private final String ADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE = "Ваш автомобиль успешно добавлен \n\n";
-    private final String ADD_CAR_SAVE_SUCCESS_POSTFIX_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
+
     private final String SHOW_CAR_MESSAGE = "  Модель: %s\n  Цвет: %s\n  Госномер: %s\n  Коментарий: %s\n";
 
     //      DeleteCar
@@ -59,5 +59,7 @@ public class Messages {
             "Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся\n" +
             "Хотите удалить?";
 
+
+    private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
 
 }
