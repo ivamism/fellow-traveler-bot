@@ -180,6 +180,13 @@ public class TGBot extends TelegramLongPollingBot {
 
                 EditMessageText message = carHandler.sendCarListToDelete(incomeMessage);
                 sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK())) { //  callback to delete car first car from list
+
+                log.info("callback to delete car first car from list");
+                String deleteFirst = carHandler.deleteFirst(chatId);
+
+                EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteFirst);
+                sendEditMessage(message);
             }
         }
     }
