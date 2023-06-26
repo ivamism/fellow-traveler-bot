@@ -75,6 +75,16 @@ public class CarHandler {
 
         return editMessage;
     }
+        public EditMessageText denyStart(Message incomeMessage, String outgoingMessage) {
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setText(messages.getADD_CAR_DENY_START_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        log.info("CarHandler method denyStart: Quit the process");
+
+        return editMessage;
+    }
+
 
 //    public EditMessageText requestVendor(Message incomeMessage) {
 //        editMessage.setMessageId(incomeMessage.getMessageId());
@@ -127,8 +137,17 @@ public class CarHandler {
     }
 // TODO сделать первую букву всегда большой
     public void setColor(Long chatId, String color) {
+
+        Character firstChar = color.charAt(0);
+        if (Character.isLowerCase(firstChar)){
+         color =  firstCharToUpperCase(firstChar) + color.substring(1);
+        }
         addCarStorageAccess.setColor(chatId, color);
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
+    }
+
+    private String firstCharToUpperCase(Character ch){
+        return ch.toString(Character.toUpperCase(ch));
     }
 
     public SendMessage requestPlateNumber(Message incomeMessage) {
@@ -160,7 +179,19 @@ public class CarHandler {
     }
 
     public void setCommentary(Long chatId, String commentary) {
-        addCarStorageAccess.setCommentary(chatId, commentary);
+        if (commentary.isEmpty()){
+            addCarStorageAccess.setCommentary(chatId, commentary);
+        } else {
+            Character firstChar = commentary.charAt(0);
+            if (Character.isLowerCase(firstChar)){
+                commentary =  firstCharToUpperCase(firstChar) + commentary.substring(1);
+            }
+            addCarStorageAccess.setCommentary(chatId, commentary);
+        }
+
+
+
+
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
@@ -223,14 +254,14 @@ private String prepareCarToSend(Car car) {
 }
 
 private String prepareCarListToSend(long chatId) {
-        String text = new String();
-//
+        StringBuilder text = new StringBuilder();
+
         for (Car car: getUsersCarsList(chatId)){
             int n = getUsersCarsList(chatId).indexOf(car) + 1;
-            text = text + n  + prepareCarToSend(car)+ "\n";
-//            n++;
+            text.append(n).append(prepareCarToSend(car)).append("\n");
+
             }
-    return text;
+    return text.toString();
 }
 
     private List<Car> getUsersCarsList(long chatId) {
@@ -265,6 +296,8 @@ private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(prepareCarListToSend(chatId));
+
+
         editMessage.setReplyMarkup(keyboards.treeButtonsColumnInlineKeyboard(String.valueOf(1), buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK(), String.valueOf(2), buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
 // TODO сделать количество кнопок на клавиатуре в зависимости от количества автомобилей в списке
         log.info("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a cfr to delete");
