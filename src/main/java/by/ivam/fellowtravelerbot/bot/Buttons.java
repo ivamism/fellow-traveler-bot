@@ -33,6 +33,7 @@ public class Buttons {
     private final String HANDLE_CAR_DENY_DELETE_CAR_CALLBACK = "DENY_DELETE_CAR";
     private final String HANDLE_CAR_DELETE_FIRST_CAR_CALLBACK = "DELETE_FIRST_CAR";
     private final String HANDLE_CAR_DELETE_SECOND_CAR_CALLBACK = "DELETE_SECOND_CAR";
+    private final String HANDLE_CAR_DELETE_ALL_CARS_CALLBACK = "DELETE_ALL_CARS";
 
 
     // Buttons Names
@@ -45,5 +46,6 @@ public class Buttons {
     private final String SEND_BUTTON_TEXT = "Отправить";
     private final String SKIP_STEP_TEXT = "Пропустить";
     private final String DELETE_TEXT = "Удалить";
+    private final String DELETE_ALL_TEXT = "Удалить всё";
 
 }

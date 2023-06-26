@@ -146,9 +146,6 @@ public class CarHandler {
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
     }
 
-    private String firstCharToUpperCase(Character ch){
-        return ch.toString(Character.toUpperCase(ch));
-    }
 
     public SendMessage requestPlateNumber(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
@@ -304,9 +301,23 @@ private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
         return editMessage;
     }
 
+    public void deleteFirst() {
+
+    }
+
+    public void deleteSecond() {
+
+    }
+
+    public  void deleteAll() {
+
+    }
+
 
 
 // Edit car
 
-
+    private String firstCharToUpperCase(Character ch){
+        return ch.toString(Character.toUpperCase(ch));
+    }
 }
