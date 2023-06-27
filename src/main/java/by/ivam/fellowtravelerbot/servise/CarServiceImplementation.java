@@ -48,7 +48,7 @@ public class CarServiceImplementation implements CarService {
 
     @Override
     public void deleteAllUsersCars(long chatId) {
-//        carRepository.deleteAllCarsByUserId(chatId);
+        carRepository.deleteAllByUser_chatId(chatId);
         log.info("delete all cars belongs to User userId: " + chatId);
     }
 }

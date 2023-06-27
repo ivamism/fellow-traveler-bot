@@ -24,7 +24,7 @@ This class handle User registration process and saving User to DB
 @Component
 @Data
 @Log4j
-public class RegistrationHandler {
+public class UserRegistrationHandler {
     @Autowired
     Messages messages;
     @Autowired
@@ -128,5 +128,6 @@ public class RegistrationHandler {
         return message;
 //  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
 //  TODO Реализовать процесс возврата к регистрации
+
     }
 }

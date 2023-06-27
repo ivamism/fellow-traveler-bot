@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.CarHandler;
-import by.ivam.fellowtravelerbot.handler.RegistrationHandler;
+import by.ivam.fellowtravelerbot.handler.UserRegistrationHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
@@ -27,7 +27,7 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     StartHandler startHandler;
     @Autowired
-    RegistrationHandler registrationHandler;
+    UserRegistrationHandler userRegistrationHandler;
     @Autowired
     CarHandler carHandler;
     @Autowired
@@ -84,7 +84,7 @@ public class TGBot extends TelegramLongPollingBot {
 
                         case "REGISTRATION_EDIT_NAME" -> {
                             log.info("Get edited name " + messageText);
-                            SendMessage message = registrationHandler.confirmEditedUserFirstName(incomeMessage);
+                            SendMessage message = userRegistrationHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
                         }
 //                        case "ADD_CAR_VENDOR" -> {
@@ -129,23 +129,23 @@ public class TGBot extends TelegramLongPollingBot {
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {     //  got confirmation of start registration process, call check up correctness of user firstname
 
-                EditMessageText editMessageText = registrationHandler.confirmUserFirstName(messageId, chatId, userName);
+                EditMessageText editMessageText = userRegistrationHandler.confirmUserFirstName(messageId, chatId, userName);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {   //  got denial of registration process
 
-                EditMessageText editMessageText = registrationHandler.denyRegistration(incomeMessage);
+                EditMessageText editMessageText = userRegistrationHandler.denyRegistration(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {   //  got confirmation of correctness of user firstname, call saving to DB
 
-                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage);
+                EditMessageText editMessageText = userRegistrationHandler.userRegistration(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
 
-                EditMessageText editMessageText = registrationHandler.editUserFirstName(incomeMessage);
+                EditMessageText editMessageText = userRegistrationHandler.editUserFirstName(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
                 String firstName = storageAccess.findUserFirstName(chatId);
-                EditMessageText editMessageText = registrationHandler.userRegistration(incomeMessage, firstName);
+                EditMessageText editMessageText = userRegistrationHandler.userRegistration(incomeMessage, firstName);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
 
@@ -180,12 +180,23 @@ public class TGBot extends TelegramLongPollingBot {
 
                 EditMessageText message = carHandler.sendCarListToDelete(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK())) { //  callback to delete car first car from list
+            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK())) { //  callback to delete first car from list
 
                 log.info("callback to delete car first car from list");
-                String deleteFirst = carHandler.deleteFirst(chatId);
+                String deleteFirstCar = carHandler.deleteFirstCar(chatId);
+                EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteFirstCar);
+                sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK())) { //  callback to delete second car from list
 
-                EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteFirst);
+                log.info("callback to delete car second car from list");
+                String deleteSecondCar = carHandler.deleteSecondCar(chatId);
+                EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteSecondCar);
+                sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
+
+                log.info("callback to delete all cars from list");
+                carHandler.deleteAllCars(chatId);
+                EditMessageText message = carHandler.deleteAllCarsMessage(incomeMessage);
                 sendEditMessage(message);
             }
         }
@@ -226,16 +237,5 @@ public class TGBot extends TelegramLongPollingBot {
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }
     }
-//    private void sendEditMessage(String text, long chatId, int messageId) {
-//        EditMessageText message = new EditMessageText();
-//        message.setChatId(chatId);
-//        message.setText(text);
-//        message.setMessageId(messageId);
-//
-//        try {
-//            execute(message);
-//        } catch (TelegramApiException e) {
-//            log.error(messages.getERROR_TEXT() + e.getMessage());
-//        }
-//    }
+
 }

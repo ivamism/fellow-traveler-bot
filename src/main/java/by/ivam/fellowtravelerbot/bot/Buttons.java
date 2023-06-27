@@ -47,5 +47,7 @@ public class Buttons {
     private final String SKIP_STEP_TEXT = "Пропустить";
     private final String DELETE_TEXT = "Удалить";
     private final String DELETE_ALL_TEXT = "Удалить всё";
+    private final String FIRST_TEXT = String.valueOf(1);
+    private final String SECOND_TEXT = String.valueOf(2);
 
 }

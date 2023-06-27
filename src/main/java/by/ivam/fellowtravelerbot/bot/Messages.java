@@ -60,6 +60,9 @@ public class Messages {
             "Хотите удалить?";
     private final String DELETE_CAR_PREFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
     private final String DELETE_CAR_POSTFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
+    private final String DELETE_ALL_CARS_MESSAGE = "Все Ваши автомобили удалены.\n";
+
+
 
     private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
 

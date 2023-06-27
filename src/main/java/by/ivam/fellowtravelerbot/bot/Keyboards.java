@@ -178,4 +178,45 @@ public InlineKeyboardMarkup threeButtonsInlineKeyboard(String firstButtonText, S
         return markupInLine;
     }
 
+    //    Inline keyboard four buttons - vertical arrangement
+    public InlineKeyboardMarkup fourButtonsColumnInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData, String thirdButtonText, String thirdButtonCallbackData, String fourthButtonText, String fourthButtonCallbackData) {
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> secondRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> thirdRowInLine = new ArrayList<>();
+        List<InlineKeyboardButton> fourthRowInLine = new ArrayList<>();
+
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+        firstButton.setText(firstButtonText);
+        firstButton.setCallbackData(firstButtonCallbackData);
+
+        InlineKeyboardButton secondButton = new InlineKeyboardButton();
+        secondButton.setText(secondButtonText);
+        secondButton.setCallbackData(secondButtonCallbackData);
+
+        InlineKeyboardButton thirdButton = new InlineKeyboardButton();
+        thirdButton.setText(thirdButtonText);
+        thirdButton.setCallbackData(thirdButtonCallbackData);
+
+        InlineKeyboardButton fourthButton = new InlineKeyboardButton();
+        fourthButton.setText(fourthButtonText);
+        fourthButton.setCallbackData(fourthButtonCallbackData);
+
+        firstRowInLine.add(firstButton);
+        secondRowInLine.add(secondButton);
+        thirdRowInLine.add(thirdButton);
+        fourthRowInLine.add(fourthButton);
+
+        rowsInLine.add(firstRowInLine);
+        rowsInLine.add(secondRowInLine);
+        rowsInLine.add(thirdRowInLine);
+        rowsInLine.add(fourthRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
+
+
 }

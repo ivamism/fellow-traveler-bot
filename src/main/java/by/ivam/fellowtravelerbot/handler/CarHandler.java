@@ -245,6 +245,10 @@ public class CarHandler {
         return editMessage;
     }
 
+    private String firstCharToUpperCase(Character ch) {
+        return ch.toString(Character.toUpperCase(ch));
+    }
+
 //    handling User's Cars
 
     private String prepareCarToSend(Car car) {
@@ -294,35 +298,41 @@ public class CarHandler {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(prepareCarListToSend(chatId));
-        editMessage.setReplyMarkup(keyboards.treeButtonsColumnInlineKeyboard(String.valueOf(1), buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK(), String.valueOf(2), buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
-// TODO сделать количество кнопок на клавиатуре в зависимости от количества автомобилей в списке
+        if (getUsersCarsQuantity(chatId) == 2) {
+            editMessage.setReplyMarkup(keyboards.fourButtonsColumnInlineKeyboard(buttons.getFIRST_TEXT(), buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK(), buttons.getSECOND_TEXT(), buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getHANDLE_CAR_DELETE_ALL_CARS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+        } else if (getUsersCarsQuantity(chatId) == 1) {
+            editMessage.setReplyMarkup(keyboards.twoButtonsColumnInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getHANDLE_CAR_DELETE_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK()));
+        }
+
         log.info("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a car to delete");
         return editMessage;
     }
 
-    public String deleteFirst(long chatId) {
+    public String deleteFirstCar(long chatId) {
         Car car = getUsersCarsList(chatId).get(0);
         String carToSend = prepareCarToSend(car);
-        carService.deleteCarById(car.getId());
 
-        log.debug("CarHandler: method deleteFirst: request to CarService to delete car by Id" + car);
+        log.debug("CarHandler: method deleteFirst: call CarService to delete car by Id" + car);
+        carService.deleteCarById(car.getId());
 
         return carToSend;
     }
 
-    public String deleteSecond(long chatId) {
+    public String deleteSecondCar(long chatId) {
         Car car = getUsersCarsList(chatId).get(1);
         String deletedCarToSend = prepareCarToSend(car);
-        carService.deleteCarById(car.getId());
 
-        log.debug("CarHandler: method deleteSecond: request to CarService to delete car by Id" + car);
+        log.debug("CarHandler: method deleteSecond: call CarService to delete car by Id" + car);
+        carService.deleteCarById(car.getId());
 
         return deletedCarToSend;
     }
 
-    public String deleteAll(long chatId) {
-
-        return null;
+    public void deleteAllCars(long chatId) {
+        log.debug("CarHandler: method deleteAll: call CarService to delete car by Id" + chatId);
+//        carService.deleteAllUsersCars(chatId);
+        deleteSecondCar(chatId);
+        deleteFirstCar(chatId);
     }
 
     public EditMessageText deleteCarMessage(Message incomeMessage, String deleteCarMessage) {
@@ -330,7 +340,18 @@ public class CarHandler {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText("Автомобиль:\n" + deleteCarMessage + " удален.\n" + messages.getFURTHER_ACTION_MESSAGE());
-        editMessage.setReplyMarkup(null);
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+
+        log.info("CarHandler method deleteCarMessage: send about deleted car");
+        return editMessage;
+    }
+
+    public EditMessageText deleteAllCarsMessage(Message incomeMessage) {
+
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getDELETE_ALL_CARS_MESSAGE() + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         log.info("CarHandler method deleteCarMessage: send about deleted car");
         return editMessage;
@@ -338,10 +359,6 @@ public class CarHandler {
 
 
 // Edit car
-
-    private String firstCharToUpperCase(Character ch) {
-        return ch.toString(Character.toUpperCase(ch));
-    }
 
 
 }
