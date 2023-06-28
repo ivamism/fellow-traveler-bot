@@ -255,7 +255,7 @@ public class CarHandler {
         return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
     }
 
-    private String prepareCarListToSend(long chatId) {
+    public String prepareCarListToSend(long chatId) {
         StringBuilder text = new StringBuilder();
 
         for (Car car : getUsersCarsList(chatId)) {

@@ -85,8 +85,10 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("got request to get help and send help message");
                 }
                 case "Мои данные" -> {
-
                     log.debug("got request to get User's stored data");
+                    SendMessage message = userHandler.sendUserData(chatId);
+                    sendMessage(message);
+
                 }
 
                 default -> {
@@ -190,25 +192,25 @@ public class TGBot extends TelegramLongPollingBot {
 
                 EditMessageText message = carHandler.denyDeleteCarMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getREQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
+            } else if (callbackData.equals(buttons.getREQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
 
                 log.info("get callback to exit delete car process");
 
                 EditMessageText message = carHandler.sendCarListToDelete(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getDELETE_FIRST_CAR_CALLBACK())) { //  callback to delete first car from list
+            } else if (callbackData.equals(buttons.getDELETE_FIRST_CAR_CALLBACK())) { //  callback to delete first car from list
 
                 log.info("callback to delete car first car from list");
                 String deleteFirstCar = carHandler.deleteFirstCar(chatId);
                 EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteFirstCar);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getDELETE_SECOND_CAR_CALLBACK())) { //  callback to delete second car from list
+            } else if (callbackData.equals(buttons.getDELETE_SECOND_CAR_CALLBACK())) { //  callback to delete second car from list
 
                 log.info("callback to delete car second car from list");
                 String deleteSecondCar = carHandler.deleteSecondCar(chatId);
                 EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteSecondCar);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getDELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
+            } else if (callbackData.equals(buttons.getDELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
 
                 log.info("callback to delete all cars from list");
                 carHandler.deleteAllCars(chatId);

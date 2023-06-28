@@ -5,6 +5,8 @@ import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
+import by.ivam.fellowtravelerbot.model.Car;
+import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
@@ -37,10 +39,15 @@ public class UserHandler {
     StorageAccess storageAccess;
     @Autowired
     RegUser regUser;
+
+    @Autowired
+    CarHandler carHandler;
     EditMessageText message = new EditMessageText();
+    SendMessage sendMessage = new SendMessage();
 
     //  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
 //  TODO Реализовать процесс возврата к регистрации
+//    TODO разделить функциональные действия и отправку сообщений
 
     // Ask user to confirm telegram user first name as UserName or edit it
     public EditMessageText confirmUserFirstName(int messageId, long chatId, String userName) {
@@ -68,10 +75,9 @@ public class UserHandler {
         return message;
     }
 
-//    request user to confirm that edited userFirstName is correct
+    //    request user to confirm that edited userFirstName is correct
     public SendMessage confirmEditedUserFirstName(Message incomeMessage) {
-        SendMessage sendMessage = new SendMessage();
-        int messageId = incomeMessage.getMessageId();
+//        int messageId = incomeMessage.getMessageId();
         long chatId = incomeMessage.getChatId();
         String incomeMessageText = incomeMessage.getText();
 
@@ -129,7 +135,19 @@ public class UserHandler {
         log.info("User deny registration");
         message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return message;
+    }
 
+    private String getUserData(long chatId) {
+        User user = userService.findUserById(chatId);
 
+        String text = String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName()) + carHandler.prepareCarListToSend(chatId);
+
+        return text;
+    }
+// TODO добавить клавиатуру
+    public SendMessage sendUserData(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(getUserData(chatId));
+        return sendMessage;
     }
 }
