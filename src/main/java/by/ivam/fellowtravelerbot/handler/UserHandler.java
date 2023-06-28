@@ -24,7 +24,7 @@ This class handle User registration process and saving User to DB
 @Component
 @Data
 @Log4j
-public class UserRegistrationHandler {
+public class UserHandler {
     @Autowired
     Messages messages;
     @Autowired
@@ -38,6 +38,9 @@ public class UserRegistrationHandler {
     @Autowired
     RegUser regUser;
     EditMessageText message = new EditMessageText();
+
+    //  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
+//  TODO Реализовать процесс возврата к регистрации
 
     // Ask user to confirm telegram user first name as UserName or edit it
     public EditMessageText confirmUserFirstName(int messageId, long chatId, String userName) {
@@ -126,8 +129,7 @@ public class UserRegistrationHandler {
         log.info("User deny registration");
         message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return message;
-//  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
-//  TODO Реализовать процесс возврата к регистрации
+
 
     }
 }

@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
 import by.ivam.fellowtravelerbot.handler.CarHandler;
-import by.ivam.fellowtravelerbot.handler.UserRegistrationHandler;
+import by.ivam.fellowtravelerbot.handler.UserHandler;
 import by.ivam.fellowtravelerbot.handler.StartHandler;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
@@ -27,7 +27,7 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     StartHandler startHandler;
     @Autowired
-    UserRegistrationHandler userRegistrationHandler;
+    UserHandler userHandler;
     @Autowired
     CarHandler carHandler;
     @Autowired
@@ -50,7 +50,6 @@ public class TGBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message incomeMessage = update.getMessage();
-//            Integer messageId = incomeMessage.getMessageId();
             String messageText = incomeMessage.getText();
             long chatId = incomeMessage.getChatId();
             switch (messageText) {
@@ -73,6 +72,23 @@ public class TGBot extends TelegramLongPollingBot {
                     SendMessage message = carHandler.startAddCarProcess(incomeMessage);
                     sendMessage(message);
                 }
+                case "Найти машину" -> {
+
+                    log.debug("got request to find a car");
+                }
+                case "Найти пассажира" -> {
+
+                    log.debug("got request to find a fellow");
+                }
+                case "Помощь" -> {
+                    sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
+                    log.debug("got request to get help and send help message");
+                }
+                case "Мои данные" -> {
+
+                    log.debug("got request to get User's stored data");
+                }
+
                 default -> {
                     log.debug("get Message: " + update.getMessage().getText());
 
@@ -84,7 +100,7 @@ public class TGBot extends TelegramLongPollingBot {
 
                         case "REGISTRATION_EDIT_NAME" -> {
                             log.info("Get edited name " + messageText);
-                            SendMessage message = userRegistrationHandler.confirmEditedUserFirstName(incomeMessage);
+                            SendMessage message = userHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
                         }
 //                        case "ADD_CAR_VENDOR" -> {
@@ -129,23 +145,23 @@ public class TGBot extends TelegramLongPollingBot {
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {     //  got confirmation of start registration process, call check up correctness of user firstname
 
-                EditMessageText editMessageText = userRegistrationHandler.confirmUserFirstName(messageId, chatId, userName);
+                EditMessageText editMessageText = userHandler.confirmUserFirstName(messageId, chatId, userName);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {   //  got denial of registration process
 
-                EditMessageText editMessageText = userRegistrationHandler.denyRegistration(incomeMessage);
+                EditMessageText editMessageText = userHandler.denyRegistration(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {   //  got confirmation of correctness of user firstname, call saving to DB
 
-                EditMessageText editMessageText = userRegistrationHandler.userRegistration(incomeMessage);
+                EditMessageText editMessageText = userHandler.userRegistration(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
 
-                EditMessageText editMessageText = userRegistrationHandler.editUserFirstName(incomeMessage);
+                EditMessageText editMessageText = userHandler.editUserFirstName(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
                 String firstName = storageAccess.findUserFirstName(chatId);
-                EditMessageText editMessageText = userRegistrationHandler.userRegistration(incomeMessage, firstName);
+                EditMessageText editMessageText = userHandler.userRegistration(incomeMessage, firstName);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
 
@@ -168,31 +184,31 @@ public class TGBot extends TelegramLongPollingBot {
                 Car car = carHandler.saveCar(chatId);
                 EditMessageText message = carHandler.saveCarMessage(incomeMessage, car);
                 sendEditMessage(message);
-            } else if (callbackData.equals(buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK())) { //  callback to exit delete car process
+            } else if (callbackData.equals(buttons.getDENY_DELETE_CAR_CALLBACK())) { //  callback to exit delete car process
 
                 log.info("get callback to exit delete car process");
 
                 EditMessageText message = carHandler.denyDeleteCarMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getHANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
+            }else if (callbackData.equals(buttons.getREQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
 
                 log.info("get callback to exit delete car process");
 
                 EditMessageText message = carHandler.sendCarListToDelete(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK())) { //  callback to delete first car from list
+            }else if (callbackData.equals(buttons.getDELETE_FIRST_CAR_CALLBACK())) { //  callback to delete first car from list
 
                 log.info("callback to delete car first car from list");
                 String deleteFirstCar = carHandler.deleteFirstCar(chatId);
                 EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteFirstCar);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK())) { //  callback to delete second car from list
+            }else if (callbackData.equals(buttons.getDELETE_SECOND_CAR_CALLBACK())) { //  callback to delete second car from list
 
                 log.info("callback to delete car second car from list");
                 String deleteSecondCar = carHandler.deleteSecondCar(chatId);
                 EditMessageText message = carHandler.deleteCarMessage(incomeMessage, deleteSecondCar);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getHANDLE_CAR_DELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
+            }else if (callbackData.equals(buttons.getDELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
 
                 log.info("callback to delete all cars from list");
                 carHandler.deleteAllCars(chatId);

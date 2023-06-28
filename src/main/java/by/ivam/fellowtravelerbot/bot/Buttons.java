@@ -26,14 +26,21 @@ public class Buttons {
     private final String ADD_CAR_EDIT_CAR_CALLBACK = "ADD_CAR_EDIT_CAR";
     private final String ADD_CAR_SAVE_CAR_CALLBACK = "ADD_CAR_CONFIRM_CAR";
 
-    // Handle Car
-    private final String HANDLE_CAR_EDIT_CAR_CALLBACK = "EDIT_CAR_CAR";
-    private final String HANDLE_CAR_DELETE_CAR_CALLBACK = "DELETE_CAR";
-    private final String HANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK = "REQUEST_DELETE_CAR";
-    private final String HANDLE_CAR_DENY_DELETE_CAR_CALLBACK = "DENY_DELETE_CAR";
-    private final String HANDLE_CAR_DELETE_FIRST_CAR_CALLBACK = "DELETE_FIRST_CAR";
-    private final String HANDLE_CAR_DELETE_SECOND_CAR_CALLBACK = "DELETE_SECOND_CAR";
-    private final String HANDLE_CAR_DELETE_ALL_CARS_CALLBACK = "DELETE_ALL_CARS";
+    // Deletion Car
+
+    private final String DELETE_CAR_CALLBACK = "DELETE_CAR";
+    private final String REQUEST_DELETE_CAR_CALLBACK = "REQUEST_DELETE_CAR";
+    private final String DENY_DELETE_CAR_CALLBACK = "DENY_DELETE_CAR";
+    private final String DELETE_FIRST_CAR_CALLBACK = "DELETE_FIRST_CAR";
+    private final String DELETE_SECOND_CAR_CALLBACK = "DELETE_SECOND_CAR";
+    private final String DELETE_ALL_CARS_CALLBACK = "DELETE_ALL_CARS";
+
+    //    Editing Car
+    private final String EDIT_CAR_CALLBACK = "EDIT_CAR_CAR";
+    private final String EDIT_MODEL_CALLBACK = "EDIT_CAR_CAR";
+    private final String EDIT_COLOR_CALLBACK = "EDIT_CAR_CAR";
+    private final String EDIT_PLATES_CALLBACK = "EDIT_CAR_CAR";
+    private final String EDIT_COMMENTARY_CALLBACK = "EDIT_CAR_CAR";
 
 
     // Buttons Names
@@ -49,5 +56,16 @@ public class Buttons {
     private final String DELETE_ALL_TEXT = "Удалить всё";
     private final String FIRST_TEXT = String.valueOf(1);
     private final String SECOND_TEXT = String.valueOf(2);
+    private final String MODEL_TEXT = "Модель";
+    private final String COLOR_TEXT = "Цвет";
+    private final String PLATES_TEXT = "Рег. номер";
+    private final String COMMENTARY_TEXT = "Комментарий";
+
+//    Main menu buttons
+    private final String MAIN_FIND_CAR = "Найти машину";
+    private final String MAIN_FIND_FELLOW = "Найти пассажира";
+    private final String MAIN_GET_HELP = "Помощь";
+    private final String MAIN_GET_USER_DATA = "Мои данные";
+
 
 }

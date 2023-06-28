@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class RegistrationHandlerTest {
 
-UserRegistrationHandler handler;
+UserHandler handler;
 
 StorageAccess storageAccess;
     @Test

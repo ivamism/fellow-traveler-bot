@@ -277,7 +277,7 @@ public class CarHandler {
     private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getDELETE_CAR_START_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getHANDLE_CAR_REQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
         log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
         return sendMessage;
     }
@@ -299,9 +299,9 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(prepareCarListToSend(chatId));
         if (getUsersCarsQuantity(chatId) == 2) {
-            editMessage.setReplyMarkup(keyboards.fourButtonsColumnInlineKeyboard(buttons.getFIRST_TEXT(), buttons.getHANDLE_CAR_DELETE_FIRST_CAR_CALLBACK(), buttons.getSECOND_TEXT(), buttons.getHANDLE_CAR_DELETE_SECOND_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getHANDLE_CAR_DELETE_ALL_CARS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+            editMessage.setReplyMarkup(keyboards.fourButtonsColumnInlineKeyboard(buttons.getFIRST_TEXT(), buttons.getDELETE_FIRST_CAR_CALLBACK(), buttons.getSECOND_TEXT(), buttons.getDELETE_SECOND_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getDELETE_ALL_CARS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
         } else if (getUsersCarsQuantity(chatId) == 1) {
-            editMessage.setReplyMarkup(keyboards.twoButtonsColumnInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getHANDLE_CAR_DELETE_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getHANDLE_CAR_DENY_DELETE_CAR_CALLBACK()));
+            editMessage.setReplyMarkup(keyboards.twoButtonsColumnInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getDELETE_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
         }
 
         log.info("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a car to delete");
