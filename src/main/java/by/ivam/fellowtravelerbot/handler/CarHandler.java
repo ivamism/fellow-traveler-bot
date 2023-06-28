@@ -239,7 +239,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE() + prepareCarToSend(car) + messages.getFURTHER_ACTION_MESSAGE();
         editMessage.setText(messageText);
-        editMessage.setReplyMarkup(null);
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         log.info("CarHandler method saveCarMessage: message about success add car");
         return editMessage;
@@ -288,7 +288,7 @@ public class CarHandler {
         editMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
 
-        log.info("CarHandler method denyDeleteCarMessage: quit delete a car process");
+        log.debug("CarHandler method denyDeleteCarMessage: quit delete a car process");
 
         return editMessage;
     }
@@ -304,7 +304,7 @@ public class CarHandler {
             editMessage.setReplyMarkup(keyboards.twoButtonsColumnInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getDELETE_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
         }
 
-        log.info("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a car to delete");
+        log.debug("CarHandler method sendCarListToDelete: send cars list with inline keyboard to choose a car to delete");
         return editMessage;
     }
 
@@ -329,6 +329,7 @@ public class CarHandler {
     }
 
     public void deleteAllCars(long chatId) {
+//        Todo переделать на удаление через отправку массива карайди
         log.debug("CarHandler: method deleteAll: call CarService to delete car by Id" + chatId);
 //        carService.deleteAllUsersCars(chatId);
         deleteSecondCar(chatId);
@@ -342,7 +343,7 @@ public class CarHandler {
         editMessage.setText("Автомобиль:\n" + deleteCarMessage + " удален.\n" + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        log.info("CarHandler method deleteCarMessage: send about deleted car");
+        log.info("CarHandler method deleteCarMessage: send message about deleted car");
         return editMessage;
     }
 
@@ -353,12 +354,21 @@ public class CarHandler {
         editMessage.setText(messages.getDELETE_ALL_CARS_MESSAGE() + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        log.info("CarHandler method deleteCarMessage: send about deleted car");
+        log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
         return editMessage;
     }
 
 
 // Edit car
+public EditMessageText editCarStartMessage(Message incomeMessage) {
 
+    editMessage.setChatId(incomeMessage.getChatId());
+    editMessage.setMessageId(incomeMessage.getMessageId());
+    editMessage.setText(messages.getEDIT_CAR_START_MESSAGE());
+    editMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getMODEL_TEXT(), buttons.getEDIT_MODEL_CALLBACK(), buttons.getCOLOR_TEXT(), buttons.getEDIT_COLOR_CALLBACK(), buttons.getPLATES_TEXT(), buttons.getEDIT_PLATES_CALLBACK(), buttons.getCOMMENTARY_TEXT(), buttons.getEDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
+
+    log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
+    return editMessage;
+}
 
 }

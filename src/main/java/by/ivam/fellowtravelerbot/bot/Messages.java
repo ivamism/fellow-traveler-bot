@@ -29,7 +29,7 @@ public class Messages {
     private final String UNKNOWN_COMMAND = "Неизвестная команда";
     private final String CHOOSE_ACTION = "Выберите действие из меню";
 
-//    User registration process
+    //    User registration process
     private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
     private final String CONFIRM_USER_FIRST_MESSAGE = "Поддвердите данные для регистрации: \n\n Ваше Имя - ";
     private final String DENY_REGISTRATION_MESSAGE = "Вы отказались от регистрации. До свидания";
@@ -37,10 +37,10 @@ public class Messages {
     private final String CONFIRM_FIRSTNAME_MESSAGE = "Вы ввели имя - ";
     private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
 
-//    Handle User
+    //    Handle User
     private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n\nАвтомобили";
 
-//    Add Car
+    //    Add Car
     private final String ADD_CAR_START_MESSAGE = "Вы хотите добавить автомобиль в ваш профиль?";
 
     private final String ADD_CAR_DENY_START_MESSAGE = "Вы отказались от добавления автомобиля. Для продолжения работы с ботом выберите нужный пункт меню";
@@ -57,7 +57,7 @@ public class Messages {
 
     private final String SHOW_CAR_MESSAGE = "  Модель: %s\n    Цвет: %s\n    Госномер: %s\n    Коментарий: %s\n";
 
-    //      DeleteCar
+    //      Delete Car
     private final String DELETE_CAR_START_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n" +
             "Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся\n" +
             "Хотите удалить?";
@@ -65,6 +65,9 @@ public class Messages {
     private final String DELETE_CAR_POSTFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
     private final String DELETE_ALL_CARS_MESSAGE = "Все Ваши автомобили удалены.\n";
 
+
+    //    Edit Car
+    private final String EDIT_CAR_START_MESSAGE = "Выберите, что вы хотите изменить:\n";
 
 
     private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";

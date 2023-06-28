@@ -216,6 +216,11 @@ public class TGBot extends TelegramLongPollingBot {
                 carHandler.deleteAllCars(chatId);
                 EditMessageText message = carHandler.deleteAllCarsMessage(incomeMessage);
                 sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_CAR_CALLBACK())) { //  callback to edit car before saving
+
+                log.info("callback to edit car before saving");
+                EditMessageText message = carHandler.editCarStartMessage(incomeMessage);
+                sendEditMessage(message);
             }
         }
     }
