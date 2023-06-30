@@ -153,7 +153,7 @@ public class CarHandler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
 
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATE));
+        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATES));
 
         log.info("CarHandler method requestPlateNumber: request to send plate number");
 
@@ -359,16 +359,33 @@ public class CarHandler {
     }
 
 
-// Edit car
-public EditMessageText editCarStartMessage(Message incomeMessage) {
+    // Edit car
+    public EditMessageText editCarBeforeSavingStartMessage(Message incomeMessage) {
 
-    editMessage.setChatId(incomeMessage.getChatId());
-    editMessage.setMessageId(incomeMessage.getMessageId());
-    editMessage.setText(messages.getEDIT_CAR_START_MESSAGE());
-    editMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getMODEL_TEXT(), buttons.getEDIT_MODEL_CALLBACK(), buttons.getCOLOR_TEXT(), buttons.getEDIT_COLOR_CALLBACK(), buttons.getPLATES_TEXT(), buttons.getEDIT_PLATES_CALLBACK(), buttons.getCOMMENTARY_TEXT(), buttons.getEDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getEDIT_CAR_START_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getMODEL_TEXT(), buttons.getEDIT_MODEL_CALLBACK(), buttons.getCOLOR_TEXT(), buttons.getEDIT_COLOR_CALLBACK(), buttons.getPLATES_TEXT(), buttons.getEDIT_PLATES_CALLBACK(), buttons.getCOMMENTARY_TEXT(), buttons.getEDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
 
-    log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
-    return editMessage;
-}
+        log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
+        return editMessage;
+    }
+
+    public EditMessageText changeModelRequestMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
+
+        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_MODEL));
+
+        return editMessage;
+    }
+
+    public void setEditedModel(Long chatId, String model) {
+
+        addCarStorageAccess.setModel(chatId, model.toUpperCase());
+        storageAccess.deleteChatStatus(chatId);
+        log.debug("CarHandler method setEditedModel: set model " + model + " to carDTO and send to storage");
+    }
 
 }
