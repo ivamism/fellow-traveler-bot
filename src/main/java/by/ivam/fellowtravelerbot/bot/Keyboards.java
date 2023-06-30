@@ -258,7 +258,7 @@ public class Keyboards {
         secondRowInLine.add(secondButton);
         thirdRowInLine.add(thirdButton);
         fourthRowInLine.add(fourthButton);
-        fourthRowInLine.add(fifthButton);
+        fifthRowInLine.add(fifthButton);
 
         rowsInLine.add(firstRowInLine);
         rowsInLine.add(secondRowInLine);
