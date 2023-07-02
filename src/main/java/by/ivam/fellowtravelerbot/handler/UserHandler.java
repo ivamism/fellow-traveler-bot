@@ -5,10 +5,9 @@ import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
-import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.model.User;
-import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import by.ivam.fellowtravelerbot.servise.UserService;
+import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,10 +138,7 @@ public class UserHandler {
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
-
-        String text = String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName()) + carHandler.prepareCarListToSend(chatId);
-
-        return text;
+        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName()) + carHandler.prepareCarListToSend(chatId);
     }
 // TODO добавить клавиатуру
     public SendMessage sendUserData(long chatId) {

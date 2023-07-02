@@ -37,10 +37,10 @@ public class Buttons {
 
     //    Editing Car
     private final String EDIT_CAR_CALLBACK = "EDIT_CAR_CAR";
-    private final String EDIT_MODEL_CALLBACK = "EDIT_CAR_CAR";
-    private final String EDIT_COLOR_CALLBACK = "EDIT_CAR_CAR";
-    private final String EDIT_PLATES_CALLBACK = "EDIT_CAR_CAR";
-    private final String EDIT_COMMENTARY_CALLBACK = "EDIT_CAR_CAR";
+    private final String ADD_CAR_EDIT_MODEL_CALLBACK = "ADD_CAR_EDIT_MODEL_CALLBACK";
+    private final String ADD_CAR_EDIT_COLOR_CALLBACK = "ADD_CAR_EDIT_COLOR_CALLBACK";
+    private final String ADD_CAR_EDIT_PLATES_CALLBACK = "ADD_CAR_EDIT_PLATES_CALLBACK";
+    private final String ADD_CAR_EDIT_COMMENTARY_CALLBACK = "ADD_CAR_EDIT_COMMENTARY_CALLBACK";
 
 
     // Buttons Names

@@ -63,6 +63,11 @@ public class TGBot extends TelegramLongPollingBot {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
                     log.debug("get Message: " + messageText);
                 }
+                case "/profile" -> {
+                    log.debug("got request to get User's stored data");
+                    SendMessage message = userHandler.sendUserData(chatId);
+                    sendMessage(message);
+                }
 
                 case "/registration" -> {
 //                    log.debug("get Message: " + messageText + " - Start registration process");
@@ -72,6 +77,7 @@ public class TGBot extends TelegramLongPollingBot {
                     SendMessage message = carHandler.startAddCarProcess(incomeMessage);
                     sendMessage(message);
                 }
+
                 case "Найти машину" -> {
 
                     log.debug("got request to find a car");
@@ -88,7 +94,6 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("got request to get User's stored data");
                     SendMessage message = userHandler.sendUserData(chatId);
                     sendMessage(message);
-
                 }
 
                 default -> {
@@ -133,6 +138,24 @@ public class TGBot extends TelegramLongPollingBot {
                         case "ADD_CAR_EDIT_MODEL" -> {
                             log.info("Get edited model " + messageText);
                             carHandler.setEditedModel(chatId, messageText);
+                            SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_EDIT_COLOR" -> {
+                            log.info("Get edited color " + messageText);
+                            carHandler.setEditedColor(chatId, messageText);
+                            SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_EDIT_PLATES" -> {
+                            log.info("Get edited plates " + messageText);
+                            carHandler.setEditedPlateNumber(chatId, messageText);
+                            SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+                            sendMessage(message);
+                        }
+                        case "ADD_CAR_EDIT_COMMENTARY" -> {
+                            log.info("Get edited commentary " + messageText);
+                            carHandler.setEditedCommentary(chatId, messageText);
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
@@ -223,20 +246,31 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to edit car before saving");
                 EditMessageText message = carHandler.editCarBeforeSavingStartMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getEDIT_MODEL_CALLBACK())) { //  callback to edit car's model before saving
+            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_MODEL_CALLBACK())) { //  callback to edit car's model before saving
 
                 log.info("callback to edit car's model before saving");
 
                 EditMessageText message = carHandler.changeModelRequestMessage(incomeMessage);
                 sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_COLOR_CALLBACK())) { //  callback to edit car's color before saving
+
+                log.info("callback to edit car's color before saving");
+
+                EditMessageText message = carHandler.changeColorRequestMessage(incomeMessage);
+                sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_PLATES_CALLBACK())) { //  callback to edit car's plate number before saving
+
+                log.info("callback to edit car's plate number before saving");
+
+                EditMessageText message = carHandler.changePlateNumberRequestMessage(incomeMessage);
+                sendEditMessage(message);
+            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK())) { //  callback to edit car's commentary before saving
+
+                log.info("callback to edit car's commentary before saving");
+
+                EditMessageText message = carHandler.changeCommentaryRequestMessage(incomeMessage);
+                sendEditMessage(message);
             }
-
-            /*
-
-buttons.getEDIT_COLOR_CALLBACK()
-buttons.getEDIT_PLATES_CALLBACK()
-buttons.getEDIT_COMMENTARY_CALLBACK()
- */
         }
     }
 
@@ -275,5 +309,4 @@ buttons.getEDIT_COMMENTARY_CALLBACK()
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }
     }
-
 }

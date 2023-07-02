@@ -65,7 +65,6 @@ public class CarHandler {
         return sendMessage;
     }
 
-
     public EditMessageText denyStart(Message incomeMessage) {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setChatId(incomeMessage.getChatId());
@@ -137,12 +136,10 @@ public class CarHandler {
         return sendMessage;
     }
 
-    // TODO сделать первую букву всегда большой
     public void setColor(Long chatId, String color) {
 
-        Character firstChar = color.charAt(0);
-        if (Character.isLowerCase(firstChar)) {
-            color = firstCharToUpperCase(firstChar) + color.substring(1);
+        if (Character.isLowerCase(color.charAt(0))) {
+            color = firstCharToUpperCase(color.charAt(0)) + color.substring(1);
         }
         addCarStorageAccess.setColor(chatId, color);
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
@@ -181,13 +178,11 @@ public class CarHandler {
         if (commentary.isEmpty()) {
             addCarStorageAccess.setCommentary(chatId, commentary);
         } else {
-            Character firstChar = commentary.charAt(0);
-            if (Character.isLowerCase(firstChar)) {
-                commentary = firstCharToUpperCase(firstChar) + commentary.substring(1);
+            if (Character.isLowerCase(commentary.charAt(0))) {
+                commentary = firstCharToUpperCase(commentary.charAt(0)) + commentary.substring(1);
             }
             addCarStorageAccess.setCommentary(chatId, commentary);
         }
-
 
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
@@ -246,7 +241,7 @@ public class CarHandler {
     }
 
     private String firstCharToUpperCase(Character ch) {
-        return ch.toString(Character.toUpperCase(ch));
+        return Character.toString(Character.toUpperCase(ch));
     }
 
 //    handling User's Cars
@@ -365,9 +360,9 @@ public class CarHandler {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_CAR_START_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getMODEL_TEXT(), buttons.getEDIT_MODEL_CALLBACK(), buttons.getCOLOR_TEXT(), buttons.getEDIT_COLOR_CALLBACK(), buttons.getPLATES_TEXT(), buttons.getEDIT_PLATES_CALLBACK(), buttons.getCOMMENTARY_TEXT(), buttons.getEDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
+        editMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getMODEL_TEXT(), buttons.getADD_CAR_EDIT_MODEL_CALLBACK(), buttons.getCOLOR_TEXT(), buttons.getADD_CAR_EDIT_COLOR_CALLBACK(), buttons.getPLATES_TEXT(), buttons.getADD_CAR_EDIT_PLATES_CALLBACK(), buttons.getCOMMENTARY_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
 
-        log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
+        log.debug("CarHandler method editCarBeforeSavingStartMessage: send message about cars edition");
         return editMessage;
     }
 
@@ -375,8 +370,9 @@ public class CarHandler {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
-        editMessage.setReplyMarkup(null);
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_MODEL));
+        log.info("CarHandler method changeModelRequestMessage: request to send car model");
 
         return editMessage;
     }
@@ -387,5 +383,67 @@ public class CarHandler {
         storageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedModel: set model " + model + " to carDTO and send to storage");
     }
+
+    public EditMessageText changeColorRequestMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COLOR));
+        log.info("CarHandler method changeColorRequestMessage: request to send color");
+
+        return editMessage;
+    }
+
+    public void setEditedColor(Long chatId, String color) {
+
+        if (Character.isLowerCase(color.charAt(0))) {
+            color = firstCharToUpperCase(color.charAt(0)) + color.substring(1);
+        }
+        addCarStorageAccess.setColor(chatId, color);
+        storageAccess.deleteChatStatus(chatId);
+        log.debug("CarHandler method setEditedModel: set model " + color + " to carDTO and send to storage");
+    }
+
+    public EditMessageText changePlateNumberRequestMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_PLATES));
+
+        log.info("CarHandler method changePlateNumberRequestMessage: request to send plate number");
+
+        return editMessage;
+    }
+
+    public void setEditedPlateNumber(Long chatId, String plateNumber) {
+
+        addCarStorageAccess.setPlateNumber(chatId, plateNumber.toUpperCase());
+        storageAccess.deleteChatStatus(chatId);
+        log.debug("CarHandler method setEditedPlateNumber: set model " + plateNumber + " to carDTO and send to storage");
+    }
+
+    public EditMessageText changeCommentaryRequestMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COMMENTARY));
+        log.info("CarHandler method changeCommentaryRequestMessage: request to send commentary");
+
+        return editMessage;
+    }
+
+    public void setEditedCommentary(Long chatId, String commentary) {
+
+        if (Character.isLowerCase(commentary.charAt(0))) {
+            commentary = firstCharToUpperCase(commentary.charAt(0)) + commentary.substring(1);
+        }
+        addCarStorageAccess.setCommentary(chatId, commentary);
+        storageAccess.deleteChatStatus(chatId);
+        log.debug("CarHandler method setEditedCommentary: set model " + commentary + " to carDTO and send to storage");
+    }
+
 
 }

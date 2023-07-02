@@ -38,7 +38,7 @@ public class Messages {
     private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
 
     //    Handle User
-    private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n\nАвтомобили";
+    private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n\nАвтомобили:\n";
 
     //    Add Car
     private final String ADD_CAR_START_MESSAGE = "Вы хотите добавить автомобиль в ваш профиль?";
