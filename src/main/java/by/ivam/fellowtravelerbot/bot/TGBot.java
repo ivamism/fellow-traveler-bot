@@ -122,7 +122,12 @@ public class TGBot extends TelegramLongPollingBot {
                             SendMessage message = carHandler.requestCommentary(incomeMessage);
                             sendMessage(message);
                         }
-
+                        case "ADD_CAR_COMMENTARY" -> {
+                            log.info("Get commentary " + messageText);
+                            carHandler.setCommentary(chatId, messageText);
+                            SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+                            sendMessage(message);
+                        }
                         case "ADD_CAR_EDIT_MODEL" -> {
                             log.info("Get edited model " + messageText);
                             carHandler.setEditedModel(chatId, messageText);
