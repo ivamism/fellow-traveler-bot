@@ -35,10 +35,12 @@ public class Messages {
     private final String DENY_REGISTRATION_MESSAGE = "Вы отказались от регистрации. До свидания";
     private final String SUCCESS_REGISTRATION_MESSAGE = "Вы успешно зарегистрированны. Для дальнейшего использования выберите действие из меню";
     private final String CONFIRM_FIRSTNAME_MESSAGE = "Вы ввели имя - ";
-    private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи";
+    private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи.\n";
+    private final String EDIT_USER_FIRSTNAME_SUCCESS_MESSAGE = "Ваше текущее имя:\n%s\n";
 
     //    Handle User
     private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n\nАвтомобили:\n";
+    private final String EDIT_USER_FIRSTNAME_MESSAGE_POSTFIX = "Ваше текущее имя: %s";
 
     //    Add Car
     private final String ADD_CAR_START_MESSAGE = "Вы хотите добавить автомобиль в ваш профиль?";

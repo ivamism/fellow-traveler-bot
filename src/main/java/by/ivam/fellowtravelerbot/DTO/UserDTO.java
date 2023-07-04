@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Accessors(chain = true)
 @Component
 @ToString
-public class RegUser {
+public class UserDTO {
     private long chatId;
     private String firstName;
     private String telegramUserName;

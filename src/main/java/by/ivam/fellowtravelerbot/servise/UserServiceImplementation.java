@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.DTO.RegUser;
+import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.repository.UserRepository;
 import lombok.extern.log4j.Log4j;
@@ -37,11 +37,11 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public void registerNewUser(RegUser regUser) {
+    public void registerNewUser(UserDTO userDTO) {
         User user = new User();
-        user.setChatId(regUser.getChatId())
-                .setFirstName(regUser.getFirstName())
-                .setUserName(regUser.getTelegramUserName())
+        user.setChatId(userDTO.getChatId())
+                .setFirstName(userDTO.getFirstName())
+                .setUserName(userDTO.getTelegramUserName())
                 .setRegisteredAt(LocalDateTime.now());
 
         userRepository.save(user);
@@ -52,5 +52,13 @@ public class UserServiceImplementation implements UserService {
     @Override
     public void deleteUser(long chatId) {
 
+    }
+
+    @Override
+    public void updateUserFirstName(long chatId, String firstName) {
+        User user = findUserById(chatId);
+        user.setFirstName(firstName);
+        userRepository.save(user);
+        log.info("Update User's FirstName to " + firstName);
     }
 }

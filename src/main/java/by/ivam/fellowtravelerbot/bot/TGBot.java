@@ -69,7 +69,7 @@ public class TGBot extends TelegramLongPollingBot {
                     sendMessage(message);
                 }
                 case "/registration" -> {
-//                    log.debug("get Message: " + messageText + " - Start registration process");
+                    log.debug("get Message: " + messageText + " - Start registration process");
 //                    registerUser(chatId, );
                 }
                 case "/add_car" -> {
@@ -103,12 +103,7 @@ public class TGBot extends TelegramLongPollingBot {
                             SendMessage message = userHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
                         }
-//                        case "ADD_CAR_VENDOR" -> {
-//                            log.info("Get vendor " + messageText);
-//                            carHandler.setVendor(chatId, messageText);
-//                            SendMessage message = carHandler.requestModel(incomeMessage);
-//                            sendMessage(message);
-//                        }
+
                         case "ADD_CAR_MODEL" -> {
                             log.info("Get model " + messageText);
                             carHandler.setModel(chatId, messageText);
@@ -152,6 +147,12 @@ public class TGBot extends TelegramLongPollingBot {
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
+                        case "USER_EDIT_NAME" -> {
+                            log.info("Get edited User's firstname " + messageText);
+                            userHandler.saveEditedUserFirstName(chatId, messageText);
+                            SendMessage message = userHandler.editUserFirstNameSuccess(chatId);
+                            sendMessage(message);
+                        }
                     }
                 }
             }
@@ -177,7 +178,7 @@ public class TGBot extends TelegramLongPollingBot {
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
 
-                EditMessageText editMessageText = userHandler.editUserFirstName(incomeMessage);
+                EditMessageText editMessageText = userHandler.editUserFirstNameBeforeSaving(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
                 String firstName = storageAccess.findUserFirstName(chatId);
@@ -262,6 +263,13 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to edit car's commentary before saving");
 
                 EditMessageText message = carHandler.changeCommentaryRequestMessage(incomeMessage);
+                sendEditMessage(message);
+            }
+            else if (callbackData.equals(buttons.getEDIT_USER_NAME_CALLBACK())) { //  callback to edit user's name
+
+                log.info("callback to edit user's name");
+
+                EditMessageText message = userHandler.editUserFirstNameMessage(incomeMessage);
                 sendEditMessage(message);
             }
         }

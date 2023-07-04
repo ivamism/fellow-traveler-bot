@@ -12,7 +12,6 @@ public class Car {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-//    private String vendor;
     private String model;
     private String color;
     private String plateNumber;

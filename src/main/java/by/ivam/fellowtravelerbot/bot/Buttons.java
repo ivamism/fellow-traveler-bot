@@ -19,6 +19,9 @@ public class Buttons {
     private final String NAME_TO_CONFIRM_CALLBACK = "CONFIRM_NAME";
     private final String NAME_CONFIRMED_CALLBACK = "CONFIRM_NAME";
 
+    //     Handle User
+    private final String EDIT_USER_NAME_CALLBACK = "EDIT_USER_NAME";
+
     //    Add a Car process
     private final String ADD_CAR_START_CALLBACK = "ADD_CAR_START";
     private final String ADD_CAR_START_DENY_CALLBACK = "ADD_CAR_START_DENY";
@@ -64,7 +67,7 @@ public class Buttons {
     private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 
-//    Main menu buttons
+    //    Main menu buttons
     private final String MAIN_FIND_CAR = "Найти машину";
     private final String MAIN_FIND_FELLOW = "Найти пассажира";
     private final String MAIN_GET_HELP = "Помощь";

@@ -86,24 +86,6 @@ public class CarHandler {
     }
 
 
-//    public EditMessageText requestVendor(Message incomeMessage) {
-//        editMessage.setMessageId(incomeMessage.getMessageId());
-//        editMessage.setChatId(incomeMessage.getChatId());
-//        editMessage.setText(messages.getADD_CAR_ADD_VENDOR_MESSAGE());
-//
-//        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_VENDOR));
-//
-//        log.info("CarHandler method requestVendor: request to send car vendor");
-//
-//        return editMessage;
-//    }
-
-//    public void setVendor(Long chatId, String vendor) {
-//        carDTO.setVendor(vendor.toUpperCase());
-//        addCarStorageAccess.addCarDTO(chatId, carDTO);
-//        log.debug("CarHandler method setVendor: set vendor " + vendor + " to carDTO and send to storage");
-//    }
-
     public EditMessageText requestModel(Message incomeMessage) {
 
         editMessage.setChatId(incomeMessage.getChatId());
@@ -444,6 +426,5 @@ public class CarHandler {
         storageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedCommentary: set model " + commentary + " to carDTO and send to storage");
     }
-
 
 }
