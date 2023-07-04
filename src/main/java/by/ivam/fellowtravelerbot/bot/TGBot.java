@@ -130,32 +130,32 @@ public class TGBot extends TelegramLongPollingBot {
                         }
                         case "ADD_CAR_EDIT_MODEL" -> {
                             log.info("Get edited model " + messageText);
-                            carHandler.setEditedModel(chatId, messageText);
+                            carHandler.setEditedBeforeSavingModel(chatId, messageText);
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                         case "ADD_CAR_EDIT_COLOR" -> {
                             log.info("Get edited color " + messageText);
-                            carHandler.setEditedColor(chatId, messageText);
+                            carHandler.setEditedBeforeSavingColor(chatId, messageText);
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                         case "ADD_CAR_EDIT_PLATES" -> {
                             log.info("Get edited plates " + messageText);
-                            carHandler.setEditedPlateNumber(chatId, messageText);
+                            carHandler.setEditedBeforeSavingPlateNumber(chatId, messageText);
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                         case "ADD_CAR_EDIT_COMMENTARY" -> {
                             log.info("Get edited commentary " + messageText);
-                            carHandler.setEditedCommentary(chatId, messageText);
+                            carHandler.setEditedBeforeSavingCommentary(chatId, messageText);
                             SendMessage message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
                             sendMessage(message);
                         }
                         case "USER_EDIT_NAME" -> {
                             log.info("Get edited User's firstname " + messageText);
                             userHandler.saveEditedUserFirstName(chatId, messageText);
-                            SendMessage message = userHandler.editUserFirstNameSuccess(chatId);
+                            SendMessage message = userHandler.editUserFirstNameSuccessMessage(chatId);
                             sendMessage(message);
                         }
                     }
@@ -191,7 +191,7 @@ public class TGBot extends TelegramLongPollingBot {
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
 
-                EditMessageText editMessageText = carHandler.denyStart(incomeMessage);
+                EditMessageText editMessageText = carHandler.quitProcessMessage(incomeMessage);
                 sendEditMessage(editMessageText);
             } else if (callbackData.equals(buttons.getADD_CAR_START_CALLBACK())) {   //  start add car process
 
@@ -249,34 +249,52 @@ public class TGBot extends TelegramLongPollingBot {
 
                 log.info("callback to edit car's model before saving");
 
-                EditMessageText message = carHandler.changeModelRequestMessage(incomeMessage);
+                EditMessageText message = carHandler.changeModelBeforeSavingRequestMessage(incomeMessage);
                 sendEditMessage(message);
             } else if (callbackData.equals(buttons.getADD_CAR_EDIT_COLOR_CALLBACK())) { //  callback to edit car's color before saving
 
                 log.info("callback to edit car's color before saving");
 
-                EditMessageText message = carHandler.changeColorRequestMessage(incomeMessage);
+                EditMessageText message = carHandler.changeColorBeforeSavingRequestMessage(incomeMessage);
                 sendEditMessage(message);
             } else if (callbackData.equals(buttons.getADD_CAR_EDIT_PLATES_CALLBACK())) { //  callback to edit car's plate number before saving
 
                 log.info("callback to edit car's plate number before saving");
 
-                EditMessageText message = carHandler.changePlateNumberRequestMessage(incomeMessage);
+                EditMessageText message = carHandler.changePlateNumberBeforeSavingRequestMessage(incomeMessage);
                 sendEditMessage(message);
             } else if (callbackData.equals(buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK())) { //  callback to edit car's commentary before saving
 
                 log.info("callback to edit car's commentary before saving");
 
-                EditMessageText message = carHandler.changeCommentaryRequestMessage(incomeMessage);
+                EditMessageText message = carHandler.changeCommentaryBeforeSavingRequestMessage(incomeMessage);
                 sendEditMessage(message);
-            }
-            else if (callbackData.equals(buttons.getEDIT_USER_NAME_CALLBACK())) { //  callback to edit user's name
+            } else if (callbackData.equals(buttons.getEDIT_USER_NAME_CALLBACK())) { //  callback to edit user's name
 
                 log.info("callback to edit user's name");
 
                 EditMessageText message = userHandler.editUserFirstNameMessage(incomeMessage);
                 sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getEDIT_CAR_START_PROCESS_CALLBACK())) { //  callback to edit user's cars
+
+                log.info("callback to edit user's cars");
+
+                EditMessageText message = carHandler.sendCarListToEdit(incomeMessage);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getEDIT_CAR_CHOOSE_FIRST_CAR_CALLBACK())) { //  callback to edit first car
+
+                log.info("callback to edit first car");
+
+                EditMessageText message = carHandler.editFirstCarMessage(incomeMessage);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getEDIT_CAR_CHOOSE_SECOND_CAR_CALLBACK())) { //  callback to edit second car
+
+                log.info("callback to edit second car");
+
+                EditMessageText message = carHandler.editSecondCarMessage(incomeMessage);
+                sendEditMessage(message);
             }
+
         }
     }
 

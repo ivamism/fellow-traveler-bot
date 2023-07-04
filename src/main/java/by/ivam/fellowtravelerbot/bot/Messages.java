@@ -70,6 +70,8 @@ public class Messages {
 
     //    Edit Car
     private final String EDIT_CAR_START_MESSAGE = "Выберите, что вы хотите изменить:\n";
+    private final String EDIT_CAR_CHOICE_PREFIX_MESSAGE = "Выберите, какой автомобиль вы хотите изменить:\n";
+    private final String EDIT_CAR_CHOSEN_PREFIX_MESSAGE = "Вы выбрали:\n%s\n";
 
 
     private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";

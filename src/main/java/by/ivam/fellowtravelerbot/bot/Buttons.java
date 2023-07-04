@@ -39,12 +39,17 @@ public class Buttons {
     private final String DELETE_ALL_CARS_CALLBACK = "DELETE_ALL_CARS";
 
     //    Editing Car
-    private final String EDIT_CAR_CALLBACK = "EDIT_CAR_CAR";
     private final String ADD_CAR_EDIT_MODEL_CALLBACK = "ADD_CAR_EDIT_MODEL_CALLBACK";
     private final String ADD_CAR_EDIT_COLOR_CALLBACK = "ADD_CAR_EDIT_COLOR_CALLBACK";
     private final String ADD_CAR_EDIT_PLATES_CALLBACK = "ADD_CAR_EDIT_PLATES_CALLBACK";
     private final String ADD_CAR_EDIT_COMMENTARY_CALLBACK = "ADD_CAR_EDIT_COMMENTARY_CALLBACK";
-
+    private final String EDIT_CAR_START_PROCESS_CALLBACK = "EDIT_CAR_START_PROCESS_CALLBACK";
+    private final String EDIT_CAR_CHOOSE_FIRST_CAR_CALLBACK = "EDIT_CAR_CHOOSE_FIRST_CAR_CALLBACK";
+    private final String EDIT_CAR_CHOOSE_SECOND_CAR_CALLBACK = "EDIT_CAR_CHOOSE_FIRST_CAR_CALLBACK";
+    private final String EDIT_CAR_EDIT_MODEL_CALLBACK = "EDIT_CAR_EDIT_MODEL_CALLBACK";
+    private final String EDIT_CAR_EDIT_COLOR_CALLBACK = "EDIT_CAR_EDIT_COLOR_CALLBACK";
+    private final String EDIT_CAR_EDIT_PLATES_CALLBACK = "EDIT_CAR_EDIT_PLATES_CALLBACK";
+    private final String EDIT_CAR_EDIT_COMMENTARY_CALLBACK = "EDIT_CAR_EDIT_COMMENTARY_CALLBACK";
 
     // Buttons Names
 
@@ -63,7 +68,7 @@ public class Buttons {
     private final String COLOR_TEXT = "Цвет";
     private final String PLATES_TEXT = "Регистрационный номер";
     private final String COMMENTARY_TEXT = "Комментарий";
-    private final String CHANGE_NAME_TEXT = "Изменить Имя";
+    private final String CHANGE_NAME_TEXT = "Изменить имя";
     private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 

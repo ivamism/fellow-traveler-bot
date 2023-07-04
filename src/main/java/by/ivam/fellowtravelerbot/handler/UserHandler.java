@@ -146,7 +146,7 @@ public class UserHandler {
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getADD_CAR_EDIT_COLOR_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getADD_CAR_EDIT_PLATES_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getADD_CAR_EDIT_PLATES_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_DELETE_CAR_CALLBACK()));
         return sendMessage;
     }
     public EditMessageText editUserFirstNameMessage(Message incomeMessage) {
@@ -165,7 +165,7 @@ public class UserHandler {
         log.debug("User handler. Method saveEditedUserFirstName - call update User's first name from " + oldFirstName + " to " + firstName);
         userService.updateUserFirstName(chatId, firstName);
     }
-    public SendMessage editUserFirstNameSuccess(long chatId){
+    public SendMessage editUserFirstNameSuccessMessage(long chatId){
         String firstName = userService.findUserById(chatId).getFirstName();
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getEDIT_USER_FIRSTNAME_SUCCESS_MESSAGE(), firstName) + messages.getFURTHER_ACTION_MESSAGE());
