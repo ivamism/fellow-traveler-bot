@@ -63,12 +63,11 @@ public class TGBot extends TelegramLongPollingBot {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
                     log.debug("get Message: " + messageText);
                 }
-                case "/profile" -> {
+                case "/profile", "Мои данные" -> {
                     log.debug("got request to get User's stored data");
                     SendMessage message = userHandler.sendUserData(chatId);
                     sendMessage(message);
                 }
-
                 case "/registration" -> {
 //                    log.debug("get Message: " + messageText + " - Start registration process");
 //                    registerUser(chatId, );
@@ -77,7 +76,6 @@ public class TGBot extends TelegramLongPollingBot {
                     SendMessage message = carHandler.startAddCarProcess(incomeMessage);
                     sendMessage(message);
                 }
-
                 case "Найти машину" -> {
 
                     log.debug("got request to find a car");
@@ -89,11 +87,6 @@ public class TGBot extends TelegramLongPollingBot {
                 case "Помощь" -> {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
                     log.debug("got request to get help and send help message");
-                }
-                case "Мои данные" -> {
-                    log.debug("got request to get User's stored data");
-                    SendMessage message = userHandler.sendUserData(chatId);
-                    sendMessage(message);
                 }
 
                 default -> {
@@ -241,30 +234,30 @@ public class TGBot extends TelegramLongPollingBot {
                 carHandler.deleteAllCars(chatId);
                 EditMessageText message = carHandler.deleteAllCarsMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_CAR_CALLBACK())) { //  callback to edit car before saving
+            } else if (callbackData.equals(buttons.getADD_CAR_EDIT_CAR_CALLBACK())) { //  callback to edit car before saving
 
                 log.info("callback to edit car before saving");
                 EditMessageText message = carHandler.editCarBeforeSavingStartMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_MODEL_CALLBACK())) { //  callback to edit car's model before saving
+            } else if (callbackData.equals(buttons.getADD_CAR_EDIT_MODEL_CALLBACK())) { //  callback to edit car's model before saving
 
                 log.info("callback to edit car's model before saving");
 
                 EditMessageText message = carHandler.changeModelRequestMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_COLOR_CALLBACK())) { //  callback to edit car's color before saving
+            } else if (callbackData.equals(buttons.getADD_CAR_EDIT_COLOR_CALLBACK())) { //  callback to edit car's color before saving
 
                 log.info("callback to edit car's color before saving");
 
                 EditMessageText message = carHandler.changeColorRequestMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_PLATES_CALLBACK())) { //  callback to edit car's plate number before saving
+            } else if (callbackData.equals(buttons.getADD_CAR_EDIT_PLATES_CALLBACK())) { //  callback to edit car's plate number before saving
 
                 log.info("callback to edit car's plate number before saving");
 
                 EditMessageText message = carHandler.changePlateNumberRequestMessage(incomeMessage);
                 sendEditMessage(message);
-            }else if (callbackData.equals(buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK())) { //  callback to edit car's commentary before saving
+            } else if (callbackData.equals(buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK())) { //  callback to edit car's commentary before saving
 
                 log.info("callback to edit car's commentary before saving");
 

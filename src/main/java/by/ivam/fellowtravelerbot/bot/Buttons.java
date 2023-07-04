@@ -58,8 +58,11 @@ public class Buttons {
     private final String SECOND_TEXT = String.valueOf(2);
     private final String MODEL_TEXT = "Модель";
     private final String COLOR_TEXT = "Цвет";
-    private final String PLATES_TEXT = "Рег. номер";
+    private final String PLATES_TEXT = "Регистрационный номер";
     private final String COMMENTARY_TEXT = "Комментарий";
+    private final String CHANGE_NAME_TEXT = "Изменить Имя";
+    private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
+    private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 
 //    Main menu buttons
     private final String MAIN_FIND_CAR = "Найти машину";
