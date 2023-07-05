@@ -146,7 +146,7 @@ public class UserHandler {
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getADD_CAR_EDIT_PLATES_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
         log.info("send message with stored User's data and keyboard with further action menu");
         return sendMessage;
     }

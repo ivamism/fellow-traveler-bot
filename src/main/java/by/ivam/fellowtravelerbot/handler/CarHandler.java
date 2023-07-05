@@ -588,7 +588,6 @@ public class CarHandler {
 
         return editMessage;
     }
-
     public Car setSecondCarEditedCommentary(Long chatId, String commentary) {
         log.debug("CarHandler method setSecondCarEditedCommentary: set new value of commentary " + commentary);
         Car car = getSecondCar(chatId);
@@ -615,7 +614,7 @@ public class CarHandler {
         return Character.toString(Character.toUpperCase(ch));
     }
     private String firstLetterToUpperCase(String s) {
-        return Character.toString(Character.toUpperCase(s.charAt(0))) + s.substring(1);
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
 
@@ -650,6 +649,4 @@ public class CarHandler {
     private Car getSecondCar(long chatId) {
         return getUsersCarsList(chatId).get(1);
     }
-
-
 }
