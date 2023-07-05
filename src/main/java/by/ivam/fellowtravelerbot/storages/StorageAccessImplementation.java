@@ -22,7 +22,7 @@ public class StorageAccessImplementation implements StorageAccess {
     @Override
     public void deleteChatStatus(Long chatId) {
         storage.activeChatsStorage.remove(chatId);
-        log.debug("Remove botStatus from storage");
+        log.debug("Remove chatStatus from storage");
     }
 
     @Override

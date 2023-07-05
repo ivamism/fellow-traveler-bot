@@ -17,4 +17,5 @@ public interface CarService {
     void deleteCar(Car car);
 
     void deleteAllUsersCars(long chatId);
+    Car updateCar (Car car);
 }

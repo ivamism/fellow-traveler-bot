@@ -24,31 +24,37 @@ public class CarServiceImplementation implements CarService {
     @Override
     public Car addNewCar(Car car) {
         carRepository.save(car);
-        log.info("Car " + car + " saved to DB");
+        log.info("CarService: Car " + car + " saved to DB");
         return car;
     }
 
     @Override
     public List<Car> usersCarList(long chatId) {
-
+log.info("CarService: get User's cars list");
         return carRepository.findAllByUser_chatId(chatId);
     }
 
     @Override
     public void deleteCarById(int id) {
         carRepository.deleteById(id);
-        log.info("delete car carId: " + id);
+        log.info("CarService: delete car - carId: " + id);
     }
 
     @Override
     public void deleteCar(Car car) {
         carRepository.delete(car);
-        log.info("delete car: " + car);
+        log.info("CarService: delete car: " + car);
     }
 
     @Override
     public void deleteAllUsersCars(long chatId) {
         carRepository.deleteAllByUser_chatId(chatId);
-        log.info("delete all cars belongs to User userId: " + chatId);
+        log.info("CarService: delete all cars belongs to User userId: " + chatId);
+    }
+
+    @Override
+    public Car updateCar(Car car) {
+        log.info("CarService: update car: "+car);
+        return carRepository.save(car);
     }
 }
