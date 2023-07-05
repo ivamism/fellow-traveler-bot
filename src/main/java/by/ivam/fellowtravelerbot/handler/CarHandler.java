@@ -111,10 +111,7 @@ public class CarHandler {
 
     public void setColor(Long chatId, String color) {
 
-        if (Character.isLowerCase(color.charAt(0))) {
-            color = firstLetterToUpperCase(color.charAt(0)) + color.substring(1);
-        }
-        addCarStorageAccess.setColor(chatId, color);
+        addCarStorageAccess.setColor(chatId, firstLetterToUpperCase(color));
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
     }
 
@@ -151,12 +148,8 @@ public class CarHandler {
         if (commentary.isEmpty()) {
             addCarStorageAccess.setCommentary(chatId, commentary);
         } else {
-            if (Character.isLowerCase(commentary.charAt(0))) {
-                commentary = firstLetterToUpperCase(commentary.charAt(0)) + commentary.substring(1);
-            }
-            addCarStorageAccess.setCommentary(chatId, commentary);
+            addCarStorageAccess.setCommentary(chatId, firstLetterToUpperCase(commentary));
         }
-
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
@@ -342,11 +335,7 @@ public class CarHandler {
     }
 
     public void setEditedBeforeSavingColor(Long chatId, String color) {
-
-        if (Character.isLowerCase(color.charAt(0))) {
-            color = firstLetterToUpperCase(color.charAt(0)) + color.substring(1);
-        }
-        addCarStorageAccess.setColor(chatId, color);
+        addCarStorageAccess.setColor(chatId, firstLetterToUpperCase(color));
         storageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedModel: set model " + color + " to carDTO and send to storage");
     }
@@ -383,10 +372,7 @@ public class CarHandler {
 
     public void setEditedBeforeSavingCommentary(Long chatId, String commentary) {
 
-        if (Character.isLowerCase(commentary.charAt(0))) {
-            commentary = firstLetterToUpperCase(commentary.charAt(0)) + commentary.substring(1);
-        }
-        addCarStorageAccess.setCommentary(chatId, commentary);
+        addCarStorageAccess.setCommentary(chatId, firstLetterToUpperCase(commentary));
         storageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
@@ -472,8 +458,7 @@ public class CarHandler {
     public Car setFirstCarEditedColor(Long chatId, String color) {
         log.debug("CarHandler method setFirstCarEditedModel: set new value of color " + color);
         Car car = getFirstCar(chatId);
-        car.setColor(firstLetterToUpperCase(color.charAt(0)) + color.substring(1));
-
+        car.setColor(firstLetterToUpperCase(color));
         return saveEditedCar(chatId, car);
     }
     public EditMessageText changeFirstCarPlatesRequestMessage(Message incomeMessage) {
@@ -552,8 +537,7 @@ public class CarHandler {
     public Car setSecondCarEditedColor(Long chatId, String color) {
         log.debug("CarHandler method setSecondCarEditedColor: set new value of color " + color);
         Car car = getSecondCar(chatId);
-        car.setColor(firstLetterToUpperCase(color.charAt(0)) + color.substring(1));
-
+        car.setColor(firstLetterToUpperCase(color));
         return saveEditedCar(chatId, car);
     }
     public EditMessageText changeSecondCarPlatesRequestMessage(Message incomeMessage) {
@@ -608,15 +592,9 @@ public class CarHandler {
         return carService.updateCar(car);
     }
 
-
-//TODO Переделать все методы на использование второго варианта
-    private String firstLetterToUpperCase(Character ch) {
-        return Character.toString(Character.toUpperCase(ch));
-    }
     private String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
-
 
 //    handling User's Cars
 
