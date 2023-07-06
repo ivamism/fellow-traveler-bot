@@ -82,8 +82,8 @@ public class Buttons {
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 
     //    Main menu buttons
-    private final String MAIN_FIND_CAR = "Найти машину";
-    private final String MAIN_FIND_FELLOW = "Найти пассажира";
+    private final String MAIN_FIND_CAR = "Найти попутку";
+    private final String MAIN_FIND_FELLOW = "Найти попутчика";
     private final String MAIN_GET_HELP = "Помощь";
     private final String MAIN_GET_USER_DATA = "Мои данные";
 
