@@ -262,12 +262,18 @@ public class CarHandler {
         return deletedCarToSend;
     }
 
-    public void deleteAllCars(long chatId) {
+    public void deleteTwoCars(long chatId) {
 //        Todo переделать на удаление через отправку массива карайди
         log.debug("CarHandler: method deleteAll: call CarService to delete car by Id" + chatId);
 //        carService.deleteAllUsersCars(chatId);
         deleteSecondCar(chatId);
         deleteFirstCar(chatId);
+    }
+    public void deleteAllCars(long chatId){
+        switch (getUsersCarsQuantity(chatId)){
+            case 1 -> deleteFirstCar(chatId);
+            case 2 -> deleteTwoCars(chatId);
+        }
     }
 
     public EditMessageText deleteCarMessage(Message incomeMessage, String deleteCarMessage) {

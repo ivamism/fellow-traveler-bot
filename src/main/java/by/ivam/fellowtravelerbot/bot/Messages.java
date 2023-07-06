@@ -41,6 +41,14 @@ public class Messages {
     //    Handle User
     private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n\nАвтомобили:\n";
     private final String EDIT_USER_FIRSTNAME_MESSAGE_POSTFIX = "Ваше текущее имя: %s";
+    private final String DELETE_USER_START_MESSAGE = """
+            Нажмите "Удалить", если вы хотите удалить ваши данные из бота.
+            Если вы захотите вернуться к использованию бота в будущем, выберите команду /start.
+            Нажмите "Отменить", если вы хотите продолжить пользоваться ботом.""";
+    private final String DELETE_USER_DONE_MESSAGE = """
+            Ваши данные удалены.
+            Если вы захотите вернуться к использованию бота в будущем, выберите команду /start.
+            """;
 
     //    Add Car
     private final String ADD_CAR_START_MESSAGE = "Вы хотите добавить автомобиль в ваш профиль?";
@@ -60,9 +68,10 @@ public class Messages {
     private final String SHOW_CAR_MESSAGE = "  Модель: %s\n    Цвет: %s\n    Госномер: %s\n    Коментарий: %s\n";
 
     //      Delete Car
-    private final String DELETE_CAR_START_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n" +
-            "Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся\n" +
-            "Хотите удалить?";
+    private final String DELETE_CAR_START_MESSAGE = """
+            У Вас добавлено максимально возможное количество автомобилей.
+            Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся.
+            Хотите удалить?""";
     private final String DELETE_CAR_PREFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
     private final String DELETE_CAR_POSTFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
     private final String DELETE_ALL_CARS_MESSAGE = "Все Ваши автомобили удалены.\n";

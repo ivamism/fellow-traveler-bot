@@ -24,6 +24,9 @@ public class Buttons {
 
     //     Handle User
     private final String EDIT_USER_NAME_CALLBACK = "EDIT_USER_NAME";
+    private final String DELETE_USER_START_PROCESS_CALLBACK = "DELETE_USER_START_PROCESS_CALLBACK";
+    private final String DELETE_USER_CONFIRM_CALLBACK = "DELETE_USER_CONFIRM_CALLBACK";
+
 
     //    Add a Car process
     private final String ADD_CAR_START_CALLBACK = "ADD_CAR_START";

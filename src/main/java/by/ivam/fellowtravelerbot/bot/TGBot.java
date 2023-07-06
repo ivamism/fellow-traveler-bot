@@ -98,7 +98,7 @@ public class TGBot extends TelegramLongPollingBot {
                     switch (chatStatus) {
                         case "NO_STATUS" -> unknownCommandReceived(chatId);
 
-                        case "REGISTRATION_EDIT_NAME" -> {
+                        case "REGISTRATION_USER_EDIT_NAME" -> {
                             log.info("Get edited name " + messageText);
                             SendMessage message = userHandler.confirmEditedUserFirstName(incomeMessage);
                             sendMessage(message);
@@ -270,7 +270,7 @@ public class TGBot extends TelegramLongPollingBot {
                 sendEditMessage(message);
             } else if (callbackData.equals(buttons.getDELETE_ALL_CARS_CALLBACK())) { //  callback to delete all cars from list
                 log.info("callback to delete all cars from list");
-                carHandler.deleteAllCars(chatId);
+                carHandler.deleteTwoCars(chatId);
                 EditMessageText message = carHandler.deleteAllCarsMessage(incomeMessage);
                 sendEditMessage(message);
             } else if (callbackData.equals(buttons.getADD_CAR_EDIT_CAR_CALLBACK())) { //  callback to edit car before saving
@@ -340,6 +340,15 @@ public class TGBot extends TelegramLongPollingBot {
             } else if (callbackData.equals(buttons.getEDIT_SECOND_CAR_EDIT_COMMENTARY_CALLBACK())) { //  callback to edit second car's model
                 log.info("callback to edit second car's commentary");
                 EditMessageText message = carHandler.changeSecondCarCommentaryRequestMessage(incomeMessage);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getDELETE_USER_START_PROCESS_CALLBACK())) { //  callback start deletion User's stored data
+                log.info("callback to start deletion User's stored data");
+                EditMessageText message = userHandler.deleteUserStartProcessMessage(incomeMessage);
+                sendEditMessage(message);
+            } else if (callbackData.equals(buttons.getDELETE_USER_CONFIRM_CALLBACK())) { //  callback to delete User's stored data
+                log.info("callback to delete User's stored data");
+                EditMessageText message = userHandler.deleteUserSuccessMessage(incomeMessage);
+                userHandler.deleteUser(chatId);
                 sendEditMessage(message);
             }
         }

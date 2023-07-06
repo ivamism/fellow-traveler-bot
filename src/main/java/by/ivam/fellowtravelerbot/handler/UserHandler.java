@@ -146,10 +146,11 @@ public class UserHandler {
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getADD_CAR_EDIT_COMMENTARY_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getDELETE_USER_START_PROCESS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
         log.info("send message with stored User's data and keyboard with further action menu");
         return sendMessage;
     }
+
     public EditMessageText editUserFirstNameMessage(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         String firstName = userService.findUserById(chatId).getFirstName();
@@ -161,12 +162,14 @@ public class UserHandler {
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
-    public void saveEditedUserFirstName(long chatId, String firstName){
+
+    public void saveEditedUserFirstName(long chatId, String firstName) {
         String oldFirstName = userService.findUserById(chatId).getFirstName();
         log.debug("User handler. Method saveEditedUserFirstName - call update User's first name from " + oldFirstName + " to " + firstName);
         userService.updateUserFirstName(chatId, firstName);
     }
-    public SendMessage editUserFirstNameSuccessMessage(long chatId){
+
+    public SendMessage editUserFirstNameSuccessMessage(long chatId) {
         String firstName = userService.findUserById(chatId).getFirstName();
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getEDIT_USER_FIRSTNAME_SUCCESS_MESSAGE(), firstName) + messages.getFURTHER_ACTION_MESSAGE());
@@ -174,5 +177,29 @@ public class UserHandler {
         return sendMessage;
     }
 
+//    Delete User
+
+    public EditMessageText deleteUserStartProcessMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getDELETE_USER_CONFIRM_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        return editMessage;
+    }
+
+    public EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getDELETE_USER_DONE_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        return editMessage;
+    }
+
+    public void deleteUser(long chatId) {
+        User user = userService.findUserById(chatId);
+        log.info("start deletion of User " + user + " and his cars");
+        carHandler.deleteAllCars(chatId);
+        userService.deleteUser(chatId);
+    }
 
 }

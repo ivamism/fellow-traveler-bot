@@ -1,7 +1,9 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
+import by.ivam.fellowtravelerbot.model.DeletedUser;
 import by.ivam.fellowtravelerbot.model.User;
+import by.ivam.fellowtravelerbot.repository.DeletedUserRepository;
 import by.ivam.fellowtravelerbot.repository.UserRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import java.util.Optional;
 public class UserServiceImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private DeletedUserRepository deletedUserRepository;
 
 
     @Override
@@ -51,6 +55,15 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public void deleteUser(long chatId) {
+        User user = findUserById(chatId);
+        DeletedUser deletedUser = new DeletedUser();
+        deletedUser.setChatId(user.getChatId())
+                .setUserName(user.getUserName())
+                .setRegisteredAt(user.getRegisteredAt())
+                .setDeletedAt(LocalDateTime.now());
+        deletedUserRepository.save(deletedUser);
+        userRepository.delete(user);
+        log.info("User " + user + " deleted from \"users\" and saved as \"deletedUser\"" + deletedUser);
 
     }
 
