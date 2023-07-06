@@ -64,25 +64,46 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("get Message: " + messageText);
                 }
                 case "/profile", "Мои данные" -> {
-                    log.debug("got request to get User's stored data");
-                    SendMessage message = userHandler.sendUserData(chatId);
+                    SendMessage message;
+                    if (startHandler.checkRegistration(chatId)){
+                        message = startHandler.noRegistrationMessage(chatId);
+                    } else {
+                        log.debug("got request to get User's stored data");
+                        message = userHandler.sendUserData(chatId);
+                    }
                     sendMessage(message);
                 }
                 case "/registration" -> {
                     log.debug("get Message: " + messageText + " - Start registration process");
-//                    registerUser(chatId, );
+                    sendMessage(startHandler.startMessaging(chatId, incomeMessage));
                 }
                 case "/add_car" -> {
-                    SendMessage message = carHandler.startAddCarProcess(incomeMessage);
+                    SendMessage message;
+                    if (startHandler.checkRegistration(chatId)){
+                        message = startHandler.noRegistrationMessage(chatId);
+                    } else {
+                        log.debug("got request to get User's stored data");
+                        message = carHandler.startAddCarProcess(incomeMessage);
+                    }
                     sendMessage(message);
                 }
                 case "Найти машину" -> {
-
-                    log.debug("got request to find a car");
+                    SendMessage message = new SendMessage();
+                    if (startHandler.checkRegistration(chatId)){
+                        message = startHandler.noRegistrationMessage(chatId);
+                    } else {
+                        log.debug("got request to find a car");
+                    }
+                    sendMessage(message);
                 }
                 case "Найти пассажира" -> {
-
-                    log.debug("got request to find a fellow");
+                    SendMessage message = new SendMessage();
+                    if (startHandler.checkRegistration(chatId)){
+                        message = startHandler.noRegistrationMessage(chatId);
+                    } else {
+                        log.debug("got request to find a fellow");
+                    }
+                    sendMessage(message);
                 }
                 case "Помощь" -> {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));

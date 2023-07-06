@@ -28,6 +28,10 @@ public class Messages {
     private final String ERROR_TEXT = "ERROR: ";
     private final String UNKNOWN_COMMAND = "Неизвестная команда";
     private final String CHOOSE_ACTION = "Выберите действие из меню";
+    private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
+    private final String NO_REGISTRATION_MESSAGE = "Вы еще не зарегистрированы." +
+            "Для регистрации выберите /start, или /registration";
+
 
     //    User registration process
     private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
@@ -59,10 +63,17 @@ public class Messages {
     private final String ADD_CAR_ADD_COLOR_MESSAGE = "Впишите цвет вашего автомобиля";
     private final String ADD_CAR_ADD_PLATE_NUMBER_MESSAGE = "Впишите регистрационный номер вашего автомобиля";
     private final String ADD_CAR_ADD_COMMENTARY_MESSAGE = "Впишите коментарий\n (необязательное поле)";
-    private final String ADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE = "Проверьте правильность введенных данных \n\n  Модель: %s\n  Цвет: %s\n  Госномер: %s\n  Коментарий: %s\n\n" +
-            "Для сохранения нажмите \"Сохранить\"\n" +
-            "Для изменения нажмите \"Редактировать\"\n" +
-            "Для отмены нажмите \"Отменить\"";
+    private final String ADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE = """
+            Проверьте правильность введенных данных\s
+
+              Модель: %s
+              Цвет: %s
+              Госномер: %s
+              Коментарий: %s
+
+            Для сохранения нажмите "Сохранить"
+            Для изменения нажмите "Редактировать"
+            Для отмены нажмите "Отменить\"""";
     private final String ADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE = "Ваш автомобиль успешно добавлен \n\n";
 
     private final String SHOW_CAR_MESSAGE = "  Модель: %s\n    Цвет: %s\n    Госномер: %s\n    Коментарий: %s\n";
@@ -84,7 +95,7 @@ public class Messages {
     private final String EDIT_CAR_SUCCESS_PREFIX_MESSAGE = "Изменения успешно внесены\n";
 
 
-    private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
+
     private final String ACTUAL_VALUE_MESSAGE = "\n  Текущее значение: %s";
 
 }

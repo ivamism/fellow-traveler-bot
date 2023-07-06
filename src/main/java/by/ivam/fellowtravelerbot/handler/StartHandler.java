@@ -25,26 +25,37 @@ public class StartHandler {
     @Autowired
     Buttons buttons;
 
+    public boolean checkRegistration (long chatId){
+        return userService.findById(chatId).isEmpty();
+    }
+    SendMessage message = new SendMessage();
 
     public SendMessage startMessaging(long chatId, Message incomeMessage) {
-
-        SendMessage message = new SendMessage();
         message.setChatId(chatId);
 
-        if (userService.findById(chatId).isEmpty()) {
+        if (checkRegistration(chatId)) {
 
 // TODO Стоит ли вынести в метод в registrationHandler
 
             message.setText(messages.getSTART_REGISTRATION());
-            message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_START_REG_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
+            message.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(),
+                    buttons.getCONFIRM_START_REG_CALLBACK(),
+                    buttons.getNO_BUTTON_TEXT(),
+                    buttons.getDENY_REG_CALLBACK()));
 
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is new User. Call registration process.");
         } else {
-            message.setText(messages.getCHOOSE_ACTION());
+            message.setText(messages.getFURTHER_ACTION_MESSAGE());
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
         }
+        return message;
+    }
+
+    public SendMessage noRegistrationMessage (long chatId){
+        message.setChatId(chatId);
+        message.setText(messages.getNO_REGISTRATION_MESSAGE());
         return message;
     }
 }
