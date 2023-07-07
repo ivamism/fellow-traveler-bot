@@ -1,9 +1,7 @@
 package by.ivam.fellowtravelerbot.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -19,4 +17,9 @@ public class User {
     private String firstName;
     private String userName;
     private LocalDateTime registeredAt;
+
+    @ManyToOne
+    @JoinColumn(name = "settlement_id")
+    private Settlement residence;
+
 }

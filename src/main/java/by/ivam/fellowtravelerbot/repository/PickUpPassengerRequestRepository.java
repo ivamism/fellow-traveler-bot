@@ -1,0 +1,7 @@
+package by.ivam.fellowtravelerbot.repository;
+
+import by.ivam.fellowtravelerbot.model.PickUpPassengerRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PickUpPassengerRequestRepository extends JpaRepository<PickUpPassengerRequest, Integer> {
+}
