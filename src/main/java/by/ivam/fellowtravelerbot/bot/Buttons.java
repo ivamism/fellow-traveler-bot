@@ -87,5 +87,11 @@ public class Buttons {
     private final String MAIN_GET_HELP = "Помощь";
     private final String MAIN_GET_USER_DATA = "Мои данные";
 
-
+    //   Admins Main menu buttons
+    private final String MAIN_ADMIN_ADD_SETTLEMENT = "Добавить нас. пункт";
+    private final String MAIN_ADMIN_DELETE_SETTLEMENT = "Удалить нас. пункт";
+    private final String MAIN_ADMIN_ADD_LOCATION = "Добавить локацию";
+    private final String MAIN_ADMIN_DELETE_LOCATION = "Удалить локацию";
+    private final String MAIN_ADMIN_SET_ADMIN = "Добавить администратора";
+    private final String MAIN_ADMIN_BLOCK_USER = "Заблокировать пользователя";
 }

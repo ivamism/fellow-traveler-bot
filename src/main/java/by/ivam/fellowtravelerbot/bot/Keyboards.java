@@ -21,7 +21,35 @@ public class Keyboards {
     @Autowired
     Buttons buttons;
 
-// Клавиатура главного меню
+// Main menu
+
+    ReplyKeyboardMarkup mainAdminMenu() {
+        ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
+
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow firstRow = new KeyboardRow();
+
+        firstRow.add(buttons.getMAIN_ADMIN_ADD_SETTLEMENT());
+        firstRow.add(buttons.getMAIN_ADMIN_DELETE_SETTLEMENT());
+        keyboardRows.add(firstRow);
+
+        KeyboardRow secondRow = new KeyboardRow();
+
+        secondRow.add(buttons.getMAIN_ADMIN_ADD_LOCATION());
+        secondRow.add(buttons.getMAIN_ADMIN_DELETE_LOCATION());
+        keyboardRows.add(secondRow);
+
+        KeyboardRow thirdRow = new KeyboardRow();
+        thirdRow.add(buttons.getMAIN_ADMIN_SET_ADMIN());
+        thirdRow.add(buttons.getMAIN_ADMIN_BLOCK_USER());
+        keyboardRows.add(thirdRow);
+
+        mainKeyboard.setKeyboard(keyboardRows);
+
+        return mainKeyboard;
+    }
+// Main menu
 
     ReplyKeyboardMarkup mainMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();

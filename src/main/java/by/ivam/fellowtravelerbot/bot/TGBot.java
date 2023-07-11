@@ -62,6 +62,10 @@ public class TGBot extends TelegramLongPollingBot {
 
                     sendMessage(startHandler.startMessaging(chatId, incomeMessage));
                 }
+                case "/showMasterAdminMenu" -> {
+                    log.debug("get Message: " + messageText + " - request to send admin menu from user " + chatId);
+                    adminCommandReceived(chatId);
+                }
                 case "/help" -> {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
                     log.debug("get Message: " + messageText);
@@ -357,7 +361,6 @@ public class TGBot extends TelegramLongPollingBot {
                 userHandler.deleteUser(chatId);
             }
             sendEditMessage(editMessageText);
-
         }
     }
 
@@ -373,11 +376,22 @@ public class TGBot extends TelegramLongPollingBot {
         log.info("received unknown command");
     }
 
+    private void adminCommandReceived(long chatId) {
+        if (userHandler.getUserService().findUserById(chatId).isAdmin() == true) {
+            message.setChatId(chatId);
+            message.setText(messages.getADMIN_MESSAGE());
+            message.setReplyMarkup(keyboards.mainAdminMenu());
+            sendMessage(message);
+        }
+        else unknownCommandReceived(chatId);
+    }
+
     private SendMessage prepareMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(textToSend);
         message.setReplyMarkup(keyboards.mainMenu());
+
         return message;
     }
 

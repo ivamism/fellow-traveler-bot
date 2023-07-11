@@ -29,6 +29,7 @@ public class Messages {
     private final String UNKNOWN_COMMAND = "Неизвестная команда";
     private final String CHOOSE_ACTION = "Выберите действие из меню";
     private final String FURTHER_ACTION_MESSAGE = "Для продолжения работы с ботом выберите нужный пункт меню.";
+    private final String ADMIN_MESSAGE = "Вы вошли в меню администратора.\nВыберите необходимое действие на главной клавиатуре.";
     private final String NO_REGISTRATION_MESSAGE = "Вы еще не зарегистрированы." +
             "Для регистрации выберите /start, или /registration";
 

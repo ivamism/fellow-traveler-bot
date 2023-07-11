@@ -17,6 +17,11 @@ public class User {
     private String firstName;
     private String userName;
     private LocalDateTime registeredAt;
+    private boolean isAdmin;
+    private boolean isDeleted;
+    private LocalDateTime deletedAt;
+    private boolean isBlocked;
+    private LocalDateTime blockedAt;
 
     @ManyToOne
     @JoinColumn(name = "settlement_id")

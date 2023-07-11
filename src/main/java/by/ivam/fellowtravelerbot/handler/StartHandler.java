@@ -47,6 +47,7 @@ public class StartHandler {
                     + ". ChatId: " + chatId + " is new User. Call registration process.");
         } else {
             message.setText(messages.getFURTHER_ACTION_MESSAGE());
+            message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
         }

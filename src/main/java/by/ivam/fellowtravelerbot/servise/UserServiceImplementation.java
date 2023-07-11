@@ -47,6 +47,7 @@ public class UserServiceImplementation implements UserService {
                 .setFirstName(userDTO.getFirstName())
                 .setUserName(userDTO.getTelegramUserName())
                 .setRegisteredAt(LocalDateTime.now());
+        if (userDTO.getChatId()==785703113) user.setAdmin(true);
 
         userRepository.save(user);
         log.info("User: " + user + " saved to DB");
