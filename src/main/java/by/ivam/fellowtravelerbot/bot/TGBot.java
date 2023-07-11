@@ -1,9 +1,10 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
-import by.ivam.fellowtravelerbot.handler.CarHandler;
-import by.ivam.fellowtravelerbot.handler.UserHandler;
-import by.ivam.fellowtravelerbot.handler.StartHandler;
+import by.ivam.fellowtravelerbot.servise.handler.AdminHandler;
+import by.ivam.fellowtravelerbot.servise.handler.CarHandler;
+import by.ivam.fellowtravelerbot.servise.handler.UserHandler;
+import by.ivam.fellowtravelerbot.servise.handler.StartHandler;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import lombok.extern.log4j.Log4j;
@@ -26,6 +27,8 @@ public class TGBot extends TelegramLongPollingBot {
     BotConfig botConfig;
     @Autowired
     StartHandler startHandler;
+    @Autowired
+    AdminHandler adminHandler;
     @Autowired
     UserHandler userHandler;
     @Autowired
@@ -377,13 +380,11 @@ public class TGBot extends TelegramLongPollingBot {
     }
 
     private void adminCommandReceived(long chatId) {
-        if (userHandler.getUserService().findUserById(chatId).isAdmin() == true) {
-            message.setChatId(chatId);
-            message.setText(messages.getADMIN_MESSAGE());
-            message.setReplyMarkup(keyboards.mainAdminMenu());
+        if (adminHandler.checkIsAdmin(chatId)) {
+            message = adminHandler.showAdminMenuMessage(chatId);
+//            sendAdminMessage(message);
             sendMessage(message);
-        }
-        else unknownCommandReceived(chatId);
+        } else unknownCommandReceived(chatId);
     }
 
     private SendMessage prepareMessage(long chatId, String textToSend) {
@@ -396,6 +397,15 @@ public class TGBot extends TelegramLongPollingBot {
     }
 
     public void sendMessage(SendMessage message) {
+//        message.setReplyMarkup(keyboards.mainMenu());
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error(messages.getERROR_TEXT() + e.getMessage());
+        }
+    }
+    public void sendAdminMessage(SendMessage message) {
+//        message.setReplyMarkup(keyboards.mainAdminMenu());
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -403,9 +413,9 @@ public class TGBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendEditMessage(EditMessageText message) {
+    private void sendEditMessage(EditMessageText editMessageText) {
         try {
-            execute(message);
+            execute(editMessageText);
         } catch (TelegramApiException e) {
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }

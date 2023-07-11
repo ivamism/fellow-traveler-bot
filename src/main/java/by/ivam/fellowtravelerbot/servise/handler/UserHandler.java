@@ -1,17 +1,17 @@
-package by.ivam.fellowtravelerbot.handler;
+package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.servise.UserService;
+import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.storages.StorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -22,7 +22,7 @@ This class handle User registration process and saving User to DB
  */
 
 
-@Component
+@Service
 @Data
 @Log4j
 public class UserHandler {

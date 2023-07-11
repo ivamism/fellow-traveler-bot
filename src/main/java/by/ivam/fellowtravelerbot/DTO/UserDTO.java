@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.DTO;
 
-import by.ivam.fellowtravelerbot.handler.enums.ChatStatus;
+import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;

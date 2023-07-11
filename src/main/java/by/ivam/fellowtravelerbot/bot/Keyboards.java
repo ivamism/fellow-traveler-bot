@@ -23,7 +23,7 @@ public class Keyboards {
 
 // Main menu
 
-    ReplyKeyboardMarkup mainAdminMenu() {
+    public ReplyKeyboardMarkup mainAdminMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Keyboards {
     }
 // Main menu
 
-    ReplyKeyboardMarkup mainMenu() {
+    public ReplyKeyboardMarkup mainMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboardRows = new ArrayList<>();

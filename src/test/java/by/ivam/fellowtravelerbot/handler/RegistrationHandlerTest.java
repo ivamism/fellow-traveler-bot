@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.handler;
 
+import by.ivam.fellowtravelerbot.servise.handler.UserHandler;
 import org.hibernate.cache.spi.support.StorageAccess;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
