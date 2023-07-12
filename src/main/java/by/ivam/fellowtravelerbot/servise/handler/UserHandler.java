@@ -76,7 +76,7 @@ public class UserHandler {
 
     //    request user to confirm that edited userFirstName is correct
     public SendMessage confirmEditedUserFirstName(Message incomeMessage) {
-//        int messageId = incomeMessage.getMessageId();
+
         long chatId = incomeMessage.getChatId();
         String incomeMessageText = incomeMessage.getText();
 

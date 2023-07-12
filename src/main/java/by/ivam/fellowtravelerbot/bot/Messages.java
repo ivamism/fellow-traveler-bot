@@ -32,7 +32,7 @@ public class Messages {
     private final String ADMIN_MESSAGE = "Вы вошли в меню администратора.\nВыберите необходимое действие на главной клавиатуре.";
     private final String NO_REGISTRATION_MESSAGE = "Вы еще не зарегистрированы." +
             "Для регистрации выберите /start, или /registration";
-
+    private final String ACTUAL_VALUE_MESSAGE = "\n  Текущее значение: %s";
 
     //    User registration process
     private final String START_REGISTRATION = "Вы еще не зарегистрированы. Регистрируемся?";
@@ -91,12 +91,13 @@ public class Messages {
 
     //    Edit Car
     private final String EDIT_CAR_START_MESSAGE = "Выберите, что вы хотите изменить:\n";
+
     private final String EDIT_CAR_CHOICE_PREFIX_MESSAGE = "Выберите, какой автомобиль вы хотите изменить:\n";
     private final String EDIT_CAR_CHOSEN_PREFIX_MESSAGE = "Вы выбрали:\n%s\n";
     private final String EDIT_CAR_SUCCESS_PREFIX_MESSAGE = "Изменения успешно внесены\n";
 
 
-
-    private final String ACTUAL_VALUE_MESSAGE = "\n  Текущее значение: %s";
-
+// AdminHandler
+    private final String ADD_SETTLEMENT_NAME_MESSAGE = "Впишите название населенного пункта";
+    private final String ADD_SETTLEMENT_SUCCESS_MESSAGE = "Населенный пункт:\n\n  Id: %d\n  Название: %s\n  успешно сохранен";
 }
