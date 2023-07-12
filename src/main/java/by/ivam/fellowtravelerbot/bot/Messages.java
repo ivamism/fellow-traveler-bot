@@ -100,4 +100,5 @@ public class Messages {
 // AdminHandler
     private final String ADD_SETTLEMENT_NAME_MESSAGE = "Впишите название населенного пункта";
     private final String ADD_SETTLEMENT_SUCCESS_MESSAGE = "Населенный пункт:\n\n  Id: %d\n  Название: %s\n  успешно сохранен";
+    private final String ADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE = "Выберите населенный пункт";
 }

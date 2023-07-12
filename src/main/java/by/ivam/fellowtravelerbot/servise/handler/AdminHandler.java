@@ -3,6 +3,8 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
+import by.ivam.fellowtravelerbot.model.Car;
+import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
@@ -13,6 +15,13 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /*
@@ -72,7 +81,33 @@ log.debug("AdminHandler method checkIsAdmin");
         log.debug("AdminHandler method settlementSaveSuccessMessage");
         return sendMessage;
     }
+    public SendMessage departureLocationSettlementRequestMessage(long chatId){
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
 
+        sendMessage.setReplyMarkup(null);
+
+        log.debug("AdminHandler method settlementSaveSuccessMessage");
+        return sendMessage;
+    }
+
+    private List<Settlement> getDepartureLocationList() {
+        return settlementService.findAll();
+    }
+private InlineKeyboardMarkup createSettlementInlineKeyboard(){
+
+
+    return null;
+}
+
+
+private HashMap<String, String> buttonsAttributesCreator(){
+        HashMap<String, String>buttonsAttributes = (HashMap<String, String>) settlementService.findAll()
+                .stream()
+                .collect(Collectors.toMap(settlement -> settlement.getName(), settlement -> String.valueOf(settlement.getId())+buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK()));
+
+            return buttonsAttributes;
+}
     private String firstLetterToUpperCase(String s) {
             return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
