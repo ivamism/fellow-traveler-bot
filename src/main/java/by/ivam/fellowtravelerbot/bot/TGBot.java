@@ -63,15 +63,14 @@ public class TGBot extends TelegramLongPollingBot {
                 case "/start" -> {
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
                     log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
-
-                    sendMessage(startHandler.startMessaging(chatId, incomeMessage));
+                    message = startHandler.startMessaging(chatId, incomeMessage);
                 }
                 case "/showMasterAdminMenu" -> {
                     log.debug("get Message: " + messageText + " - request to send admin menu from user " + chatId);
                     adminCommandReceived(chatId);
                 }
                 case "/help" -> {
-                    sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
+                    message = prepareMessage(chatId, messages.getHELP_TEXT());
                     log.debug("get Message: " + messageText);
                 }
                 case "/profile", "Мои данные" -> {
@@ -81,30 +80,25 @@ public class TGBot extends TelegramLongPollingBot {
                         log.debug("got request to get User's stored data");
                         message = userHandler.sendUserData(chatId);
                     }
-//                    sendMessage(message);
                 }
                 case "/registration" -> {
+                    message = startHandler.startMessaging(chatId, incomeMessage);
                     log.debug("get Message: " + messageText + " - Start registration process");
-                    sendMessage(startHandler.startMessaging(chatId, incomeMessage));
                 }
                 case "/add_car" -> {
-//                    SendMessage message;
                     if (startHandler.checkRegistration(chatId)) {
                         message = startHandler.noRegistrationMessage(chatId);
                     } else {
                         log.debug("got request to get User's stored data");
                         message = carHandler.startAddCarProcess(incomeMessage);
                     }
-//                    sendMessage(message);
                 }
                 case "Найти попутку" -> {
-//                    SendMessage message = new SendMessage();
                     if (startHandler.checkRegistration(chatId)) {
                         message = startHandler.noRegistrationMessage(chatId);
                     } else {
                         log.debug("got request to find a car");
                     }
-//                    sendMessage(message);
                 }
                 case "Найти попутчика" -> {
 //                    SendMessage message = new SendMessage();
@@ -113,7 +107,6 @@ public class TGBot extends TelegramLongPollingBot {
                     } else {
                         log.debug("got request to find a fellow");
                     }
-//                    sendMessage(message);
                 }
                 case "Помощь" -> {
                     sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
@@ -233,11 +226,8 @@ public class TGBot extends TelegramLongPollingBot {
                             Settlement settlement = adminHandler.saveSettlement(chatId, messageText);
                             message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
                         }
-//
                     }
-//                    sendMessage(message);
                 }
-
             }
             sendMessage(message);
 
