@@ -121,7 +121,15 @@ public class TGBot extends TelegramLongPollingBot {
                         unknownCommandReceived(chatId);
                     }
                 }
-
+                case "Добавить локацию" -> {
+                    log.debug("got request to add new DepartureLocation");
+                    if (adminHandler.checkIsAdmin(chatId)) {
+                        message = adminHandler.departureLocationSettlementRequestMessage(chatId);
+                    } else {
+                        log.debug("user " + chatId + " not an Admin");
+                        unknownCommandReceived(chatId);
+                    }
+                }
                 default -> {
                     log.debug("get Message: " + update.getMessage().getText());
 
@@ -238,6 +246,7 @@ public class TGBot extends TelegramLongPollingBot {
             long chatId = incomeMessage.getChatId();
             String messageText = incomeMessage.getText();
             String userName = incomeMessage.getChat().getFirstName();
+            log.info("get callback: " + callbackData);
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {     //  got confirmation of start registration process, call check up correctness of user firstname
                 editMessageText = userHandler.confirmUserFirstName(messageId, chatId, userName);
@@ -371,7 +380,13 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to delete User's stored data");
                 editMessageText = userHandler.deleteUserSuccessMessage(incomeMessage);
                 userHandler.deleteUser(chatId);
+            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0,35))) { //  callback to delete User's stored data
+                log.info("callback to choose Settlement for DepartureLocation");
+                adminHandler.departureLocationSetSettlement(chatId, callbackData);
+
+
             }
+
             sendEditMessage(editMessageText);
         }
     }

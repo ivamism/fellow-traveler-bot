@@ -16,14 +16,15 @@ public class SettlementServiceImplementation implements SettlementService {
     SettlementRepository settlementRepository;
 
     @Override
-    public Settlement findById() {
+    public Settlement findById(int id) {
+        return settlementRepository.findById(id).orElseThrow();
 
-        return null;
     }
 
     @Override
     public List<Settlement> findAll() {
-        return null;
+        log.debug("get list of Settlements from DB");
+        return settlementRepository.findAll();
     }
 
     @Override
@@ -36,12 +37,12 @@ public class SettlementServiceImplementation implements SettlementService {
     }
 
     @Override
-    public Settlement updateSettlement() {
+    public Settlement updateSettlement(int id) {
         return null;
     }
 
     @Override
-    public void deleteById() {
+    public void deleteById(int id) {
 
     }
 }

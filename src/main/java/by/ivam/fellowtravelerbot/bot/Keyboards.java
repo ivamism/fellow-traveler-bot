@@ -5,6 +5,7 @@ Main menu and inline keyboards
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -298,4 +299,21 @@ public class Keyboards {
         return markupInLine;
     }
 
+    public InlineKeyboardMarkup dynamicRangeColumnInlineKeyboard(List<Pair<String, String>> buttonsAttributes) {
+
+        InlineKeyboardMarkup inLineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        for (Pair<String, String> pair : buttonsAttributes) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(pair.getFirst());
+            button.setCallbackData(pair.getSecond());
+            row.add(button);
+            rows.add(row);
+        }
+
+        inLineKeyboard.setKeyboard(rows);
+        return inLineKeyboard;
+    }
 }

@@ -5,10 +5,10 @@ import by.ivam.fellowtravelerbot.model.Settlement;
 import java.util.List;
 
 public interface SettlementService {
-   Settlement findById();
+   Settlement findById(int id);
    List<Settlement> findAll();
    Settlement addNewSettlement(String settlementName);
-   Settlement updateSettlement();
-   void deleteById();
+   Settlement updateSettlement(int id);
+   void deleteById(int id);
 
 }
