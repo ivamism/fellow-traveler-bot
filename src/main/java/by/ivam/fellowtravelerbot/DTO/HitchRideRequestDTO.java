@@ -16,6 +16,7 @@ import java.time.LocalTime;
 
 public class HitchRideRequestDTO {
 
+
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;

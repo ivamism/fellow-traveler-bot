@@ -102,7 +102,6 @@ public class TGBot extends TelegramLongPollingBot {
                     }
                 }
                 case "Найти попутчика" -> {
-//                    SendMessage message = new SendMessage();
                     if (startHandler.checkRegistration(chatId)) {
                         message = startHandler.noRegistrationMessage(chatId);
                     } else {
@@ -387,7 +386,7 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to delete User's stored data");
                 editMessageText = userHandler.deleteUserSuccessMessage(incomeMessage);
                 userHandler.deleteUser(chatId);
-            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0,35))) { //  callback to delete User's stored data
+            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0, 35))) { //  callback to delete User's stored data
                 log.info("callback to choose Settlement for DepartureLocation");
                 adminHandler.departureLocationSetSettlement(chatId, callbackData);
                 editMessageText = adminHandler.departureLocationNameRequestMessage(incomeMessage);
