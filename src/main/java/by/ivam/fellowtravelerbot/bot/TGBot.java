@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
+import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.handler.AdminHandler;
 import by.ivam.fellowtravelerbot.servise.handler.CarHandler;
@@ -125,6 +126,7 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("got request to add new DepartureLocation");
                     if (adminHandler.checkIsAdmin(chatId)) {
                         message = adminHandler.departureLocationSettlementRequestMessage(chatId);
+//                        adminHandler.departureLocationSettlementRequestMessage(chatId);
                     } else {
                         log.debug("user " + chatId + " not an Admin");
                         unknownCommandReceived(chatId);
@@ -233,6 +235,11 @@ public class TGBot extends TelegramLongPollingBot {
                             log.info("Get Settlement name  " + messageText);
                             Settlement settlement = adminHandler.saveSettlement(chatId, messageText);
                             message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
+                        }
+                        case "ADD_DEPARTURE_LOCATION_NAME" -> {
+                            log.info("Get DepartureLocation name  " + messageText);
+                            DepartureLocation location = adminHandler.departureLocationSave(chatId, messageText);
+                            message = adminHandler.departureLocationSaveSuccessMessage(chatId, location);
                         }
                     }
                 }
@@ -383,7 +390,7 @@ public class TGBot extends TelegramLongPollingBot {
             } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0,35))) { //  callback to delete User's stored data
                 log.info("callback to choose Settlement for DepartureLocation");
                 adminHandler.departureLocationSetSettlement(chatId, callbackData);
-
+                editMessageText = adminHandler.departureLocationNameRequestMessage(incomeMessage);
 
             }
 

@@ -14,7 +14,7 @@ public class DepartureLocation {
     private int id;
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "settlement_id")
     private Settlement settlement;
 

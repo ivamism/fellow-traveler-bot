@@ -101,4 +101,7 @@ public class Messages {
     private final String ADD_SETTLEMENT_NAME_MESSAGE = "Впишите название населенного пункта";
     private final String ADD_SETTLEMENT_SUCCESS_MESSAGE = "Населенный пункт:\n\n  Id: %d\n  Название: %s\n  успешно сохранен";
     private final String ADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE = "Выберите населенный пункт";
+    private final String ADD_LOCATION_NAME_MESSAGE = "Впишите название места выезда";
+    private final String ADD_LOCATION_SUCCESS_MESSAGE = "Место выезда:\n\n  Id: %d\n  Название: %s\n  Населенный пункт: %s\n  успешно сохранено";
+
 }

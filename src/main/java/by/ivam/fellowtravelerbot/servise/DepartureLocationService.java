@@ -1,13 +1,14 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 
 import java.util.List;
 
 public interface DepartureLocationService {
-    DepartureLocation findById();
+    DepartureLocation findById(int id);
     List<DepartureLocation> findAll();
-    DepartureLocation addNewLocation();
-    DepartureLocation updateLocation();
-    void deleteById();
+    DepartureLocation addNewLocation(DepartureLocationDTO locationDTO);
+    DepartureLocation updateLocation(int id);
+    void deleteById(int id);
 }

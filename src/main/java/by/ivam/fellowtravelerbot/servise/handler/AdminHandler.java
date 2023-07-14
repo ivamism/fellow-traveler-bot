@@ -6,6 +6,7 @@ import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Settlement;
+import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +37,8 @@ public class AdminHandler {
     @Autowired
     SettlementService settlementService;
     @Autowired
+    DepartureLocationService locationService;
+    @Autowired
     Messages messages;
     @Autowired
     Keyboards keyboards;
@@ -44,9 +49,10 @@ public class AdminHandler {
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
 
-//    TODO Добавить логирование
 
     SendMessage sendMessage = new SendMessage();
+    EditMessageText editMessage = new EditMessageText();
+
 
     public boolean checkIsAdmin(long chatId) {
         log.debug("AdminHandler method checkIsAdmin");
@@ -91,31 +97,62 @@ public class AdminHandler {
     public SendMessage departureLocationSettlementRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesCreator()));
-//        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_SETTLEMENT));
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(settlementListButtonsAttributesCreator()));
         log.debug("AdminHandler method departureLocationSettlementRequestMessage");
         return sendMessage;
     }
 
     public void departureLocationSetSettlement(long chatId, String callbackData) {
+        log.debug("AdminHandler method departureLocationSetSettlement");
         DepartureLocationDTO location = new DepartureLocationDTO();
         location.setSettlement(settlementService.findById(Integer.parseInt(callbackData.substring(36))));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
 
+    public EditMessageText departureLocationNameRequestMessage(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_LOCATION_NAME_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
+        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
+
+        log.debug("AdminHandler method departureLocationNameRequestMessage");
+        return editMessage;
+    }
+
+    public DepartureLocation departureLocationSave(long chatId, String name) {
+        log.debug("AdminHandler method departureLocationSave");
+        DepartureLocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
+        locationDTO.setName(firstLetterToUpperCase(name));
+        departureLocationStorageAccess.deleteLocation(chatId);
+        storageAccess.deleteChatStatus(chatId);
+
+        return locationService.addNewLocation(locationDTO);
+
+    }
+
+    public SendMessage departureLocationSaveSuccessMessage(long chatId, DepartureLocation location) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(String.format(messages.getADD_LOCATION_SUCCESS_MESSAGE(), location.getId(), location.getName(), location.getSettlement().getName()));
+        sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+
+        log.debug("AdminHandler method settlementSaveSuccessMessage");
+        return sendMessage;
+    }
 
     private List<Settlement> getDepartureLocationList() {
         return settlementService.findAll();
     }
 
-    private List<Pair<String, String>> buttonsAttributesCreator() {
+    private List<Pair<String, String>> settlementListButtonsAttributesCreator() {
 
         List<Pair<String, String>> buttonsAttributes = settlementService.findAll()
                 .stream()
                 .map(settlement -> Pair.of(settlement.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + settlement.getId()))
                 .collect(Collectors.toList());
         buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        log.debug("AdminHandler method departureLocationSettlementRequestMessage: create list of buttons attributes");
+        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
         return buttonsAttributes;
 
     }
