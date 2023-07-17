@@ -48,7 +48,20 @@ public class UserHandler {
 //  TODO Реализовать процесс возврата к регистрации
 //    TODO разделить функциональные действия и отправку сообщений
 
+// Start registration User process
+    public SendMessage startRegistration(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getSTART_REGISTRATION());
+        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(),
+                buttons.getCONFIRM_START_REG_CALLBACK(),
+                buttons.getNO_BUTTON_TEXT(),
+                buttons.getDENY_REG_CALLBACK()));
+        log.debug("method startRegistration");
+        return sendMessage;
+    }
+
     // Ask user to confirm telegram User's first name as UserName or edit it
+//    TODO перенести создание дто и сохранение в хранилище сюда
     public EditMessageText confirmUserFirstName(int messageId, long chatId, String userName) {
 
         editMessage.setChatId(chatId);
@@ -84,8 +97,15 @@ public class UserHandler {
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessageText);
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
         storageAccess.addUserFirstName(chatId, incomeMessageText);
+
+
         log.info("method confirmEditedUserFirstName. Send request to confirm edited name");
         return sendMessage;
+    }
+
+    public EditMessageText requestResidence(Message incomeMessage) {
+        log.debug("method userRegistration. Call saving to DB user: " + userDTO);
+        return editMessage;
     }
 
     // Save User to DB

@@ -64,7 +64,7 @@ public class TGBot extends TelegramLongPollingBot {
                 case "/start" -> {
                     startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
                     log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
-                    message = startHandler.startMessaging(chatId, incomeMessage);
+                    message = startHandler.startMessaging(incomeMessage);
                 }
                 case "/showMasterAdminMenu" -> {
                     log.debug("get Message: " + messageText + " - request to send admin menu from user " + chatId);
@@ -83,7 +83,7 @@ public class TGBot extends TelegramLongPollingBot {
                     }
                 }
                 case "/registration" -> {
-                    message = startHandler.startMessaging(chatId, incomeMessage);
+                    message = startHandler.startMessaging(incomeMessage);
                     log.debug("get Message: " + messageText + " - Start registration process");
                 }
                 case "/add_car" -> {
