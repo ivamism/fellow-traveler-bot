@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.storages;
 
-public interface StorageAccess {
+public interface ChatStatusStorageAccess {
 
     void addChatStatus(Long chatId, String chatStatus);
     void deleteChatStatus(Long chatId);

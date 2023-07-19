@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @Log4j
-public class StorageAccessImplementation implements StorageAccess {
+public class ChatStatusStorageAccessImplementation implements ChatStatusStorageAccess {
     @Autowired
     Storages storage;
 

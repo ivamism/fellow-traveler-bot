@@ -44,7 +44,7 @@ public class Messages {
     private final String EDIT_USER_FIRSTNAME_SUCCESS_MESSAGE = "Ваше текущее имя:\n%s\n";
 
     //    Handle User
-    private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n\nАвтомобили:\n";
+    private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n  Место жительства: %s \n\nАвтомобили:\n";
     private final String EDIT_USER_FIRSTNAME_MESSAGE_POSTFIX = "Ваше текущее имя: %s";
     private final String DELETE_USER_START_MESSAGE = """
             Нажмите "Удалить", если вы хотите удалить ваши данные из бота.

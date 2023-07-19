@@ -4,10 +4,13 @@ import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
+import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.model.User;
+import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
-import by.ivam.fellowtravelerbot.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +38,15 @@ public class UserHandler {
     @Autowired
     Buttons buttons;
     @Autowired
-    StorageAccess storageAccess;
+    ChatStatusStorageAccess chatStatusStorageAccess;
+    @Autowired
+    UserDTOStorageAccess userDTOStorageAccess;
     @Autowired
     UserDTO userDTO;
+    @Autowired
+    AdminHandler adminHandler;
+    @Autowired
+    SettlementService settlementService;
 
     @Autowired
     CarHandler carHandler;
@@ -48,7 +57,7 @@ public class UserHandler {
 //  TODO Реализовать процесс возврата к регистрации
 //    TODO разделить функциональные действия и отправку сообщений
 
-// Start registration User process
+    // Start registration User process
     public SendMessage startRegistration(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
@@ -61,18 +70,27 @@ public class UserHandler {
     }
 
     // Ask user to confirm telegram User's first name as UserName or edit it
-//    TODO перенести создание дто и сохранение в хранилище сюда
-    public EditMessageText confirmUserFirstName(int messageId, long chatId, String userName) {
-
+    public EditMessageText confirmUserFirstName(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
+        String userName = incomeMessage.getChat().getUserName();
+        String firstName = incomeMessage.getChat().getFirstName();
         editMessage.setChatId(chatId);
-        editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + userName + "?");
-        editMessage.setMessageId(messageId);
-        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getCONFIRM_REG_DATA_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
+        editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK(),
+                buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(),
+                buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
+
+        userDTO.setChatId(chatId)
+                .setFirstName(incomeMessage.getChat().getFirstName())
+                .setTelegramUserName(userName);
+        userDTOStorageAccess.addUserDTO(chatId, userDTO);
 
         log.debug("method confirmUserFirstName. Send request for confirmation of registration data");
 
         return editMessage;
     }
+
 
     //    Request to send users choice of userFirstName
     public EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
@@ -82,7 +100,7 @@ public class UserHandler {
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_USER_EDIT_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_USER_EDIT_NAME));
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -96,7 +114,7 @@ public class UserHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessageText);
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-        storageAccess.addUserFirstName(chatId, incomeMessageText);
+        chatStatusStorageAccess.addUserFirstName(chatId, incomeMessageText);
 
 
         log.info("method confirmEditedUserFirstName. Send request to confirm edited name");
@@ -104,26 +122,35 @@ public class UserHandler {
     }
 
     public EditMessageText requestResidence(Message incomeMessage) {
-        log.debug("method userRegistration. Call saving to DB user: " + userDTO);
+        long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
+
+//        TODO Изменить в keyboards.settlementsButtonsAttributesCreator() колбэк на сохранение нас.пункта в ДТО 32
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesCreator(adminHandler.getSettlementsList())));
+
+        log.debug("method requestResidence. Call saving to DB user: " + userDTO);
         return editMessage;
+    }
+
+    public void setResidenceToDTO (long chatId, String callbackData){
+        userDTOStorageAccess.setResidence(chatId, settlementService.findById(Integer.parseInt(callbackData.substring(32))));
+        log.debug("method setResidenceToDTO");
     }
 
     // Save User to DB
     public EditMessageText userRegistration(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
-        String firstName = incomeMessage.getChat().getFirstName();
-        String userName = incomeMessage.getChat().getUserName();
-        userDTO.setChatId(chatId)
-                .setFirstName(firstName)
-                .setTelegramUserName(userName);
 
-        userService.registerNewUser(userDTO);
+        userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
 
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
+        userDTOStorageAccess.deleteUserDTO(chatId);
         log.debug("method userRegistration. Call saving to DB user: " + userDTO);
         return editMessage;
     }
@@ -141,8 +168,8 @@ public class UserHandler {
         editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        storageAccess.deleteChatStatus(chatId);
-        storageAccess.deleteUserFirstName(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteUserFirstName(chatId);
         log.debug("method userRegistration. Call saving to DB with with edited firstname: " + userDTO);
         return editMessage;
     }
@@ -160,6 +187,8 @@ public class UserHandler {
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
+
+        String residence = user.getResidence().getName();
         return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName()) + carHandler.prepareCarListToSend(chatId);
     }
 
@@ -178,7 +207,7 @@ public class UserHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE() + String.format(messages.getEDIT_USER_FIRSTNAME_MESSAGE_POSTFIX(), firstName));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.USER_EDIT_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.USER_EDIT_NAME));
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -221,5 +250,6 @@ public class UserHandler {
         carHandler.deleteAllCars(chatId);
         userService.deleteUser(chatId);
     }
+
 
 }

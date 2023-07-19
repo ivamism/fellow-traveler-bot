@@ -3,6 +3,8 @@ package by.ivam.fellowtravelerbot.bot;
 Main menu and inline keyboards
  */
 
+import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -10,11 +12,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Data
@@ -316,4 +318,26 @@ public class Keyboards {
         inLineKeyboard.setKeyboard(rows);
         return inLineKeyboard;
     }
+
+    public List<Pair<String, String>> settlementsButtonsAttributesCreator(List<Settlement> settlements) {
+
+        List<Pair<String, String>> buttonsAttributes = settlements
+                .stream()
+                .map(settlement -> Pair.of(settlement.getName(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK() + settlement.getId()))
+                .collect(Collectors.toList());
+        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
+        return buttonsAttributes;
+    }
+    public List<Pair<String, String>> departureLocationListButtonsAttributesCreator(List<DepartureLocation> departureLocations) {
+
+        List<Pair<String, String>> buttonsAttributes = departureLocations
+                .stream()
+                .map(location -> Pair.of(location.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + location.getId()))
+                .collect(Collectors.toList());
+        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
+        return buttonsAttributes;
+    }
 }
+

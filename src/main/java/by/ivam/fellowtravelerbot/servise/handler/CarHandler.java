@@ -8,8 +8,8 @@ import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.servise.CarService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
-import by.ivam.fellowtravelerbot.storages.AddCarStorageAccess;
-import by.ivam.fellowtravelerbot.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.AddCarStorageAccess;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class CarHandler {
     @Autowired
     AddCarStorageAccess addCarStorageAccess;
     @Autowired
-    StorageAccess storageAccess;
+    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserService userService;
     SendMessage sendMessage = new SendMessage();
@@ -76,7 +76,7 @@ public class CarHandler {
         editMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         log.info("CarHandler method quitProcessMessage: Quit the process");
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         return editMessage;
     }
 
@@ -86,7 +86,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
 
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_MODEL));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_MODEL));
 
         log.info("CarHandler method requestModel: request to send car model");
 
@@ -105,7 +105,7 @@ public class CarHandler {
         sendMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE());
         sendMessage.setReplyMarkup(null);   //need to set null to remove no longer necessary inline keyboard
 
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COLOR));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COLOR));
 
         log.info("CarHandler method requestColor: request to send color");
 
@@ -123,7 +123,7 @@ public class CarHandler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
 
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATES));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_PLATES));
 
         log.info("CarHandler method requestPlateNumber: request to send plate number");
 
@@ -140,7 +140,7 @@ public class CarHandler {
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getSKIP_STEP_TEXT(), buttons.getADD_CAR_SKIP_COMMENT_CALLBACK()));
 
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COMMENTARY));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_COMMENTARY));
 
         log.info("CarHandler method requestCommentary: request to send commentary");
 
@@ -192,7 +192,7 @@ public class CarHandler {
 
         carService.addNewCar(car);
         log.debug("CarHandler method addNewCar: call  carService.addNewCar to save car " + car + " to DB");
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         addCarStorageAccess.deleteCarDTO(chatId);
         return car;
     }
@@ -319,7 +319,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_MODEL));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_MODEL));
         log.info("CarHandler method changeModelRequestMessage: request to send car model");
 
         return editMessage;
@@ -328,7 +328,7 @@ public class CarHandler {
     public void setEditedBeforeSavingModel(Long chatId, String model) {
 
         addCarStorageAccess.setModel(chatId, model.toUpperCase());
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedModel: set model " + model + " to carDTO and send to storage");
     }
 
@@ -337,7 +337,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COLOR));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COLOR));
         log.info("CarHandler method changeColorRequestMessage: request to send color");
 
         return editMessage;
@@ -345,7 +345,7 @@ public class CarHandler {
 
     public void setEditedBeforeSavingColor(Long chatId, String color) {
         addCarStorageAccess.setColor(chatId, firstLetterToUpperCase(color));
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedModel: set model " + color + " to carDTO and send to storage");
     }
 
@@ -354,7 +354,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_PLATES));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_PLATES));
 
         log.info("CarHandler method changePlateNumberRequestMessage: request to send plate number");
 
@@ -364,7 +364,7 @@ public class CarHandler {
     public void setEditedBeforeSavingPlateNumber(Long chatId, String plateNumber) {
 
         addCarStorageAccess.setPlateNumber(chatId, plateNumber.toUpperCase());
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedPlateNumber: set model " + plateNumber + " to carDTO and send to storage");
     }
 
@@ -373,7 +373,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COMMENTARY));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.ADD_CAR_EDIT_COMMENTARY));
         log.info("CarHandler method changeCommentaryRequestMessage: request to send commentary");
 
         return editMessage;
@@ -382,7 +382,7 @@ public class CarHandler {
     public void setEditedBeforeSavingCommentary(Long chatId, String commentary) {
 
         addCarStorageAccess.setCommentary(chatId, firstLetterToUpperCase(commentary));
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
 
@@ -438,7 +438,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), modelActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_MODEL));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_MODEL));
         log.info("CarHandler method changeFirstCarModelRequestMessage: request to send new value of first car model");
 
         return editMessage;
@@ -458,7 +458,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), colorActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_COLOR));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_COLOR));
         log.info("CarHandler method changeFirstCarColorRequestMessage: request to send new value of first car color");
 
         return editMessage;
@@ -477,7 +477,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), platesActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_PLATES));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_PLATES));
         log.info("CarHandler method changeFirstCarPlatesRequestMessage: request to send new value of first car plates number");
 
         return editMessage;
@@ -497,7 +497,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), commentaryActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_COMMENTARY));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_FIRST_CAR_COMMENTARY));
         log.info("CarHandler method changeFirstCarCommentaryRequestMessage: request to send new value of first car commentary");
 
         return editMessage;
@@ -517,7 +517,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), modelActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_MODEL));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_MODEL));
         log.info("CarHandler method changeFirstCarModelRequestMessage: request to send new value of second car model");
 
         return editMessage;
@@ -537,7 +537,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), colorActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_COLOR));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_COLOR));
         log.info("CarHandler method changeSecondCarColorRequestMessage: request to send new value of second car color");
 
         return editMessage;
@@ -556,7 +556,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), platesActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_PLATES));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_PLATES));
         log.info("CarHandler method changeSecondCarPlatesRequestMessage: request to send new value of second car plates number");
 
         return editMessage;
@@ -576,7 +576,7 @@ public class CarHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), commentaryActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_COMMENTARY));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), String.valueOf(ChatStatus.EDIT_SECOND_CAR_COMMENTARY));
         log.info("CarHandler method changeSecondCarCommentaryRequestMessage: request to send new value of second car commentary");
 
         return editMessage;
@@ -597,7 +597,7 @@ public class CarHandler {
     }
     private Car saveEditedCar(long chatId, Car car) {
         log.debug("CarHandler method editCar: update car " + car);
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         return carService.updateCar(car);
     }
 

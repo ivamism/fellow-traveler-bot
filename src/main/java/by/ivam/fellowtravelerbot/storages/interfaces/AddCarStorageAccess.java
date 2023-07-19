@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.storages;
+package by.ivam.fellowtravelerbot.storages.interfaces;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
 

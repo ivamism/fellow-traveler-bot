@@ -8,7 +8,7 @@ import by.ivam.fellowtravelerbot.servise.handler.CarHandler;
 import by.ivam.fellowtravelerbot.servise.handler.UserHandler;
 import by.ivam.fellowtravelerbot.servise.handler.StartHandler;
 import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -42,7 +42,7 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     Buttons buttons;
     @Autowired
-    StorageAccess storageAccess;
+    ChatStatusStorageAccess chatStatusStorageAccess;
 
     SendMessage message = new SendMessage();
     EditMessageText editMessageText = new EditMessageText();
@@ -134,7 +134,7 @@ public class TGBot extends TelegramLongPollingBot {
                 default -> {
                     log.debug("get Message: " + update.getMessage().getText());
 
-                    String chatStatus = storageAccess.findChatStatus(chatId);
+                    String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
 
                     log.debug("get chatStatus - " + chatStatus);
                     switch (chatStatus) {
@@ -255,19 +255,25 @@ public class TGBot extends TelegramLongPollingBot {
             log.info("get callback: " + callbackData);
 
             if (callbackData.equals(buttons.getCONFIRM_START_REG_CALLBACK())) {     //  got confirmation of start registration process, call check up correctness of user firstname
-                editMessageText = userHandler.confirmUserFirstName(messageId, chatId, userName);
+                editMessageText = userHandler.confirmUserFirstName(incomeMessage);
 
             } else if (callbackData.equals(buttons.getDENY_REG_CALLBACK())) {   //  got denial of registration process
                 editMessageText = userHandler.denyRegistration(incomeMessage);
 
-            } else if (callbackData.equals(buttons.getCONFIRM_REG_DATA_CALLBACK())) {   //  got confirmation of correctness of user firstname, call saving to DB
-                editMessageText = userHandler.userRegistration(incomeMessage);
+            } else if (callbackData.equals(buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK())) {   //  request to send list of settlements to choose residence
+                editMessageText = userHandler.requestResidence(incomeMessage);
+            }
+            else if (callbackData.substring(0,31).equals(buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())) {   //  got callback with settlement ID
+//                callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0, 35));
 
-            } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
+                userHandler.setResidenceToDTO(chatId, callbackData);
+                editMessageText = userHandler.userRegistration(incomeMessage);
+            }
+            else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
                 editMessageText = userHandler.editUserFirstNameBeforeSaving(incomeMessage);
 
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
-                String firstName = storageAccess.findUserFirstName(chatId);
+                String firstName = chatStatusStorageAccess.findUserFirstName(chatId);
                 editMessageText = userHandler.userRegistration(incomeMessage, firstName);
 
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process

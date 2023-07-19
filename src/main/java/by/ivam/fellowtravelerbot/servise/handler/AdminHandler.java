@@ -10,8 +10,8 @@ import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
-import by.ivam.fellowtravelerbot.storages.DepartureLocationStorageAccess;
-import by.ivam.fellowtravelerbot.storages.StorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class AdminHandler {
     @Autowired
     Buttons buttons;
     @Autowired
-    StorageAccess storageAccess;
+    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
 
@@ -73,13 +73,13 @@ public class AdminHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_SETTLEMENT_NAME_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_SETTLEMENT_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_SETTLEMENT_NAME));
         log.debug("AdminHandler method settlementNameRequestMessage");
         return sendMessage;
     }
 
     public Settlement saveSettlement(Long chatId, String settlementName) {
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method saveSettlement: call to save " + settlementName + " to DB");
         return settlementService.addNewSettlement(firstLetterToUpperCase(settlementName));
     }
@@ -97,7 +97,7 @@ public class AdminHandler {
     public SendMessage departureLocationSettlementRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(settlementListButtonsAttributesCreator()));
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesCreator(getSettlementsList())));
         log.debug("AdminHandler method departureLocationSettlementRequestMessage");
         return sendMessage;
     }
@@ -115,7 +115,7 @@ public class AdminHandler {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_NAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
-        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
 
         log.debug("AdminHandler method departureLocationNameRequestMessage");
         return editMessage;
@@ -126,7 +126,7 @@ public class AdminHandler {
         DepartureLocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
         locationDTO.setName(firstLetterToUpperCase(name));
         departureLocationStorageAccess.deleteLocation(chatId);
-        storageAccess.deleteChatStatus(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
 
         return locationService.addNewLocation(locationDTO);
 
@@ -141,21 +141,21 @@ public class AdminHandler {
         return sendMessage;
     }
 
-    private List<Settlement> getDepartureLocationList() {
+    public List<Settlement> getSettlementsList() {
         return settlementService.findAll();
     }
 
-    private List<Pair<String, String>> settlementListButtonsAttributesCreator() {
-
-        List<Pair<String, String>> buttonsAttributes = settlementService.findAll()
-                .stream()
-                .map(settlement -> Pair.of(settlement.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + settlement.getId()))
-                .collect(Collectors.toList());
-        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
-        return buttonsAttributes;
-
-    }
+//    private List<Pair<String, String>> settlementListButtonsAttributesCreator() {
+//
+//        List<Pair<String, String>> buttonsAttributes = settlementService.findAll()
+//                .stream()
+//                .map(settlement -> Pair.of(settlement.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + settlement.getId()))
+//                .collect(Collectors.toList());
+//        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
+//        return buttonsAttributes;
+//
+//    }
 
     private String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
