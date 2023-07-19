@@ -41,7 +41,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public void registerNewUser(UserDTO userDTO) {
+    public User registerNewUser(UserDTO userDTO) {
         User user = new User();
         user.setChatId(userDTO.getChatId())
                 .setFirstName(userDTO.getFirstName())
@@ -52,6 +52,7 @@ public class UserServiceImplementation implements UserService {
 
         userRepository.save(user);
         log.info("User: " + user + " saved to DB");
+        return user;
     }
 
 

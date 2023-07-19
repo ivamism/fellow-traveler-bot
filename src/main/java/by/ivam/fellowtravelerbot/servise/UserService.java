@@ -13,7 +13,7 @@ public interface UserService {
 
     List <User> findAll();
 
-    void registerNewUser(UserDTO userDTO);
+    User registerNewUser(UserDTO userDTO);
 
     void deleteUser(long chatId);
     void updateUserFirstName(long chatId, String firstName);

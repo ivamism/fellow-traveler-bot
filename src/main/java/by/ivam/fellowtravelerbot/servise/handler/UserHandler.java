@@ -4,7 +4,6 @@ import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
@@ -80,11 +79,11 @@ public class UserHandler {
         editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK(),
                 buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(),
                 buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
-
-        userDTO.setChatId(chatId)
-                .setFirstName(incomeMessage.getChat().getFirstName())
-                .setTelegramUserName(userName);
-        userDTOStorageAccess.addUserDTO(chatId, userDTO);
+        userDTOCreator(incomeMessage);
+//        userDTO.setChatId(chatId)
+//                .setFirstName(incomeMessage.getChat().getFirstName())
+//                .setTelegramUserName(userName);
+//        userDTOStorageAccess.addUserDTO(chatId, userDTO);
 
         log.debug("method confirmUserFirstName. Send request for confirmation of registration data");
 
@@ -110,14 +109,12 @@ public class UserHandler {
 
         long chatId = incomeMessage.getChatId();
         String incomeMessageText = incomeMessage.getText();
-
         sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessageText);
+        sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessage.getText());
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-        chatStatusStorageAccess.addUserFirstName(chatId, incomeMessageText);
-
-
-        log.info("method confirmEditedUserFirstName. Send request to confirm edited name");
+//        chatStatusStorageAccess.addUserFirstName(chatId, incomeMessageText);
+        userDTOCreator(incomeMessage, incomeMessageText);
+        log.info("method confirmEditedUserFirstName. got user edited firstname and request to confirm edited name");
         return sendMessage;
     }
 
@@ -126,53 +123,58 @@ public class UserHandler {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-
-//        TODO Изменить в keyboards.settlementsButtonsAttributesCreator() колбэк на сохранение нас.пункта в ДТО 32
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesCreator(adminHandler.getSettlementsList())));
 
-        log.debug("method requestResidence. Call saving to DB user: " + userDTO);
+        log.debug("method requestResidence.");
         return editMessage;
     }
 
-    public void setResidenceToDTO (long chatId, String callbackData){
+    public void setResidenceToDTO(long chatId, String callbackData) {
         userDTOStorageAccess.setResidence(chatId, settlementService.findById(Integer.parseInt(callbackData.substring(32))));
         log.debug("method setResidenceToDTO");
     }
 
     // Save User to DB
-    public EditMessageText userRegistration(Message incomeMessage) {
-        Long chatId = incomeMessage.getChatId();
+    public EditMessageText userRegistrationSuccessMessage(Message incomeMessage) {
 
-        userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
-
+        editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+
+        log.debug("method userRegistrationSuccessMessage.");
+        return editMessage;
+    }
+
+    public User userRegistration(long chatId) {
+        User user = userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
 
         chatStatusStorageAccess.deleteChatStatus(chatId);
         userDTOStorageAccess.deleteUserDTO(chatId);
-        log.debug("method userRegistration. Call saving to DB user: " + userDTO);
-        return editMessage;
+        log.info("method userRegistration. Call saving to DB user: " + user);
+
+        return user;
     }
 
-    public EditMessageText userRegistration(Message incomeMessage, String firstName) {
-        Long chatId = incomeMessage.getChatId();
-        String userName = incomeMessage.getChat().getUserName();
-        userDTO.setChatId(chatId)
-                .setFirstName(firstName)
-                .setTelegramUserName(userName);
 
-        userService.registerNewUser(userDTO);
-
-        editMessage.setMessageId(incomeMessage.getMessageId());
-        editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-
-        chatStatusStorageAccess.deleteChatStatus(chatId);
-        chatStatusStorageAccess.deleteUserFirstName(chatId);
-        log.debug("method userRegistration. Call saving to DB with with edited firstname: " + userDTO);
-        return editMessage;
-    }
+//    public EditMessageText userRegistrationSuccessMessage(Message incomeMessage, String firstName) {
+//        Long chatId = incomeMessage.getChatId();
+//        String userName = incomeMessage.getChat().getUserName();
+//        userDTO.setChatId(chatId)
+//                .setFirstName(firstName)
+//                .setTelegramUserName(userName);
+//
+//        userService.registerNewUser(userDTO);
+//
+//        editMessage.setMessageId(incomeMessage.getMessageId());
+//        editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
+//        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+//
+//        chatStatusStorageAccess.deleteChatStatus(chatId);
+//        chatStatusStorageAccess.deleteUserFirstName(chatId);
+//        log.debug("method userRegistration. Call saving to DB  with edited firstname: " + userDTO);
+//        return editMessage;
+//    }
 
     public EditMessageText denyRegistration(Message incomeMessage) {
         editMessage.setMessageId(incomeMessage.getMessageId());
@@ -187,15 +189,26 @@ public class UserHandler {
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
-
-        String residence = user.getResidence().getName();
-        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName()) + carHandler.prepareCarListToSend(chatId);
+        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.prepareCarListToSend(chatId);
     }
 
+    /*
+    TODO переделать онлайн клавиатуру на динамически создаваемую. параметры - кнопки и колбэки переделать
+     в лист пар
+   */
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(), buttons.getEDIT_USER_NAME_CALLBACK(), buttons.getCHANGE_CAR_TEXT(), buttons.getEDIT_CAR_START_PROCESS_CALLBACK(), buttons.getDELETE_CAR_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getDELETE_USER_START_PROCESS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(),
+                buttons.getEDIT_USER_NAME_CALLBACK(),
+                buttons.getCHANGE_CAR_TEXT(),
+                buttons.getEDIT_CAR_START_PROCESS_CALLBACK(),
+                buttons.getDELETE_CAR_TEXT(),
+                buttons.getREQUEST_DELETE_CAR_CALLBACK(),
+                buttons.getDELETE_ALL_TEXT(),
+                buttons.getDELETE_USER_START_PROCESS_CALLBACK(),
+                buttons.getCANCEL_BUTTON_TEXT(),
+                buttons.getCANCEL_CALLBACK()));
         log.info("send message with stored User's data and keyboard with further action menu");
         return sendMessage;
     }
@@ -251,5 +264,25 @@ public class UserHandler {
         userService.deleteUser(chatId);
     }
 
+    private UserDTO userDTOCreator(Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
+        userDTO.setChatId(chatId)
+                .setFirstName(incomeMessage.getChat().getFirstName())
+                .setTelegramUserName(incomeMessage.getChat().getUserName());
+        userDTOStorageAccess.addUserDTO(chatId, userDTO);
+        log.debug("method userDTOCreator");
 
+        return userDTO;
+    }
+
+    private UserDTO userDTOCreator(Message incomeMessage, String firstname) {
+        Long chatId = incomeMessage.getChatId();
+        userDTO.setChatId(chatId)
+                .setFirstName(firstname)
+                .setTelegramUserName(incomeMessage.getChat().getUserName());
+        userDTOStorageAccess.addUserDTO(chatId, userDTO);
+        log.debug("method userDTOCreator with edited firstname");
+
+        return userDTO;
+    }
 }

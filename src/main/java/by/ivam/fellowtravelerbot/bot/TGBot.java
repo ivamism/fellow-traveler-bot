@@ -9,6 +9,7 @@ import by.ivam.fellowtravelerbot.servise.handler.UserHandler;
 import by.ivam.fellowtravelerbot.servise.handler.StartHandler;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -43,6 +44,8 @@ public class TGBot extends TelegramLongPollingBot {
     Buttons buttons;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
+    @Autowired
+    UserDTOStorageAccess userDTOStorageAccess;
 
     SendMessage message = new SendMessage();
     EditMessageText editMessageText = new EditMessageText();
@@ -262,19 +265,16 @@ public class TGBot extends TelegramLongPollingBot {
 
             } else if (callbackData.equals(buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK())) {   //  request to send list of settlements to choose residence
                 editMessageText = userHandler.requestResidence(incomeMessage);
-            }
-            else if (callbackData.substring(0,31).equals(buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())) {   //  got callback with settlement ID
-//                callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0, 35));
-
+            } else if (callbackData.startsWith(buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())) {   //  got callback with settlement ID
                 userHandler.setResidenceToDTO(chatId, callbackData);
-                editMessageText = userHandler.userRegistration(incomeMessage);
-            }
-            else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
+                userHandler.userRegistration(chatId);
+                editMessageText = userHandler.userRegistrationSuccessMessage(incomeMessage);
+            } else if (callbackData.equals(buttons.getEDIT_REG_DATA_CALLBACK())) {  //  got request of edit of user firstname, call appropriate process
                 editMessageText = userHandler.editUserFirstNameBeforeSaving(incomeMessage);
 
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
-                String firstName = chatStatusStorageAccess.findUserFirstName(chatId);
-                editMessageText = userHandler.userRegistration(incomeMessage, firstName);
+                editMessageText = userHandler.requestResidence(incomeMessage);
+//                editMessageText = userHandler.userRegistrationSuccessMessage(incomeMessage, userDTOStorageAccess.findUserDTO(chatId).getFirstName());
 
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
                 editMessageText = carHandler.quitProcessMessage(incomeMessage);
@@ -396,9 +396,7 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to choose Settlement for DepartureLocation");
                 adminHandler.departureLocationSetSettlement(chatId, callbackData);
                 editMessageText = adminHandler.departureLocationNameRequestMessage(incomeMessage);
-
             }
-
             sendEditMessage(editMessageText);
         }
     }
