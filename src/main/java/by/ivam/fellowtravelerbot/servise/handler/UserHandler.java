@@ -13,10 +13,14 @@ import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -80,12 +84,8 @@ public class UserHandler {
                 buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(),
                 buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
         userDTOCreator(incomeMessage);
-//        userDTO.setChatId(chatId)
-//                .setFirstName(incomeMessage.getChat().getFirstName())
-//                .setTelegramUserName(userName);
-//        userDTOStorageAccess.addUserDTO(chatId, userDTO);
 
-        log.debug("method confirmUserFirstName. Send request for confirmation of registration data");
+        log.debug("method confirmUserFirstName");
 
         return editMessage;
     }
@@ -199,17 +199,28 @@ public class UserHandler {
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        sendMessage.setReplyMarkup(keyboards.fiveButtonsColumnInlineKeyboard(buttons.getCHANGE_NAME_TEXT(),
-                buttons.getEDIT_USER_NAME_CALLBACK(),
-                buttons.getCHANGE_CAR_TEXT(),
-                buttons.getEDIT_CAR_START_PROCESS_CALLBACK(),
-                buttons.getDELETE_CAR_TEXT(),
-                buttons.getREQUEST_DELETE_CAR_CALLBACK(),
-                buttons.getDELETE_ALL_TEXT(),
-                buttons.getDELETE_USER_START_PROCESS_CALLBACK(),
-                buttons.getCANCEL_BUTTON_TEXT(),
-                buttons.getCANCEL_CALLBACK()));
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+//        Create pairs of buttons attributes and add them to list
+        Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
+                buttons.getEDIT_USER_NAME_CALLBACK());
+        Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
+                buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
+        Pair<String, String> deleteCarButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_CAR_TEXT(),
+                buttons.getREQUEST_DELETE_CAR_CALLBACK());
+        Pair<String, String> deleteUserButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_ALL_TEXT(),
+                buttons.getDELETE_USER_START_PROCESS_CALLBACK());
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
+                buttons.getCANCEL_CALLBACK());
+        buttonsAttributesList.add(changeNameButton);
+        buttonsAttributesList.add(changeCarButton);
+        buttonsAttributesList.add(deleteCarButton);
+        buttonsAttributesList.add(deleteUserButton);
+        buttonsAttributesList.add(cancelButton);
+
         log.info("send message with stored User's data and keyboard with further action menu");
+
+
         return sendMessage;
     }
 

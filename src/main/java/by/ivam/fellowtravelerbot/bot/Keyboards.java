@@ -24,6 +24,8 @@ public class Keyboards {
     @Autowired
     Buttons buttons;
 
+    private List<Pair<String, String>> buttonsAttributesList = new ArrayList<>();
+
 // Main menu
 
     public ReplyKeyboardMarkup mainAdminMenu() {
@@ -326,9 +328,10 @@ public class Keyboards {
                 .map(settlement -> Pair.of(settlement.getName(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK() + settlement.getId()))
                 .collect(Collectors.toList());
         buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
+
         return buttonsAttributes;
     }
+
     public List<Pair<String, String>> departureLocationListButtonsAttributesCreator(List<DepartureLocation> departureLocations) {
 
         List<Pair<String, String>> buttonsAttributes = departureLocations
@@ -336,8 +339,31 @@ public class Keyboards {
                 .map(location -> Pair.of(location.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + location.getId()))
                 .collect(Collectors.toList());
         buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
+
         return buttonsAttributes;
+    }
+
+    public List<Pair<String, String>> ListButtonsAttributesCreator(List<DepartureLocation> departureLocations) {
+
+        List<Pair<String, String>> buttonsAttributes = departureLocations
+                .stream()
+                .map(location -> Pair.of(location.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + location.getId()))
+                .collect(Collectors.toList());
+        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+
+        return buttonsAttributes;
+    }
+
+    public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
+        return Pair.of(buttonName, buttonCallback);
+    }
+    public List<Pair<String, String>> buttonAttributesPairsListCreator (Pair<String, String> buttonAttributes) {
+        buttonsAttributesList.add(buttonAttributes);
+        return buttonsAttributesList;
+    }
+    public List<Pair<String, String>> buttonAttributesPairsListCreator (List<Pair<String, String>> buttonsAttributesPairsList, Pair<String, String> buttonAttributes) {
+        buttonsAttributesPairsList.add(buttonAttributes);
+        return buttonsAttributesPairsList;
     }
 }
 
