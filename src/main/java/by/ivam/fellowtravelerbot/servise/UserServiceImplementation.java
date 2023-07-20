@@ -48,7 +48,7 @@ public class UserServiceImplementation implements UserService {
                 .setUserName(userDTO.getTelegramUserName())
                 .setRegisteredAt(LocalDateTime.now())
                 .setResidence(userDTO.getResidence());
-        if (userDTO.getChatId()==785703113) user.setAdmin(true);
+        if (userDTO.getChatId() == 785703113) user.setAdmin(true);
 
         userRepository.save(user);
         log.info("User: " + user + " saved to DB");
@@ -76,5 +76,12 @@ public class UserServiceImplementation implements UserService {
         user.setFirstName(firstName);
         userRepository.save(user);
         log.info("Update User's FirstName to " + firstName);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        log.info("Update User: " + user);
+        return userRepository.save(user);
+
     }
 }

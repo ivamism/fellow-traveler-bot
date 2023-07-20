@@ -193,17 +193,19 @@ public class UserHandler {
     }
 
     /*
-    TODO переделать онлайн клавиатуру на динамически создаваемую. параметры - кнопки и колбэки переделать
-     в лист пар
-   */
+    TODO сделать вывод кнопок редактирования и удаления автомобиля по результатам проверки на их наличие
+     сделать функционал кнопки changeResidenceButton
+    */
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+
 //        Create pairs of buttons attributes and add them to list
         Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
                 buttons.getEDIT_USER_NAME_CALLBACK());
+        Pair<String, String> changeResidenceButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_RESIDENCE_TEXT(),
+                buttons.getEDIT_USER_RESIDENCE_CALLBACK());
         Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
                 buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
         Pair<String, String> deleteCarButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_CAR_TEXT(),
@@ -213,11 +215,12 @@ public class UserHandler {
         Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
                 buttons.getCANCEL_CALLBACK());
         buttonsAttributesList.add(changeNameButton);
+        buttonsAttributesList.add(changeResidenceButton);
         buttonsAttributesList.add(changeCarButton);
         buttonsAttributesList.add(deleteCarButton);
         buttonsAttributesList.add(deleteUserButton);
         buttonsAttributesList.add(cancelButton);
-
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.info("send message with stored User's data and keyboard with further action menu");
 
 

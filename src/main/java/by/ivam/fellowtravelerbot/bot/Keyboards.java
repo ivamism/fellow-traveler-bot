@@ -321,6 +321,22 @@ public class Keyboards {
         return inLineKeyboard;
     }
 
+    public InlineKeyboardMarkup dynamicRangeOneRowInlineKeyboard(List<Pair<String, String>> buttonsAttributes) {
+
+        InlineKeyboardMarkup inLineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        for (Pair<String, String> pair : buttonsAttributes) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(pair.getFirst());
+            button.setCallbackData(pair.getSecond());
+            row.add(button);
+        }
+        rows.add(row);
+        inLineKeyboard.setKeyboard(rows);
+        return inLineKeyboard;
+    }
+
     public List<Pair<String, String>> settlementsButtonsAttributesCreator(List<Settlement> settlements) {
 
         List<Pair<String, String>> buttonsAttributes = settlements
@@ -357,11 +373,13 @@ public class Keyboards {
     public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
         return Pair.of(buttonName, buttonCallback);
     }
-    public List<Pair<String, String>> buttonAttributesPairsListCreator (Pair<String, String> buttonAttributes) {
+
+    public List<Pair<String, String>> buttonAttributesPairsListCreator(Pair<String, String> buttonAttributes) {
         buttonsAttributesList.add(buttonAttributes);
         return buttonsAttributesList;
     }
-    public List<Pair<String, String>> buttonAttributesPairsListCreator (List<Pair<String, String>> buttonsAttributesPairsList, Pair<String, String> buttonAttributes) {
+
+    public List<Pair<String, String>> buttonAttributesPairsListCreator(List<Pair<String, String>> buttonsAttributesPairsList, Pair<String, String> buttonAttributes) {
         buttonsAttributesPairsList.add(buttonAttributes);
         return buttonsAttributesPairsList;
     }

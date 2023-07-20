@@ -25,7 +25,9 @@ public class Buttons {
 
 
     //     Handle User
-    private final String EDIT_USER_NAME_CALLBACK = "EDIT_USER_NAME";
+    private final String EDIT_USER_CALLBACK = "EDIT_USER_CALLBACK";
+    private final String EDIT_USER_NAME_CALLBACK = "EDIT_USER_NAME_CALLBACK";
+    private final String EDIT_USER_RESIDENCE_CALLBACK = "EDIT_USER_RESIDENCE_CALLBACK";
     private final String DELETE_USER_START_PROCESS_CALLBACK = "DELETE_USER_START_PROCESS_CALLBACK";
     private final String DELETE_USER_CONFIRM_CALLBACK = "DELETE_USER_CONFIRM_CALLBACK";
 
@@ -85,6 +87,7 @@ public class Buttons {
     private final String PLATES_TEXT = "Регистрационный номер";
     private final String COMMENTARY_TEXT = "Комментарий";
     private final String CHANGE_NAME_TEXT = "Изменить имя";
+    private final String CHANGE_RESIDENCE_TEXT = "Изменить место жительство";
     private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 

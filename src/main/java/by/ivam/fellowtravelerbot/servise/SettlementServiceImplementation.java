@@ -37,8 +37,9 @@ public class SettlementServiceImplementation implements SettlementService {
     }
 
     @Override
-    public Settlement updateSettlement(int id) {
-        return null;
+    public Settlement updateSettlement(Settlement settlement) {
+        log.info("Update settlement: " + settlement);
+        return settlementRepository.save(settlement);
     }
 
     @Override

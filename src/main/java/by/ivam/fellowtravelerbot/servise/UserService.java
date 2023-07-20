@@ -17,5 +17,5 @@ public interface UserService {
 
     void deleteUser(long chatId);
     void updateUserFirstName(long chatId, String firstName);
-
+User updateUser(User user);
 }
