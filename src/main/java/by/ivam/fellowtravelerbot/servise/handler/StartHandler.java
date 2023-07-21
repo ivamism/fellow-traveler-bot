@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Service
@@ -26,6 +27,7 @@ public class StartHandler {
     @Autowired
     UserHandler userHandler;
     SendMessage message = new SendMessage();
+    EditMessageText editMessage = new EditMessageText();
 
 
     public boolean checkRegistration(long chatId) {
@@ -55,5 +57,11 @@ public class StartHandler {
         message.setChatId(chatId);
         message.setText(messages.getNO_REGISTRATION_MESSAGE());
         return message;
+    }
+    public EditMessageText noRegistrationEditMessage(long chatId) {
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(editMessage.getMessageId());
+        editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
+        return editMessage;
     }
 }

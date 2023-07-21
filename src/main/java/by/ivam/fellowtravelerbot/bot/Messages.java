@@ -42,6 +42,7 @@ public class Messages {
     private final String CONFIRM_FIRSTNAME_MESSAGE = "Вы ввели имя - ";
     private final String EDIT_USER_FIRSTNAME_MESSAGE = "Введите имя, под которым Вы хотите, чтобы Вас видели другие пользователи.\n";
     private final String EDIT_USER_FIRSTNAME_SUCCESS_MESSAGE = "Ваше текущее имя:\n%s\n";
+    private final String EDIT_USER_RESIDENCE_SUCCESS_MESSAGE = "Ваше текущее место жительства:\n%s\n";
 
     //    Handle User
     private final String USER_DATA = "Данные пользователя:\n\n  Id: %d\n  Имя: %s\n  ТГ имя: %s\n  Место жительства: %s \n\nАвтомобили:\n";

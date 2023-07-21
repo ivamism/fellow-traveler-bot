@@ -33,6 +33,7 @@ public class Buttons {
 
 
     //    Add a Car process
+    private final String ADD_CAR_CALLBACK = "ADD_CAR_CALLBACK";
     private final String ADD_CAR_START_CALLBACK = "ADD_CAR_START";
     private final String ADD_CAR_START_DENY_CALLBACK = "ADD_CAR_START_DENY";
     private final String ADD_CAR_SKIP_COMMENT_CALLBACK = "ADD_CAR_NO_COMMENT";
@@ -88,6 +89,7 @@ public class Buttons {
     private final String COMMENTARY_TEXT = "Комментарий";
     private final String CHANGE_NAME_TEXT = "Изменить имя";
     private final String CHANGE_RESIDENCE_TEXT = "Изменить место жительство";
+    private final String ADD_CAR_TEXT = "Добавить автомобиль";
     private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
 

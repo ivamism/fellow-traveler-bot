@@ -118,7 +118,7 @@ public class UserHandler {
         return sendMessage;
     }
 
-    public EditMessageText requestResidence(Message incomeMessage) {
+    public EditMessageText requestResidenceMessage(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
@@ -194,35 +194,44 @@ public class UserHandler {
 
     /*
     TODO сделать вывод кнопок редактирования и удаления автомобиля по результатам проверки на их наличие
-     сделать функционал кнопки changeResidenceButton
     */
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-
-//        Create pairs of buttons attributes and add them to list
+        //        Create pairs of buttons attributes and add them to list
         Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
                 buttons.getEDIT_USER_NAME_CALLBACK());
         Pair<String, String> changeResidenceButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_RESIDENCE_TEXT(),
                 buttons.getEDIT_USER_RESIDENCE_CALLBACK());
         Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
                 buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
+        Pair<String, String> addCarButton = keyboards.buttonAttributesPairCreator(buttons.getADD_CAR_TEXT(),
+                buttons.getADD_CAR_CALLBACK());
         Pair<String, String> deleteCarButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_CAR_TEXT(),
                 buttons.getREQUEST_DELETE_CAR_CALLBACK());
         Pair<String, String> deleteUserButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_ALL_TEXT(),
                 buttons.getDELETE_USER_START_PROCESS_CALLBACK());
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                buttons.getCANCEL_CALLBACK());
-        buttonsAttributesList.add(changeNameButton);
-        buttonsAttributesList.add(changeResidenceButton);
-        buttonsAttributesList.add(changeCarButton);
-        buttonsAttributesList.add(deleteCarButton);
-        buttonsAttributesList.add(deleteUserButton);
-        buttonsAttributesList.add(cancelButton);
+//        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
+//                buttons.getCANCEL_CALLBACK());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+if (carHandler.getUsersCarsQuantity(chatId)==0){
+    buttonsAttributesList.add(changeNameButton);
+    buttonsAttributesList.add(changeResidenceButton);
+    buttonsAttributesList.add(addCarButton);
+    buttonsAttributesList.add(deleteUserButton);
+    //        buttonsAttributesList.add(cancelButton);
+} else {
+    buttonsAttributesList.add(changeNameButton);
+    buttonsAttributesList.add(changeResidenceButton);
+    if (carHandler.getUsersCarsQuantity(chatId)<2) buttonsAttributesList.add(addCarButton);
+    buttonsAttributesList.add(changeCarButton);
+    buttonsAttributesList.add(deleteCarButton);
+    buttonsAttributesList.add(deleteUserButton);
+//        buttonsAttributesList.add(cancelButton);
+}
+
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.info("send message with stored User's data and keyboard with further action menu");
-
 
         return sendMessage;
     }
@@ -251,6 +260,31 @@ public class UserHandler {
         sendMessage.setText(String.format(messages.getEDIT_USER_FIRSTNAME_SUCCESS_MESSAGE(), firstName) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return sendMessage;
+    }
+
+    public EditMessageText editUserResidenceRequestMessage(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.editSettlementsButtonsAttributesCreator(adminHandler.getSettlementsList())));
+
+        log.debug("method editUserResidenceRequestMessage");
+        return editMessage;
+    }
+
+    public User editUserSetResidence(long chatId, String callbackData) {
+        User user = userService.findUserById(chatId);
+        user.setResidence(adminHandler.getSettlementService().findById(Integer.parseInt(callbackData.substring(28))));
+        return userService.updateUser(user);
+    }
+
+    public EditMessageText editUserResidenceSuccessMessage(long chatId, User user) {
+
+        editMessage.setChatId(chatId);
+        editMessage.setText(String.format(messages.getEDIT_USER_RESIDENCE_SUCCESS_MESSAGE(), user.getResidence().getName()) + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        return editMessage;
     }
 
 //    Delete User

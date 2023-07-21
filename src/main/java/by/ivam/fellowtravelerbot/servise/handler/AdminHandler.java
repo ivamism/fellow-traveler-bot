@@ -145,17 +145,7 @@ public class AdminHandler {
         return settlementService.findAll();
     }
 
-//    private List<Pair<String, String>> settlementListButtonsAttributesCreator() {
-//
-//        List<Pair<String, String>> buttonsAttributes = settlementService.findAll()
-//                .stream()
-//                .map(settlement -> Pair.of(settlement.getName(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK() + settlement.getId()))
-//                .collect(Collectors.toList());
-//        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-//        log.debug("AdminHandler method settlementListButtonsAttributesCreator: create list of buttons attributes");
-//        return buttonsAttributes;
-//
-//    }
+
 
     private String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
