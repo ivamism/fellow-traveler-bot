@@ -129,7 +129,6 @@ public class TGBot extends TelegramLongPollingBot {
                     log.debug("got request to add new DepartureLocation");
                     if (adminHandler.checkIsAdmin(chatId)) {
                         message = adminHandler.departureLocationSettlementRequestMessage(chatId);
-//                        adminHandler.departureLocationSettlementRequestMessage(chatId);
                     } else {
                         log.debug("user " + chatId + " not an Admin");
                         unknownCommandReceived(chatId);

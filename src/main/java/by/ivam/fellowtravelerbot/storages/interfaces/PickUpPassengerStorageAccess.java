@@ -5,8 +5,9 @@ import by.ivam.fellowtravelerbot.DTO.HitchRideRequestDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public interface HitchRideStorageAccess {
-    void addHitchRideDTO(long chatId, HitchRideRequestDTO hitchRideRequestDTO);
+public interface PickUpPassengerStorageAccess {
+
+    void addPickUpPassengerDTO(long chatId, HitchRideRequestDTO hitchRideRequestDTO);
 
     void setSettlement(long chatId, int id);
 
@@ -15,6 +16,4 @@ public interface HitchRideStorageAccess {
     void setDate(long chatId, LocalDate departureDate);
 
     void setTime(long chatId, LocalTime departureTime);
-
-
 }

@@ -6,10 +6,4 @@ public interface ChatStatusStorageAccess {
     void deleteChatStatus(Long chatId);
     String findChatStatus(Long chatId);
 
-    void addUserFirstName(Long chatId, String chatStatus);
-    void deleteUserFirstName(Long chatId);
-    String findUserFirstName(Long chatId);
-
-
-
 }

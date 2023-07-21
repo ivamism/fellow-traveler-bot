@@ -19,11 +19,6 @@ public class PickUpPassengerRequest {
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "direction")
     private Direction direction;
@@ -34,11 +29,11 @@ public class PickUpPassengerRequest {
     @ManyToOne
     @JoinColumn(name = "departure_location_id")
     private DepartureLocation departureLocation;
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
 
     LocalDate departureDate;
     LocalTime departureTime;
     boolean isActive;
-
-
-
-}
+    }

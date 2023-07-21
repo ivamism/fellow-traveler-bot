@@ -140,7 +140,6 @@ public class CarHandler {
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
     }
 
-
     public SendMessage requestPlateNumber(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
@@ -177,7 +176,6 @@ public class CarHandler {
         }
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
-
 
     public EditMessageText checkDataBeforeSaveCarMessageSkipComment(Message incomeMessage) {
         CarDTO car = addCarStorageAccess.findCarDTO(incomeMessage.getChatId());
@@ -230,7 +228,6 @@ public class CarHandler {
         log.info("CarHandler method saveCarMessage: message about success add car");
         return editMessage;
     }
-
 
     //         Delete cars
     private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
@@ -297,7 +294,7 @@ public class CarHandler {
     }
 
     public void deleteTwoCars(long chatId) {
-//        Todo переделать на удаление через отправку массива carId
+//        Todo переделать на удаление через отправку листа carId
         log.debug("CarHandler: method deleteAll: call CarService to delete car by Id" + chatId);
 //        carService.deleteAllUsersCars(chatId);
         deleteSecondCar(chatId);
@@ -332,7 +329,6 @@ public class CarHandler {
         log.debug("CarHandler method deleteCarMessage: send message about cars deletion");
         return editMessage;
     }
-
 
     // Edit car
     public EditMessageText editCarBeforeSavingStartMessage(Message incomeMessage) {

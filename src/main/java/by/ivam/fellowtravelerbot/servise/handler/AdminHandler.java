@@ -49,10 +49,8 @@ public class AdminHandler {
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
 
-
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
-
 
     public boolean checkIsAdmin(long chatId) {
         log.debug("AdminHandler method checkIsAdmin");
@@ -144,8 +142,6 @@ public class AdminHandler {
     public List<Settlement> getSettlementsList() {
         return settlementService.findAll();
     }
-
-
 
     private String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);

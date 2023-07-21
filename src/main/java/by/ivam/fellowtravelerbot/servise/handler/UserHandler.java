@@ -56,9 +56,13 @@ public class UserHandler {
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
 
-    //  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
-//  TODO Реализовать процесс возврата к регистрации
-//    TODO разделить функциональные действия и отправку сообщений
+    /*  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
+TODO Реализовать процесс возврата к регистрации
+TODO разделить функциональные действия и отправку сообщений
+  Переделать онлайн клавиатуры на прием листа пар
+
+     */
+
 
     // Start registration User process
     public SendMessage startRegistration(long chatId) {
@@ -90,7 +94,6 @@ public class UserHandler {
         return editMessage;
     }
 
-
     //    Request to send users choice of userFirstName
     public EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
 
@@ -112,7 +115,6 @@ public class UserHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessage.getText());
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
-//        chatStatusStorageAccess.addUserFirstName(chatId, incomeMessageText);
         userDTOCreator(incomeMessage, incomeMessageText);
         log.info("method confirmEditedUserFirstName. got user edited firstname and request to confirm edited name");
         return sendMessage;
@@ -156,26 +158,6 @@ public class UserHandler {
         return user;
     }
 
-
-//    public EditMessageText userRegistrationSuccessMessage(Message incomeMessage, String firstName) {
-//        Long chatId = incomeMessage.getChatId();
-//        String userName = incomeMessage.getChat().getUserName();
-//        userDTO.setChatId(chatId)
-//                .setFirstName(firstName)
-//                .setTelegramUserName(userName);
-//
-//        userService.registerNewUser(userDTO);
-//
-//        editMessage.setMessageId(incomeMessage.getMessageId());
-//        editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
-//        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-//
-//        chatStatusStorageAccess.deleteChatStatus(chatId);
-//        chatStatusStorageAccess.deleteUserFirstName(chatId);
-//        log.debug("method userRegistration. Call saving to DB  with edited firstname: " + userDTO);
-//        return editMessage;
-//    }
-
     public EditMessageText denyRegistration(Message incomeMessage) {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getDENY_REGISTRATION_MESSAGE());
@@ -192,9 +174,6 @@ public class UserHandler {
         return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.prepareCarListToSend(chatId);
     }
 
-    /*
-    TODO сделать вывод кнопок редактирования и удаления автомобиля по результатам проверки на их наличие
-    */
     public SendMessage sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));

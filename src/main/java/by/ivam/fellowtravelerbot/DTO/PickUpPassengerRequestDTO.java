@@ -1,9 +1,6 @@
 package by.ivam.fellowtravelerbot.DTO;
 
-import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
-import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.model.User;
+import by.ivam.fellowtravelerbot.model.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -18,10 +15,10 @@ public class PickUpPassengerRequestDTO {
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "direction")
+    private Direction direction;
 
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
     @ManyToOne
     @JoinColumn(name = "settlement_id")
     private Settlement settlement;
@@ -29,9 +26,10 @@ public class PickUpPassengerRequestDTO {
     @ManyToOne
     @JoinColumn(name = "departure_location_id")
     private DepartureLocation departureLocation;
-
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
     LocalDate departureDate;
     LocalTime departureTime;
-    boolean isActive;
 
 }

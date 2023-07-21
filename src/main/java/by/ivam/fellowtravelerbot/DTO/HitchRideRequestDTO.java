@@ -27,12 +27,7 @@ public class HitchRideRequestDTO {
     @JoinColumn(name = "settlement_id")
     private Settlement settlement;
 
-    @ManyToOne
-    @JoinColumn(name = "departure_location_id")
-    private DepartureLocation departureLocation;
-
     LocalDate departureDate;
     LocalTime departureTime;
-    boolean isActive;
 
 }
