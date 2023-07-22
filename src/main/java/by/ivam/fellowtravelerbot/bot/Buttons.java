@@ -65,10 +65,17 @@ public class Buttons {
     private final String EDIT_FIRST_CAR_EDIT_COMMENTARY_CALLBACK = "EDIT_FIRST_CAR_EDIT_COMMENTARY_CALLBACK";
     private final String EDIT_SECOND_CAR_EDIT_COMMENTARY_CALLBACK = "EDIT_SECOND_CAR_EDIT_COMMENTARY_CALLBACK";
 
-//    AdminHandler
+    //    AdminHandler
     private final String ADD_LOCATION_GET_SETTLEMENT_CALLBACK = "ADD_LOCATION_GET_SETTLEMENT_CALLBACK";
 
-//
+    // PickUpPassengerRequestHandler
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_CALLBACK";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_CALLBACK";
+
+
 
     // Buttons Names
 
@@ -79,6 +86,7 @@ public class Buttons {
     private final String CANCEL_BUTTON_TEXT = "Отменить";
     private final String SEND_BUTTON_TEXT = "Отправить";
     private final String SKIP_STEP_TEXT = "Пропустить";
+    private final String ANOTHER_TEXT = "Другой";
     private final String DELETE_TEXT = "Удалить";
     private final String DELETE_ALL_TEXT = "Удалить всё";
     private final String FIRST_TEXT = String.valueOf(1);
@@ -88,10 +96,12 @@ public class Buttons {
     private final String PLATES_TEXT = "Регистрационный номер";
     private final String COMMENTARY_TEXT = "Комментарий";
     private final String CHANGE_NAME_TEXT = "Изменить имя";
-    private final String CHANGE_RESIDENCE_TEXT = "Изменить место жительство";
+    private final String CHANGE_RESIDENCE_TEXT = "Изменить место жительства";
     private final String ADD_CAR_TEXT = "Добавить автомобиль";
     private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
+    private final String TOWARD_MINSK_TEXT = "В Минск";
+    private final String FROM_MINSK_TEXT = "Из Минска";
 
     //    Main menu buttons
     private final String MAIN_FIND_CAR = "Найти попутку";

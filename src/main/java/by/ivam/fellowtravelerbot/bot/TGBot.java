@@ -1,16 +1,9 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.config.BotConfig;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
-import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.model.User;
-import by.ivam.fellowtravelerbot.servise.handler.AdminHandler;
-import by.ivam.fellowtravelerbot.servise.handler.CarHandler;
-import by.ivam.fellowtravelerbot.servise.handler.UserHandler;
-import by.ivam.fellowtravelerbot.servise.handler.StartHandler;
-import by.ivam.fellowtravelerbot.model.Car;
+import by.ivam.fellowtravelerbot.model.*;
+import by.ivam.fellowtravelerbot.servise.handler.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
-import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -46,7 +39,7 @@ public class TGBot extends TelegramLongPollingBot {
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
-    UserDTOStorageAccess userDTOStorageAccess;
+    PickUpPassengerHandler pickUpPassengerHandler;
 
     SendMessage message = new SendMessage();
     EditMessageText editMessageText = new EditMessageText();
@@ -110,6 +103,7 @@ public class TGBot extends TelegramLongPollingBot {
                         message = startHandler.noRegistrationMessage(chatId);
                     } else {
                         log.debug("got request to find a fellow");
+                        message = pickUpPassengerHandler.startCreatePickUpPassengerRequestProcess(chatId);
                     }
                 }
                 case "Помощь" -> {
@@ -274,7 +268,6 @@ public class TGBot extends TelegramLongPollingBot {
 
             } else if (callbackData.equals(buttons.getNAME_TO_CONFIRM_CALLBACK())) {  //  got confirmation of correctness of edited user firstname, call saving to DB
                 editMessageText = userHandler.requestResidenceMessage(incomeMessage);
-//                editMessageText = userHandler.userRegistrationSuccessMessage(incomeMessage, userDTOStorageAccess.findUserDTO(chatId).getFirstName());
 
             } else if (callbackData.equals(buttons.getADD_CAR_START_DENY_CALLBACK())) {  //  deny add car process
                 editMessageText = carHandler.quitProcessMessage(incomeMessage);
@@ -303,7 +296,7 @@ public class TGBot extends TelegramLongPollingBot {
 
             } else if (callbackData.equals(buttons.getCANCEL_CALLBACK())) { //  callback to exit delete car process
                 log.info("get callback to exit delete car process");
-                editMessageText = carHandler.denyDeleteCarMessage(incomeMessage);
+                editMessageText = startHandler.quitProcessMessage(incomeMessage);
 
             } else if (callbackData.equals(buttons.getREQUEST_DELETE_CAR_CALLBACK())) { //  callback to start delete car process
                 log.info("get callback to exit delete car process");
@@ -413,7 +406,29 @@ public class TGBot extends TelegramLongPollingBot {
                 log.info("callback to choose Settlement for DepartureLocation");
                 adminHandler.departureLocationSetSettlement(chatId, callbackData);
                 editMessageText = adminHandler.departureLocationNameRequestMessage(incomeMessage);
+            } else if (callbackData.equals(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_CALLBACK())) { //  callback to create pickup passenger request
+                log.info("callback to create pickup passenger request");
+                pickUpPassengerHandler.createPickUpPassengerRequestDTO(chatId);
+                editMessageText = pickUpPassengerHandler.createPickUpPassengerRequestProcessChoseDirectionMessage(incomeMessage);
+            } else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
+                log.info("callback to choose Settlement for DepartureLocation");
+                if (callbackData.substring(50).equals(String.valueOf(Direction.TOWARDS_MINSK))) {
+                    pickUpPassengerHandler.createPickUpPassengerRequestProcessSetDirection(chatId, Direction.TOWARDS_MINSK);
+                    editMessageText =  pickUpPassengerHandler.createPickUpPassengerRequestProcessChooseResidenceToMinskMessage(incomeMessage);
+                } else if (callbackData.substring(50).equals(String.valueOf(Direction.FROM_MINSK))) {
+                    pickUpPassengerHandler.createPickUpPassengerRequestProcessSetDirection(chatId, Direction.FROM_MINSK);
+                    pickUpPassengerHandler.createPickUpPassengerRequestProcessSetSettlement(chatId, "Минск");
+// TODO ветка из минска сеттлмент уже сохранен
+                }
+
+
+            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK())) { //  callback to set settlement
+                log.info("callback to set settlement");
+                Settlement settlement = pickUpPassengerHandler.getSettlementFromCallback(callbackData);
+                pickUpPassengerHandler.createPickUpPassengerRequestProcessSetSettlement(chatId,settlement);
+                editMessageText = pickUpPassengerHandler.createPickUpPassengerRequestProcessChooseDepartureLocationMessage(incomeMessage);
             }
+//
             sendEditMessage(editMessageText);
         }
     }

@@ -18,7 +18,7 @@ public class DepartureLocationStorageAccessImplementation implements DepartureLo
 
     @Override
     public void addLocation(long chatId, DepartureLocationDTO locationDTO) {
-        storage.addDepartureLocationStorage.put(chatId, locationDTO);
+        storage.departureLocationDTOStorage.put(chatId, locationDTO);
         log.debug("put location " + locationDTO + ", chatId: " + chatId + " to storage");
     }
 
@@ -34,13 +34,13 @@ public class DepartureLocationStorageAccessImplementation implements DepartureLo
 
     @Override
     public void deleteLocation(long chatId) {
-        storage.addDepartureLocationStorage.remove(chatId);
+        storage.departureLocationDTOStorage.remove(chatId);
         log.debug("remove locationDTO from storage");
     }
 
     @Override
     public DepartureLocationDTO findDTO(long chatId) {
-        DepartureLocationDTO locationDTO = Optional.ofNullable(storage.addDepartureLocationStorage.get(chatId)).orElseThrow();
+        DepartureLocationDTO locationDTO = Optional.ofNullable(storage.departureLocationDTOStorage.get(chatId)).orElseThrow();
         log.debug("get locationDTO from storage " + locationDTO);
         return locationDTO;
     }

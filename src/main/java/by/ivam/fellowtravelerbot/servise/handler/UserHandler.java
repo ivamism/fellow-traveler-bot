@@ -125,7 +125,7 @@ TODO разделить функциональные действия и отп�
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesCreator(adminHandler.getSettlementsList())));
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList())));
 
         log.debug("method requestResidence.");
         return editMessage;

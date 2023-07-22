@@ -15,14 +15,12 @@ import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /*
@@ -95,7 +93,7 @@ public class AdminHandler {
     public SendMessage departureLocationSettlementRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesCreator(getSettlementsList())));
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(getSettlementsList())));
         log.debug("AdminHandler method departureLocationSettlementRequestMessage");
         return sendMessage;
     }

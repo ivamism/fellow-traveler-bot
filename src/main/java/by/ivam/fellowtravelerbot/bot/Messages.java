@@ -98,11 +98,18 @@ public class Messages {
     private final String EDIT_CAR_SUCCESS_PREFIX_MESSAGE = "Изменения успешно внесены\n";
 
 
-// AdminHandler
+    // AdminHandler
     private final String ADD_SETTLEMENT_NAME_MESSAGE = "Впишите название населенного пункта";
     private final String ADD_SETTLEMENT_SUCCESS_MESSAGE = "Населенный пункт:\n\n  Id: %d\n  Название: %s\n  успешно сохранен";
     private final String ADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE = "Выберите населенный пункт";
     private final String ADD_LOCATION_NAME_MESSAGE = "Впишите название места выезда";
     private final String ADD_LOCATION_SUCCESS_MESSAGE = "Место выезда:\n\n  Id: %d\n  Название: %s\n  Населенный пункт: %s\n  успешно сохранено";
+
+    //    PickUpPassengerRequest
+//    Creation new request
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE = "Выберите населенный пункт";
+    private final String CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
 
 }

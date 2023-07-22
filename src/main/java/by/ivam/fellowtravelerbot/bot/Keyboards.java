@@ -6,6 +6,7 @@ Main menu and inline keyboards
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Data
+@Log4j
 public class Keyboards {
     @Autowired
     Buttons buttons;
@@ -154,6 +156,42 @@ public class Keyboards {
         return markupInLine;
     }
 
+    // Inline keyboard three buttons - horizontal arrangement
+    public InlineKeyboardMarkup twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(List<Pair<String, String>> buttonsAttributes) {
+
+            InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+            if (buttonsAttributes.size()==3) {
+                List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+                List<InlineKeyboardButton> firstRow = new ArrayList<>();
+                List<InlineKeyboardButton> secondRow = new ArrayList<>();
+
+                InlineKeyboardButton firstButton = new InlineKeyboardButton();
+                firstButton.setText(buttonsAttributes.get(0).getFirst());
+                firstButton.setCallbackData(buttonsAttributes.get(0).getSecond());
+
+                InlineKeyboardButton secondButton = new InlineKeyboardButton();
+                secondButton.setText(buttonsAttributes.get(1).getFirst());
+                secondButton.setCallbackData(buttonsAttributes.get(1).getSecond());
+
+                InlineKeyboardButton thirdButton = new InlineKeyboardButton();
+                thirdButton.setText(buttonsAttributes.get(2).getFirst());
+                thirdButton.setCallbackData(buttonsAttributes.get(2).getSecond());
+
+                firstRow.add(firstButton);
+                firstRow.add(secondButton);
+                secondRow.add(thirdButton);
+
+                rows.add(firstRow);
+                rows.add(secondRow);
+
+                markupInLine.setKeyboard(rows);
+            }
+            else {
+                log.error("Incorrect List of  buttonsAttributes. Keyboard not created");
+                markupInLine = null;
+            }
+        return markupInLine;
+    }
 
     //    Inline keyboard two buttons - vertical arrangement
     public InlineKeyboardMarkup twoButtonsColumnInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {
@@ -337,7 +375,7 @@ public class Keyboards {
         return inLineKeyboard;
     }
 
-    public List<Pair<String, String>> settlementsButtonsAttributesCreator(List<Settlement> settlements) {
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements) {
 
         List<Pair<String, String>> buttonsAttributes = settlements
                 .stream()

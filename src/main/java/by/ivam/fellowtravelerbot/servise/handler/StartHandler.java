@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.bot.Buttons;
 import by.ivam.fellowtravelerbot.bot.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.servise.UserService;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class StartHandler {
     Buttons buttons;
     @Autowired
     UserHandler userHandler;
+    @Autowired
+    ChatStatusStorageAccess chatStatusStorageAccess;
     SendMessage message = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -62,6 +65,16 @@ public class StartHandler {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(editMessage.getMessageId());
         editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
+        return editMessage;
+    }
+    public EditMessageText quitProcessMessage(Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
+        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setChatId(chatId);
+        editMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        log.info("method quitProcessMessage: Quit the process");
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         return editMessage;
     }
 }

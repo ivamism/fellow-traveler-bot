@@ -22,9 +22,25 @@ public class SettlementServiceImplementation implements SettlementService {
     }
 
     @Override
+    public Settlement findByName(String name) {
+        log.debug("find Settlement by name");
+        return settlementRepository.findByName(name).orElseThrow();
+    }
+
+    @Override
     public List<Settlement> findAll() {
         log.debug("get list of Settlements from DB");
         return settlementRepository.findAll();
+    }
+
+    @Override
+    public List<Settlement> findAllExcept(String name) {
+        return settlementRepository.findByNameNotLike(name);
+    }
+
+    @Override
+    public List<Settlement> findAllExcept(String name, String name1) {
+        return settlementRepository.findByNameNotLikeIgnoreCaseAndNameNotLikeIgnoreCase(name, name1);
     }
 
     @Override

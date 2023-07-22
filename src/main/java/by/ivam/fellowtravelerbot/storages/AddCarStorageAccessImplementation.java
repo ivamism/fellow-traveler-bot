@@ -19,19 +19,19 @@ public class AddCarStorageAccessImplementation implements AddCarStorageAccess {
 
     @Override
     public void addCarDTO(Long chatId, CarDTO carDTO) {
-        storage.addCarStorage.put(chatId, carDTO);
+        storage.CarDTOStorage.put(chatId, carDTO);
         log.debug("add carDTO to storage " + carDTO + " with userId " + chatId);
     }
 
     @Override
     public void deleteCarDTO(Long chatId) {
-        storage.addCarStorage.remove(chatId);
+        storage.CarDTOStorage.remove(chatId);
         log.debug("remove carDTO from storage");
     }
 
     @Override
     public CarDTO findCarDTO(Long chatId) {
-        CarDTO carDTO = Optional.ofNullable(storage.addCarStorage.get(chatId)).orElseThrow();
+        CarDTO carDTO = Optional.ofNullable(storage.CarDTOStorage.get(chatId)).orElseThrow();
         log.debug("get carDTO from storage " + carDTO);
         return carDTO;
     }

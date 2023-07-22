@@ -31,5 +31,4 @@ public class PickUpPassengerRequestDTO {
     private Car car;
     LocalDate departureDate;
     LocalTime departureTime;
-
 }

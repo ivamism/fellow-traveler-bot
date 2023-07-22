@@ -15,36 +15,19 @@ public class ChatStatusStorageAccessImplementation implements ChatStatusStorageA
 
     @Override
     public void addChatStatus(Long chatId, String chatStatus) {
-        storage.activeChatsStorage.put(chatId, chatStatus);
+        storage.chatsStatusStorage.put(chatId, chatStatus);
         log.debug("add messageId " + chatId + " and status: " + chatStatus + " to storage which support step by step processes");
     }
 
     @Override
     public void deleteChatStatus(Long chatId) {
-        storage.activeChatsStorage.remove(chatId);
+        storage.chatsStatusStorage.remove(chatId);
         log.debug("Remove chatStatus from storage");
     }
 
     @Override
     public String findChatStatus(Long chatId) {
-        return storage.activeChatsStorage.getOrDefault(chatId, String.valueOf(ChatStatus.NO_STATUS));
-    }
-
-    @Override
-    public void addUserFirstName(Long chatId, String UserFirstName) {
-        storage.userNamesStorage.put(chatId, UserFirstName);
-        log.debug("add edited UserFirstName to storage");
-    }
-
-    @Override
-    public void deleteUserFirstName(Long chatId) {
-        storage.userNamesStorage.remove(chatId);
-        log.debug("Remove UserFirstName from storage");
-    }
-
-    @Override
-    public String findUserFirstName(Long chatId) {
-        return storage.userNamesStorage.getOrDefault(chatId, "Имя этого пользователя отсутствует в хранилище");
+        return storage.chatsStatusStorage.getOrDefault(chatId, String.valueOf(ChatStatus.NO_STATUS));
     }
 
 }
