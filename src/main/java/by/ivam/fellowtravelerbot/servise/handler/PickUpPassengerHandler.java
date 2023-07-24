@@ -47,7 +47,7 @@ public class PickUpPassengerHandler {
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
-    public SendMessage startCreatePickUpPassengerRequestProcess(long chatId) {
+    public SendMessage startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE());
 
@@ -68,7 +68,7 @@ public class PickUpPassengerHandler {
         log.debug("method: createPickUpPassengerRequestDTO - create DTO " + pickUpPassengerRequestDTO + " and save it in storage");
     }
 
-    public EditMessageText createPickUpPassengerRequestProcessChoseDirectionMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_MESSAGE());
 
@@ -86,12 +86,12 @@ public class PickUpPassengerHandler {
     }
 
 
-    public void createPickUpPassengerRequestProcessSetDirection(long chatId, Direction direction) {
+    public void createNewRequestSetDirection(long chatId, Direction direction) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
         pickUpPassengerStorageAccess.setDirection(chatId, direction);
     }
 
-    public EditMessageText createPickUpPassengerRequestProcessChooseResidenceToMinskMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChooseResidenceToMinskMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
@@ -110,18 +110,18 @@ public class PickUpPassengerHandler {
     }
 //    todo создать метод выбора места - не резиденс
 
-    public void createPickUpPassengerRequestProcessSetSettlement(long chatId, Settlement settlement) {
+    public void createNewRequestSetSettlement(long chatId, Settlement settlement) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
         pickUpPassengerStorageAccess.setSettlement(chatId, settlement);
 
     }
 
-    public void createPickUpPassengerRequestProcessSetSettlement(long chatId, String settlementName) {
+    public void createNewRequestSetSettlement(long chatId, String settlementName) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
 
         pickUpPassengerStorageAccess.setSettlement(chatId, settlementService.findByName(settlementName));
     }
-    public EditMessageText createPickUpPassengerRequestProcessChooseDepartureLocationMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
 
