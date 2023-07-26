@@ -122,7 +122,6 @@ public class PickUpPassengerHandler {
 
         return editMessage;
     }
-//    todo создать метод выбора места - не резиденс
 
     public void createNewRequestSetSettlement(long chatId, Settlement settlement) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");

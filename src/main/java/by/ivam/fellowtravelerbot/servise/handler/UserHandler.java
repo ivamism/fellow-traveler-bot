@@ -309,7 +309,6 @@ if (carHandler.getUsersCarsQuantity(chatId)==0){
                 .setTelegramUserName(incomeMessage.getChat().getUserName());
         userDTOStorageAccess.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator with edited firstname");
-
         return userDTO;
     }
 }
