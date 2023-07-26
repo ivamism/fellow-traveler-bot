@@ -418,15 +418,18 @@ public class TGBot extends TelegramLongPollingBot {
                 } else if (callbackData.substring(50).equals(String.valueOf(Direction.FROM_MINSK))) {
                     pickUpPassengerHandler.createNewRequestSetDirection(chatId, Direction.FROM_MINSK);
                     pickUpPassengerHandler.createNewRequestSetSettlement(chatId, "Минск");
-// TODO ветка из минска сеттлмент уже сохранен
                 }
+// TODO ветка из минска сеттлмент уже сохранен
 
-
-            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK())) { //  callback to set settlement
+            } else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK())) { //  callback to set settlement
                 log.info("callback to set settlement");
                 Settlement settlement = pickUpPassengerHandler.getSettlementFromCallback(callbackData);
                 pickUpPassengerHandler.createNewRequestSetSettlement(chatId,settlement);
                 editMessageText = pickUpPassengerHandler.createNewRequestChooseDepartureLocationMessage(incomeMessage);
+            } else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())) { //  callback to chose settlement different from residence
+                log.info("callback to chose settlement different from residence");
+
+                editMessageText = pickUpPassengerHandler.createNewRequestChooseAnotherSettlementToMinskMessage(incomeMessage);
             }
 
             sendEditMessage(editMessageText);

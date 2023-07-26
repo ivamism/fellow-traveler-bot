@@ -104,7 +104,21 @@ public class PickUpPassengerHandler {
         buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
                 buttons.getCANCEL_CALLBACK())); //cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createPickUpPassengerRequestProcessChoseDirectionMessage");
+        log.debug("method: createNewRequestChooseResidenceToMinskMessage");
+
+        return editMessage;
+    }
+
+    public EditMessageText createNewRequestChooseAnotherSettlementToMinskMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
+        String callbackData = buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK();
+
+        String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
+        List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
+
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(settlementList,callbackData)));
+        log.debug("method: createNewRequestChooseResidenceToMinskMessage");
 
         return editMessage;
     }
@@ -123,16 +137,16 @@ public class PickUpPassengerHandler {
     }
     public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
+        editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
 
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
 //        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(settlement.getName(),
 //                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK() + settlement.getId())); //Chose residence button
 //        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getANOTHER_TEXT(),
 //                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())); //Chose another settlement button
-//        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-//                buttons.getCANCEL_CALLBACK())); //cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
+                buttons.getCANCEL_CALLBACK())); //cancel button
+        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createPickUpPassengerRequestProcessChoseDirectionMessage");
 
         return editMessage;

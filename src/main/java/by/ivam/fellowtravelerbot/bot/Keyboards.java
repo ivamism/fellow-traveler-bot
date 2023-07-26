@@ -374,7 +374,16 @@ public class Keyboards {
         inLineKeyboard.setKeyboard(rows);
         return inLineKeyboard;
     }
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements, String callbackData) {
 
+        List<Pair<String, String>> buttonsAttributes = settlements
+                .stream()
+                .map(settlement -> Pair.of(settlement.getName(), callbackData + settlement.getId()))
+                .collect(Collectors.toList());
+        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+
+        return buttonsAttributes;
+    }
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements) {
 
         List<Pair<String, String>> buttonsAttributes = settlements
