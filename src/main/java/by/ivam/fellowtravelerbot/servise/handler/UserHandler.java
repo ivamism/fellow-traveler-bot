@@ -125,8 +125,7 @@ TODO разделить функциональные действия и отп�
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList())));
-
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())));
         log.debug("method requestResidence.");
         return editMessage;
     }
@@ -246,7 +245,7 @@ if (carHandler.getUsersCarsQuantity(chatId)==0){
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.editSettlementsButtonsAttributesCreator(adminHandler.getSettlementsList())));
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getEDIT_USER_RESIDENCE_CALLBACK())));
 
         log.debug("method editUserResidenceRequestMessage");
         return editMessage;

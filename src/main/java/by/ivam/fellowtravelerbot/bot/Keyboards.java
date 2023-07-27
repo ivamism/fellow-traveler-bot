@@ -384,26 +384,6 @@ public class Keyboards {
 
         return buttonsAttributes;
     }
-    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements) {
-
-        List<Pair<String, String>> buttonsAttributes = settlements
-                .stream()
-                .map(settlement -> Pair.of(settlement.getName(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK() + settlement.getId()))
-                .collect(Collectors.toList());
-        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-
-        return buttonsAttributes;
-    }
-    public List<Pair<String, String>> editSettlementsButtonsAttributesCreator(List<Settlement> settlements) {
-
-        List<Pair<String, String>> buttonsAttributes = settlements
-                .stream()
-                .map(settlement -> Pair.of(settlement.getName(), buttons.getEDIT_USER_RESIDENCE_CALLBACK() + settlement.getId()))
-                .collect(Collectors.toList());
-        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        return buttonsAttributes;
-    }
-
     public List<Pair<String, String>> departureLocationListButtonsAttributesCreator(List<DepartureLocation> departureLocations) {
 
         List<Pair<String, String>> buttonsAttributes = departureLocations
