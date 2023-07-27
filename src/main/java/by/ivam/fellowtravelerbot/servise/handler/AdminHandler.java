@@ -93,7 +93,8 @@ public class AdminHandler {
     public SendMessage departureLocationSettlementRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(getSettlementsList())));
+
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(getSettlementsList(), buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK())));
         log.debug("AdminHandler method departureLocationSettlementRequestMessage");
         return sendMessage;
     }
@@ -101,7 +102,8 @@ public class AdminHandler {
     public void departureLocationSetSettlement(long chatId, String callbackData) {
         log.debug("AdminHandler method departureLocationSetSettlement");
         DepartureLocationDTO location = new DepartureLocationDTO();
-        location.setSettlement(settlementService.findById(Integer.parseInt(callbackData.substring(36))));
+//        location.setSettlement(settlementService.findById(Integer.parseInt(callbackData.substring(36))));
+        location.setSettlement(settlementService.findById(CommonMethods.trimId2(callbackData)));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
 
