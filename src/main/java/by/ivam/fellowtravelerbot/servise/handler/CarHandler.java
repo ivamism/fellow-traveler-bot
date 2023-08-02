@@ -1,13 +1,13 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
-import by.ivam.fellowtravelerbot.bot.Buttons;
-import by.ivam.fellowtravelerbot.bot.Keyboards;
+import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
+import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.servise.CarService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
+import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.storages.interfaces.AddCarStorageAccess;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;

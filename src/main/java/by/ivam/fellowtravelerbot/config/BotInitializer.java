@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.config;
 
-import by.ivam.fellowtravelerbot.bot.TGBot;
+import by.ivam.fellowtravelerbot.bot.Bot;
+//import by.ivam.fellowtravelerbot.bot.TGBot;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,11 +14,26 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Component
 public class BotInitializer {
 
+//    @Autowired
+//    TGBot tgBot;
+
     @Autowired
-    TGBot bot;
+    Bot bot;
+
+
+//    @EventListener({ContextRefreshedEvent.class})
+//    public void init() throws TelegramApiException {
+//        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+//        try {
+//            telegramBotsApi.registerBot(tgBot);
+//        }
+//        catch (TelegramApiException e) {
+//            log.error("Error: " + e.getMessage());
+//        }
+//    }
 
     @EventListener({ContextRefreshedEvent.class})
-    public void init() throws TelegramApiException {
+    public void init2() throws TelegramApiException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
             telegramBotsApi.registerBot(bot);

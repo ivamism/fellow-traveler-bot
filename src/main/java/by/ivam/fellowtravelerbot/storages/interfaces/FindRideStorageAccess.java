@@ -1,12 +1,12 @@
 package by.ivam.fellowtravelerbot.storages.interfaces;
 
-import by.ivam.fellowtravelerbot.DTO.HitchRideRequestDTO;
+import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public interface HitchRideStorageAccess {
-    void addHitchRideDTO(long chatId, HitchRideRequestDTO hitchRideRequestDTO);
+public interface FindRideStorageAccess {
+    void addHitchRideDTO(long chatId, FindRideRequestDTO findRideRequestDTO);
 
     void setSettlement(long chatId, int id);
 

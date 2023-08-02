@@ -1,15 +1,15 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
-import by.ivam.fellowtravelerbot.bot.Buttons;
-import by.ivam.fellowtravelerbot.bot.Keyboards;
+import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
+import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
+import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
@@ -77,7 +77,7 @@ public class AdminHandler {
     public Settlement saveSettlement(Long chatId, String settlementName) {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method saveSettlement: call to save " + settlementName + " to DB");
-        return settlementService.addNewSettlement(firstLetterToUpperCase(settlementName));
+        return settlementService.addNewSettlement(CommonMethods.firstLetterToUpperCase(settlementName));
     }
 
     public SendMessage settlementSaveSuccessMessage(long chatId, Settlement settlement) {
@@ -112,7 +112,7 @@ public class AdminHandler {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_NAME_MESSAGE());
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard        storageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_DEPARTURE_LOCATION_NAME));
 
         log.debug("AdminHandler method departureLocationNameRequestMessage");
@@ -122,7 +122,7 @@ public class AdminHandler {
     public DepartureLocation departureLocationSave(long chatId, String name) {
         log.debug("AdminHandler method departureLocationSave");
         DepartureLocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
-        locationDTO.setName(firstLetterToUpperCase(name));
+        locationDTO.setName(CommonMethods.firstLetterToUpperCase(name));
         departureLocationStorageAccess.deleteLocation(chatId);
         chatStatusStorageAccess.deleteChatStatus(chatId);
 

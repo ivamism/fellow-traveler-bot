@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Data
@@ -55,5 +54,9 @@ public class CommonMethods {
                 .collect(Collectors.joining());
 
         return Integer.parseInt(s);
+    }
+
+    public static String firstLetterToUpperCase(String s) {
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 }

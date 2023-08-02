@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.bot;
+package by.ivam.fellowtravelerbot.bot.keboards;
 /*
 Main menu and inline keyboards
  */

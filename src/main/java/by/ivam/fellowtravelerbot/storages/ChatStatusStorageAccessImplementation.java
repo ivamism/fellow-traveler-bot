@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.storages;
 
-import by.ivam.fellowtravelerbot.servise.handler.enums.ChatStatus;
+import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -17,7 +17,7 @@ HashMap<Long, String> userNamesStorage = new HashMap<>();
  HashMap <Long, UserDTO> userDTOStorage = new HashMap<>();
 HashMap <Long, CarDTO> CarDTOStorage = new HashMap<>();
 HashMap <Long, DepartureLocationDTO> departureLocationDTOStorage = new HashMap<>();
-HashMap <Long, HitchRideRequestDTO> hitchRideRequestDTOStorage = new HashMap<>();
+HashMap <Long, FindRideRequestDTO> hitchRideRequestDTOStorage = new HashMap<>();
 HashMap <Long, PickUpPassengerRequestDTO> pickUpPassengerRequestDTOStorage = new HashMap<>();
 
 }

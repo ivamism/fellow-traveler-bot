@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.bot.Buttons;
-import by.ivam.fellowtravelerbot.bot.Keyboards;
+import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
+import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;

@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.servise.handler.enums;
+package by.ivam.fellowtravelerbot.bot.enums;
 
 import lombok.Getter;
 

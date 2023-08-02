@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.bot;
+package by.ivam.fellowtravelerbot.bot.keboards;
 /*
 This class contains Strings of buttons names and callback-queries which used in keyboards
  */
