@@ -2,8 +2,13 @@ package by.ivam.fellowtravelerbot.bot.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 public enum BotCommands {
+
     START("/start"),
     HELP("/help"),
     HELP_BUTTON("Помощь"),
@@ -14,8 +19,14 @@ public enum BotCommands {
     FIND_RIDE("Найти попутку"),
     FIND_PASSENGER("Найти попутчика"),
     ADD_SETTLEMENT("Добавить нас. пункт"),
-    ADD_DEPARTURE_LOCATION("Добавить локацию")
-    ;
-    BotCommands(String value) {
+    ADD_DEPARTURE_LOCATION("Добавить локацию");
+    private final String command;
+
+
+
+    BotCommands(String command) {
+        this.command = command;
+
     }
+
 }

@@ -5,6 +5,6 @@ public enum Handlers {
     ADMIN,
     USER,
     CAR,
-    HITCH_RIDE,
+    FIND_RIDE,
     PICKUP_PASSENGER
 }
