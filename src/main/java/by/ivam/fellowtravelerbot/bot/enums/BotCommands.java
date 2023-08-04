@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public enum BotCommands {
 
     START("/start"),
+    ADMIN_MENU ("/showMasterAdminMenu"),
     HELP("/help"),
     HELP_BUTTON("Помощь"),
     PROFILE("/profile"),

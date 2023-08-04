@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -46,6 +47,8 @@ public class AdminHandler {
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
@@ -55,13 +58,13 @@ public class AdminHandler {
         return userService.findUserById(chatId).isAdmin();
     }
 
-    public SendMessage showAdminMenuMessage(long chatId) {
+
+    public void showAdminMenuMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADMIN_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.mainAdminMenu());
         log.debug("AdminHandler method checkIsAdmin");
-
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     // Handle Settlement

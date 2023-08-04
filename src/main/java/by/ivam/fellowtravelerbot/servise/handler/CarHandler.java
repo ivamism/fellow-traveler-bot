@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -43,19 +44,20 @@ public class CarHandler {
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserService userService;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
 // add users car step-by-step process
 
-    public SendMessage startAddCarProcess(Message incomeMessage) {
+    public void startAddCarProcess(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         if (getUsersCarsQuantity(chatId) < 2) {
-            sendMessage = startAddCarProcessMessageCreate(incomeMessage);
+            startAddCarProcessMessageCreate(incomeMessage);
         } else {
-            sendMessage = startDeleteCarProcessMessageCreate(incomeMessage);
+            startDeleteCarProcessMessageCreate(incomeMessage);
         }
-        return sendMessage;
     }
 
     public EditMessageText startAddCarProcessEditMessage(Message incomeMessage) {
@@ -68,7 +70,7 @@ public class CarHandler {
         return editMessage;
     }
 
-    private SendMessage startAddCarProcessMessageCreate(Message incomeMessage) {
+    private void startAddCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_START_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(),
@@ -76,7 +78,7 @@ public class CarHandler {
                 buttons.getNO_BUTTON_TEXT(),
                 buttons.getADD_CAR_START_DENY_CALLBACK()));
         log.info("CarHandler method startAddCarProcessMessageCreate: send request to confirm start of process to add a new car");
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     private EditMessageText startAddCarProcessEditMessageCreate(Message incomeMessage) {
@@ -230,12 +232,12 @@ public class CarHandler {
     }
 
     //         Delete cars
-    private SendMessage startDeleteCarProcessMessageCreate(Message incomeMessage) {
+    private void startDeleteCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getDELETE_CAR_START_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
         log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     private EditMessageText startDeleteCarProcessEditMessageCreate(Message incomeMessage) {

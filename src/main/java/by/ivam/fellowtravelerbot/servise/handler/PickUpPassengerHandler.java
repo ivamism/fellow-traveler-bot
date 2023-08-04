@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.PickUpPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -44,10 +45,12 @@ public class PickUpPassengerHandler {
     PickUpPassengerStorageAccess pickUpPassengerStorageAccess;
     @Autowired
     SettlementService settlementService;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
-    public SendMessage startCreateNewRequest(long chatId) {
+    public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE());
 
@@ -58,7 +61,7 @@ public class PickUpPassengerHandler {
                 buttons.getCANCEL_CALLBACK())); //cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: startCreatePickUpPassengerRequestProcess");
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     public void createPickUpPassengerRequestDTO(long chatId) {

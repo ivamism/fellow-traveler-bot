@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -24,6 +25,8 @@ public class FindRideHandler {
     Buttons buttons;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
 
 
 }

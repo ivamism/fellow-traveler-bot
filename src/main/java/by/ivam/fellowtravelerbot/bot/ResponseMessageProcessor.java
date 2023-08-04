@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 @Data
 @Log4j
 public class ResponseMessageProcessor {
+
     Bot bot;
     public void setBot(Bot bot) {
         this.bot = bot;

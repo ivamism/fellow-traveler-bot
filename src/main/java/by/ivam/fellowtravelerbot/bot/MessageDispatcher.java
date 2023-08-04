@@ -3,9 +3,6 @@ package by.ivam.fellowtravelerbot.bot;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
-import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.handler.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +40,7 @@ public class MessageDispatcher {
     @Autowired
     PickUpPassengerHandler pickUpPassengerHandler;
     @Autowired
-    ResponseMessageProcessor messageSender;
+    ResponseMessageProcessor messageProcessor;
 
     SendMessage message = new SendMessage();
     EditMessageText editMessageText = new EditMessageText();
@@ -260,56 +256,51 @@ public class MessageDispatcher {
         log.info("Received message: " + messageText);
         switch (messageText) {
             case "/start" -> {
-                startCommandReceived(chatId, incomeMessage.getChat().getFirstName());
+                startHandler.startCommandReceived(incomeMessage);
                 log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
-                message = startHandler.startMessaging(incomeMessage);
             }
             case "/showMasterAdminMenu" -> {
                 log.debug("get Message: " + messageText + " - request to send admin menu from user " + chatId);
                 adminCommandReceived(chatId);
             }
-            case "/help" -> {
-                message = prepareMessage(chatId, messages.getHELP_TEXT());
+            case "/help", "Помощь" -> {
+                helpCommandReceived(chatId);
                 log.debug("get Message: " + messageText);
             }
             case "/profile", "Мои данные" -> {
                 if (startHandler.checkRegistration(chatId)) {
-                    message = startHandler.noRegistrationMessage(chatId);
+                    startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to get User's stored data");
-                    message = userHandler.sendUserData(chatId);
+                    userHandler.sendUserData(chatId);
                 }
             }
             case "/registration" -> {
-                message = startHandler.startMessaging(incomeMessage);
+                startHandler.startMessaging(incomeMessage);
                 log.debug("get Message: " + messageText + " - Start registration process");
             }
             case "/add_car" -> {
                 if (startHandler.checkRegistration(chatId)) {
-                    message = startHandler.noRegistrationMessage(chatId);
+                    startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to get User's stored data");
-                    message = carHandler.startAddCarProcess(incomeMessage);
+                    carHandler.startAddCarProcess(incomeMessage);
                 }
             }
             case "Найти попутку" -> {
                 if (startHandler.checkRegistration(chatId)) {
-                    message = startHandler.noRegistrationMessage(chatId);
+                    startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to find a car");
                 }
             }
             case "Найти попутчика" -> {
                 if (startHandler.checkRegistration(chatId)) {
-                    message = startHandler.noRegistrationMessage(chatId);
+                    startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to find a fellow");
-                    message = pickUpPassengerHandler.startCreateNewRequest(chatId);
+                    pickUpPassengerHandler.startCreateNewRequest(chatId);
                 }
-            }
-            case "Помощь" -> {
-                messageSender.sendMessage(prepareMessage(chatId, messages.getHELP_TEXT()));
-                log.debug("got request to get help and send help message");
             }
             case "Добавить нас. пункт" -> {
                 log.debug("got request to add new Settlement");
@@ -334,30 +325,28 @@ public class MessageDispatcher {
 
     private void handleUserMessage(Message incomeMessage) {
         log.debug("method handleUserMessage");
+
     }
 
-//    private boolean hasChatStatus (long chatId){
-//
-//        return Optional.isPresent(chatStatusStorageAccess.findChatStatus(chatId));
-//    }
-
-    private void startCommandReceived(long chatId, String firstName) {
-        String answer = "Привет, " + firstName + "!";
-        messageSender.sendMessage(prepareMessage(chatId, answer));
-        log.info("Start command received");
-    }
 
     private void unknownCommandReceived(long chatId) {
-        String answer = messages.getUNKNOWN_COMMAND();
-        messageSender.sendMessage(prepareMessage(chatId, answer));
+        message.setChatId(chatId);
+        message.setText(messages.getUNKNOWN_COMMAND());
+        messageProcessor.sendMessage(message);
         log.info("received unknown command");
     }
 
     private void adminCommandReceived(long chatId) {
         if (adminHandler.checkIsAdmin(chatId)) {
-            message = adminHandler.showAdminMenuMessage(chatId);
-            messageSender.sendMessage(message);
+            adminHandler.showAdminMenuMessage(chatId);
         } else unknownCommandReceived(chatId);
+    }
+
+    private void helpCommandReceived(long chatId) {
+        message.setChatId(chatId);
+        message.setText(messages.getHELP_TEXT());
+        log.debug("method helpCommandReceived");
+        messageProcessor.sendMessage(message);
     }
 
     private SendMessage prepareMessage(long chatId, String textToSend) {

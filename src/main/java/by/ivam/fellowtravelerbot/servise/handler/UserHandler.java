@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -50,9 +51,10 @@ public class UserHandler {
     AdminHandler adminHandler;
     @Autowired
     SettlementService settlementService;
-
     @Autowired
     CarHandler carHandler;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
 
@@ -65,6 +67,8 @@ TODO разделить функциональные действия и отп�
 
 
     // Start registration User process
+    //TODO изменить реализацию этого метода на void  с отправкой сообщеения из юзеррэндлера (исправить и стартхэндлере)
+
     public SendMessage startRegistration(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
@@ -173,7 +177,7 @@ TODO разделить функциональные действия и отп�
         return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.prepareCarListToSend(chatId);
     }
 
-    public SendMessage sendUserData(long chatId) {
+    public void sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
         //        Create pairs of buttons attributes and add them to list
@@ -192,26 +196,26 @@ TODO разделить функциональные действия и отп�
 //        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
 //                buttons.getCANCEL_CALLBACK());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-if (carHandler.getUsersCarsQuantity(chatId)==0){
-    buttonsAttributesList.add(changeNameButton);
-    buttonsAttributesList.add(changeResidenceButton);
-    buttonsAttributesList.add(addCarButton);
-    buttonsAttributesList.add(deleteUserButton);
-    //        buttonsAttributesList.add(cancelButton);
-} else {
-    buttonsAttributesList.add(changeNameButton);
-    buttonsAttributesList.add(changeResidenceButton);
-    if (carHandler.getUsersCarsQuantity(chatId)<2) buttonsAttributesList.add(addCarButton);
-    buttonsAttributesList.add(changeCarButton);
-    buttonsAttributesList.add(deleteCarButton);
-    buttonsAttributesList.add(deleteUserButton);
+        if (carHandler.getUsersCarsQuantity(chatId) == 0) {
+            buttonsAttributesList.add(changeNameButton);
+            buttonsAttributesList.add(changeResidenceButton);
+            buttonsAttributesList.add(addCarButton);
+            buttonsAttributesList.add(deleteUserButton);
+            //        buttonsAttributesList.add(cancelButton);
+        } else {
+            buttonsAttributesList.add(changeNameButton);
+            buttonsAttributesList.add(changeResidenceButton);
+            if (carHandler.getUsersCarsQuantity(chatId) < 2) buttonsAttributesList.add(addCarButton);
+            buttonsAttributesList.add(changeCarButton);
+            buttonsAttributesList.add(deleteCarButton);
+            buttonsAttributesList.add(deleteUserButton);
 //        buttonsAttributesList.add(cancelButton);
-}
+        }
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.info("send message with stored User's data and keyboard with further action menu");
 
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     public EditMessageText editUserFirstNameMessage(Message incomeMessage) {

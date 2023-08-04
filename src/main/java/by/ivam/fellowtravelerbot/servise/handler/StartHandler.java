@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -16,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler {
+public class StartHandler implements Handler{
     @Autowired
     Messages messages;
     @Autowired
@@ -29,6 +30,10 @@ public class StartHandler {
     UserHandler userHandler;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
+
+
     SendMessage message = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -37,36 +42,53 @@ public class StartHandler {
         return userService.findById(chatId).isEmpty();
     }
 
-    public SendMessage startMessaging(Message incomeMessage) {
-        long chatId = incomeMessage.getChatId();
-
-        if (checkRegistration(chatId)) {
-
-            message = userHandler.startRegistration(chatId);
-
-            log.info("User " + incomeMessage.getChat().getUserName()
-                    + ". ChatId: " + chatId + " is new User. Call registration process.");
-        } else {
-            message.setChatId(chatId);
-            message.setText(messages.getFURTHER_ACTION_MESSAGE());
-            message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-            log.info("User " + incomeMessage.getChat().getUserName()
-                    + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
-        }
-        return message;
+    public void startCommandReceived(Message incomeMessage) {
+        log.info("Start command received");
+        message.setChatId(incomeMessage.getChatId());
+        message.setText("Привет, " + incomeMessage.getChat().getFirstName() + "!");
+        message.setReplyMarkup(keyboards.mainMenu());
+        messageProcessor.sendMessage(message);
+//        sendMessage(message);
+        startMessaging(incomeMessage);
     }
 
-    public SendMessage noRegistrationMessage(long chatId) {
+
+public void startMessaging(Message incomeMessage) {
+    long chatId = incomeMessage.getChatId();
+
+    if (checkRegistration(chatId)) {
+//TODO изменить реализацию этого метода на void  с отправкой сообщеения из юзеррэндлера
+
+//        sendMessage(userHandler.startRegistration(chatId));
+       messageProcessor.sendMessage(userHandler.startRegistration(chatId));
+
+        log.info("User " + incomeMessage.getChat().getUserName()
+                + ". ChatId: " + chatId + " is new User. Call registration process.");
+    } else {
+        message.setChatId(chatId);
+        message.setText(messages.getFURTHER_ACTION_MESSAGE());
+        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        log.info("User " + incomeMessage.getChat().getUserName()
+                + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
+//        sendMessage(message);
+        messageProcessor.sendMessage(message);
+    }
+}
+
+    public void noRegistrationMessage(long chatId) {
         message.setChatId(chatId);
         message.setText(messages.getNO_REGISTRATION_MESSAGE());
-        return message;
+        messageProcessor.sendMessage(message);
+
     }
+
     public EditMessageText noRegistrationEditMessage(long chatId) {
         editMessage.setChatId(chatId);
         editMessage.setMessageId(editMessage.getMessageId());
         editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
         return editMessage;
     }
+
     public EditMessageText quitProcessMessage(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
         editMessage.setMessageId(incomeMessage.getMessageId());
