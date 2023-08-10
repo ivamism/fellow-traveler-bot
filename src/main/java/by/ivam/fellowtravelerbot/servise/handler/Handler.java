@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 
 public interface Handler {
 
-    void receivedMessage(String chatStatus);
-    void receivedCallback(String callback);
+    void handleReceivedMessage(String chatStatus);
+    void handleReceivedCallback(String callback);
 
 
     default void sendMessage (SendMessage message){

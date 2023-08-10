@@ -34,7 +34,7 @@ This class handle User registration process and saving User to DB
 @Service
 @Data
 @Log4j
-public class UserHandler {
+public class UserHandler implements Handler {
     @Autowired
     Messages messages;
     @Autowired
@@ -67,7 +67,15 @@ TODO разделить функциональные действия и отп�
 
      */
 
+    @Override
+    public void handleReceivedMessage(String chatStatus) {
 
+    }
+
+    @Override
+    public void handleReceivedCallback(String callback) {
+        log.debug("method handleReceivedCallback. get callback: " + callback);
+    }
     // Start registration User process
     //TODO изменить реализацию этого метода на void  с отправкой сообщеения из юзеррэндлера (исправить и стартхэндлере)
 
@@ -321,4 +329,6 @@ TODO разделить функциональные действия и отп�
         log.debug("method userDTOCreator with edited firstname");
         return userDTO;
     }
+
+
 }

@@ -20,9 +20,10 @@ public class Bot extends TelegramLongPollingBot {
    Messages messages;
     @Autowired
     ResponseMessageProcessor messageProcessor;
-
     @Autowired
     MessageDispatcher messageDispatcher;
+    @Autowired
+    CallbackDispatcher callbackDispatcher;
 
     @PostConstruct
     public void init() {
@@ -37,6 +38,15 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()){
             messageDispatcher.onMessageReceived(update.getMessage());
+        } else if (update.hasCallbackQuery()) {
+            callbackDispatcher.onCallbackReceived(update.getCallbackQuery());
+//            String callbackData = update.getCallbackQuery().getData();
+//            Message incomeMessage = update.getCallbackQuery().getMessage();
+//            int messageId = incomeMessage.getMessageId();
+//            long chatId = incomeMessage.getChatId();
+//            String messageText = incomeMessage.getText();
+//            String userName = incomeMessage.getChat().getFirstName();
+//            log.info("get callback: " + callbackData);
         }
     }
     public  void sendMessage(SendMessage message) {
