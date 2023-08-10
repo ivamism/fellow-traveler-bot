@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler implements Handler{
+public class StartHandler {
     @Autowired
     Messages messages;
     @Autowired

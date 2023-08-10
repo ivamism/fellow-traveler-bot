@@ -7,6 +7,9 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 
 public interface Handler {
 
+    void receivedMessage(String chatStatus);
+    void receivedCallback(String callback);
+
 
     default void sendMessage (SendMessage message){
         ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();

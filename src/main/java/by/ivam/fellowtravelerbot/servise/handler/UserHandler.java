@@ -2,6 +2,8 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.Handlers;
+import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -72,10 +74,13 @@ TODO разделить функциональные действия и отп�
     public SendMessage startRegistration(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
+
+        String yesCallback = Handlers.USER.getHandlerPrefix() + UserOperation.START_REGISTRATION_CALLBACK.toString();
+        String noCallback = Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK;
         sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(),
-                buttons.getCONFIRM_START_REG_CALLBACK(),
+                yesCallback,
                 buttons.getNO_BUTTON_TEXT(),
-                buttons.getDENY_REG_CALLBACK()));
+                noCallback));
         log.debug("method startRegistration");
         return sendMessage;
     }
@@ -83,11 +88,13 @@ TODO разделить функциональные действия и отп�
     // Ask user to confirm telegram User's first name as UserName or edit it
     public EditMessageText confirmUserFirstName(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
-        String userName = incomeMessage.getChat().getUserName();
         String firstName = incomeMessage.getChat().getFirstName();
         editMessage.setChatId(chatId);
         editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
         editMessage.setMessageId(incomeMessage.getMessageId());
+        String yesCallback = String.valueOf(Handlers.USER) + UserOperation.REQUEST_SETTLEMENT_CALLBACK;
+        String noCallback = String.valueOf(Handlers.USER) + UserOperation.DENY_REGISTRATION_CALLBACK;
+
         editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK(),
                 buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(),
                 buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));

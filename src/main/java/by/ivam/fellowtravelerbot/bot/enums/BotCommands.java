@@ -23,11 +23,8 @@ public enum BotCommands {
     ADD_DEPARTURE_LOCATION("Добавить локацию");
     private final String command;
 
-
-
     BotCommands(String command) {
         this.command = command;
-
     }
 
 }
