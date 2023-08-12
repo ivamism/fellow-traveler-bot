@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler {
+public class StartHandler implements Handler{
     @Autowired
     Messages messages;
     @Autowired
@@ -36,6 +36,17 @@ public class StartHandler {
 
     SendMessage message = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
+    @Override
+    public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+log.debug("method handleReceivedMessage");
+    }
+
+    @Override
+    public void handleReceivedCallback(String callback, Message incomeMessage) {
+        log.debug("method handleReceivedCallback");
+
+    }
 
 
     public boolean checkRegistration(long chatId) {
@@ -57,10 +68,9 @@ public void startMessaging(Message incomeMessage) {
     long chatId = incomeMessage.getChatId();
 
     if (checkRegistration(chatId)) {
-//TODO изменить реализацию этого метода на void  с отправкой сообщеения из юзеррэндлера
 
 //        sendMessage(userHandler.startRegistration(chatId));
-       messageProcessor.sendMessage(userHandler.startRegistration(chatId));
+       userHandler.startRegistration(chatId);
 
         log.info("User " + incomeMessage.getChat().getUserName()
                 + ". ChatId: " + chatId + " is new User. Call registration process.");
@@ -99,4 +109,6 @@ public void startMessaging(Message incomeMessage) {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         return editMessage;
     }
+
+
 }

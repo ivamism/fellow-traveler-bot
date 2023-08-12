@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 @Data
 @Log4j
-public class PickUpPassengerHandler {
+public class PickUpPassengerHandler implements Handler{
     @Autowired
     Messages messages;
     @Autowired
@@ -49,6 +49,16 @@ public class PickUpPassengerHandler {
     ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
+    @Override
+    public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+        log.debug("method handleReceivedMessage");
+    }
+
+    @Override
+    public void handleReceivedCallback(String callback, Message incomeMessage) {
+        log.debug("method handleReceivedCallback. get callback: " + callback);
+    }
 
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);

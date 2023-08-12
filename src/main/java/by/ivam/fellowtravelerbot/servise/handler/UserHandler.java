@@ -68,44 +68,69 @@ TODO разделить функциональные действия и отп�
      */
 
     @Override
-    public void handleReceivedMessage(String chatStatus) {
-
+    public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+        log.debug("method handleReceivedMessage");
     }
 
     @Override
-    public void handleReceivedCallback(String callback) {
+    public void handleReceivedCallback(String callback, Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedCallback. get callback: " + callback);
+        switch (callback) {
+            case "START_REGISTRATION_CALLBACK" -> {
+                editMessage = confirmUserFirstName(incomeMessage);
+            }
+            case "DENY_REGISTRATION_CALLBACK" -> {
+                editMessage = denyRegistration(incomeMessage);
+            }
+            case "REQUEST_SETTLEMENT_CALLBACK" -> {
+                editMessage = requestResidenceMessage(incomeMessage);
+            }
+            case "REGISTRATION_EDIT_NAME" -> {
+                editMessage = editUserFirstNameBeforeSaving(incomeMessage);
+            }
+        }
+        messageProcessor.sendEditedMessage(editMessage);
     }
     // Start registration User process
-    //TODO изменить реализацию этого метода на void  с отправкой сообщеения из юзеррэндлера (исправить и стартхэндлере)
 
-    public SendMessage startRegistration(long chatId) {
+    public void startRegistration(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
 
-        String yesCallback = Handlers.USER.getHandlerPrefix() + UserOperation.START_REGISTRATION_CALLBACK.toString();
-        String noCallback = Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK;
-        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(),
-                yesCallback,
-                buttons.getNO_BUTTON_TEXT(),
-                noCallback));
+        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.START_REGISTRATION_CALLBACK);
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(yesButton);
+        buttonsAttributesList.add(cancelButton);
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method startRegistration");
-        return sendMessage;
+        messageProcessor.sendMessage(sendMessage);
     }
 
     // Ask user to confirm telegram User's first name as UserName or edit it
-    public EditMessageText confirmUserFirstName(Message incomeMessage) {
-        long chatId = incomeMessage.getChatId();
-        String firstName = incomeMessage.getChat().getFirstName();
-        editMessage.setChatId(chatId);
-        editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
-        editMessage.setMessageId(incomeMessage.getMessageId());
-        String yesCallback = String.valueOf(Handlers.USER) + UserOperation.REQUEST_SETTLEMENT_CALLBACK;
-        String noCallback = String.valueOf(Handlers.USER) + UserOperation.DENY_REGISTRATION_CALLBACK;
+    private EditMessageText confirmUserFirstName(Message incomeMessage) {
+editMessageTextGeneralPreset(incomeMessage);
 
-        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREG_USER_REQUEST_SETTLEMENT_CALLBACK(),
-                buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK(),
-                buttons.getCANCEL_BUTTON_TEXT(), buttons.getDENY_REG_CALLBACK()));
+        String firstName = incomeMessage.getChat().getFirstName();
+//        editMessage.setChatId(incomeMessage.getChatId());
+//        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
+
+        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK);
+        Pair<String, String> editButton = keyboards.buttonAttributesPairCreator(buttons.getEDIT_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME);
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(yesButton);
+        buttonsAttributesList.add(editButton);
+        buttonsAttributesList.add(cancelButton);
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+
         userDTOCreator(incomeMessage);
 
         log.debug("method confirmUserFirstName");
@@ -140,9 +165,10 @@ TODO разделить функциональные действия и отп�
     }
 
     public EditMessageText requestResidenceMessage(Message incomeMessage) {
-        long chatId = incomeMessage.getChatId();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
+//        long chatId = incomeMessage.getChatId();
+//        editMessage.setChatId(chatId);
+//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())));
         log.debug("method requestResidence.");
@@ -177,9 +203,10 @@ TODO разделить функциональные действия и отп�
     }
 
     public EditMessageText denyRegistration(Message incomeMessage) {
-        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setMessageId(incomeMessage.getMessageId());
+//        editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setText(messages.getDENY_REGISTRATION_MESSAGE());
-        editMessage.setChatId(incomeMessage.getChatId());
         log.info("User deny registration");
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;
@@ -329,6 +356,10 @@ TODO разделить функциональные действия и отп�
         log.debug("method userDTOCreator with edited firstname");
         return userDTO;
     }
+    public  void editMessageTextGeneralPreset(Message incomeMessage) {
 
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
+    }
 
 }

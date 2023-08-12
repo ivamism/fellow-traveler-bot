@@ -30,7 +30,7 @@ This class handle Admin functional
 @Service
 @Data
 @Log4j
-public class AdminHandler {
+public class AdminHandler implements Handler{
     @Autowired
     UserService userService;
     @Autowired
@@ -52,6 +52,16 @@ public class AdminHandler {
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
+    @Override
+    public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+        log.debug("method handleReceivedMessage");
+    }
+
+    @Override
+    public void handleReceivedCallback(String callback, Message incomeMessage) {
+        log.debug("method handleReceivedCallback. get callback: " + callback);
+    }
 
     public boolean checkIsAdmin(long chatId) {
         log.debug("AdminHandler method checkIsAdmin");

@@ -3,6 +3,8 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,12 @@ public class CommonMethods {
                 .collect(Collectors.joining());
 
         return Integer.parseInt(s);
+    }
+
+    public static void editMessageTextGeneralPreset(Message incomeMessage) {
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
     }
 
     public static String firstLetterToUpperCase(String s) {

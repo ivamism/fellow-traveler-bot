@@ -27,7 +27,7 @@ import java.util.Optional;
 @Service
 @Data
 @Log4j
-public class CarHandler {
+public class CarHandler implements Handler{
     @Autowired
     CarDTO carDTO;
     @Autowired
@@ -48,6 +48,16 @@ public class CarHandler {
     ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
+    @Override
+    public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+        log.debug("method handleReceivedMessage");
+    }
+
+    @Override
+    public void handleReceivedCallback(String callback, Message incomeMessage) {
+        log.debug("method handleReceivedCallback. get callback: " + callback);
+    }
 
 // add users car step-by-step process
 
