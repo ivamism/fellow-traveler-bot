@@ -69,14 +69,28 @@ TODO разделить функциональные действия и отп�
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-        log.debug("method handleReceivedMessage");
+        String messageText = incomeMessage.getText();
+        log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus);
+        switch (chatStatus) {
+            case "REGISTRATION_GET_EDITED_NAME" -> {
+                log.info("Get edited name " + messageText);
+                sendMessage = confirmEditedUserFirstName(incomeMessage);
+            }
+        }
+        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
+        String process = callback;
+        if (callback.contains(":")){
+           process = CommonMethods.trimProcess(callback);
+        }
+
         log.debug("method handleReceivedCallback. get callback: " + callback);
-        switch (callback) {
+        log.debug("process: " + process);
+        switch (process) {
             case "START_REGISTRATION_CALLBACK" -> {
                 editMessage = confirmUserFirstName(incomeMessage);
             }
@@ -88,6 +102,11 @@ TODO разделить функциональные действия и отп�
             }
             case "REGISTRATION_EDIT_NAME" -> {
                 editMessage = editUserFirstNameBeforeSaving(incomeMessage);
+            }
+            case "SAVE_SETTLEMENT_CALLBACK" -> {
+                setSettlementToDTO(chatId, callback);
+                userRegistration(chatId);
+                editMessage = userRegistrationSuccessMessage(incomeMessage);
             }
         }
         messageProcessor.sendEditedMessage(editMessage);
@@ -112,7 +131,7 @@ TODO разделить функциональные действия и отп�
 
     // Ask user to confirm telegram User's first name as UserName or edit it
     private EditMessageText confirmUserFirstName(Message incomeMessage) {
-editMessageTextGeneralPreset(incomeMessage);
+        editMessageTextGeneralPreset(incomeMessage);
 
         String firstName = incomeMessage.getChat().getFirstName();
 //        editMessage.setChatId(incomeMessage.getChatId());
@@ -139,52 +158,67 @@ editMessageTextGeneralPreset(incomeMessage);
     }
 
     //    Request to send users choice of userFirstName
-    public EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
-
+    private EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
         long chatId = incomeMessage.getChatId();
-        editMessage.setMessageId(incomeMessage.getMessageId());
+//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_USER_EDIT_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME);
+//        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_USER_EDIT_NAME));
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
 
     //    request user to confirm that edited userFirstName is correct
-    public SendMessage confirmEditedUserFirstName(Message incomeMessage) {
+    private SendMessage confirmEditedUserFirstName(Message incomeMessage) {
 
         long chatId = incomeMessage.getChatId();
         String incomeMessageText = incomeMessage.getText();
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessage.getText());
-        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
+
+        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK);
+        Pair<String, String> editButton = keyboards.buttonAttributesPairCreator(buttons.getEDIT_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME);
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(yesButton);
+        buttonsAttributesList.add(editButton);
+        buttonsAttributesList.add(cancelButton);
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
         userDTOCreator(incomeMessage, incomeMessageText);
         log.info("method confirmEditedUserFirstName. got user edited firstname and request to confirm edited name");
         return sendMessage;
     }
 
-    public EditMessageText requestResidenceMessage(Message incomeMessage) {
+    private EditMessageText requestResidenceMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
 //        long chatId = incomeMessage.getChatId();
 //        editMessage.setChatId(chatId);
 //        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getREG_USER_ADD_SETTLEMENT_CALLBACK())));
+        String callback = Handlers.USER.getHandlerPrefix() + UserOperation.SAVE_SETTLEMENT_CALLBACK.getValue();
+//TODO Изменить колбэк кнопки отмены
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), callback)));
         log.debug("method requestResidence.");
         return editMessage;
     }
 
-    public void setResidenceToDTO(long chatId, String callbackData) {
-        userDTOStorageAccess.setResidence(chatId, settlementService.findById(Integer.parseInt(callbackData.substring(32))));
+    private void setSettlementToDTO(long chatId, String callbackData) {
+        userDTOStorageAccess.setResidence(chatId, settlementService.findById(CommonMethods.trimId(callbackData)));
         log.debug("method setResidenceToDTO");
     }
 
     // Save User to DB
-    public EditMessageText userRegistrationSuccessMessage(Message incomeMessage) {
-
-        editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setMessageId(incomeMessage.getMessageId());
+    private EditMessageText userRegistrationSuccessMessage(Message incomeMessage) {
+editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setChatId(incomeMessage.getChatId());
+//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
@@ -192,7 +226,7 @@ editMessageTextGeneralPreset(incomeMessage);
         return editMessage;
     }
 
-    public User userRegistration(long chatId) {
+    private User userRegistration(long chatId) {
         User user = userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
 
         chatStatusStorageAccess.deleteChatStatus(chatId);
@@ -356,7 +390,8 @@ editMessageTextGeneralPreset(incomeMessage);
         log.debug("method userDTOCreator with edited firstname");
         return userDTO;
     }
-    public  void editMessageTextGeneralPreset(Message incomeMessage) {
+
+    public void editMessageTextGeneralPreset(Message incomeMessage) {
 
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

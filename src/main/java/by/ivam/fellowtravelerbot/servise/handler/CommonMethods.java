@@ -3,8 +3,6 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 @Data
 @Log4j
 public class CommonMethods {
-    public static int trimId(String callbackData) {
+    public static int trimId1(String callbackData) {
         StringBuilder s = new StringBuilder(callbackData);
 
         while (Character.isDigit(s.charAt(0)) == false) {
@@ -42,11 +40,21 @@ public class CommonMethods {
         return id;
     }
 
+    public static String trimProcess(String s) {
+        String[] strings = s.split(":");
+        return strings[0];
+    }
+
+    public static int trimId(String s) {
+        String[] strings = s.split(":");
+       return Integer.parseInt(strings[1]);
+    }
+
 
     public static int trimId2(String callbackData) {
 
         List<Character> charsList = new ArrayList<>();
-        for (Character character :callbackData.toCharArray()) {
+        for (Character character : callbackData.toCharArray()) {
             charsList.add(character);
         }
         String s = charsList
@@ -58,10 +66,14 @@ public class CommonMethods {
         return Integer.parseInt(s);
     }
 
-    public static void editMessageTextGeneralPreset(Message incomeMessage) {
-        EditMessageText editMessage = new EditMessageText();
-        editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setMessageId(incomeMessage.getMessageId());
+    public static String getHandler(String s) {
+        String[] strings = s.split("-");
+        return strings[0];
+    }
+
+    public static String getProcess(String s) {
+        String[] strings = s.split("-");
+        return strings[1];
     }
 
     public static String firstLetterToUpperCase(String s) {

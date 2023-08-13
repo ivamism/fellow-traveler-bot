@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler implements Handler{
+public class StartHandler implements Handler {
     @Autowired
     Messages messages;
     @Autowired
@@ -39,7 +39,7 @@ public class StartHandler implements Handler{
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-log.debug("method handleReceivedMessage");
+        log.debug("method handleReceivedMessage");
     }
 
     @Override
@@ -64,26 +64,26 @@ log.debug("method handleReceivedMessage");
     }
 
 
-public void startMessaging(Message incomeMessage) {
-    long chatId = incomeMessage.getChatId();
+    public void startMessaging(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
 
-    if (checkRegistration(chatId)) {
+        if (checkRegistration(chatId)) {
 
 //        sendMessage(userHandler.startRegistration(chatId));
-       userHandler.startRegistration(chatId);
+            userHandler.startRegistration(chatId);
 
-        log.info("User " + incomeMessage.getChat().getUserName()
-                + ". ChatId: " + chatId + " is new User. Call registration process.");
-    } else {
-        message.setChatId(chatId);
-        message.setText(messages.getFURTHER_ACTION_MESSAGE());
-        message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        log.info("User " + incomeMessage.getChat().getUserName()
-                + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
+            log.info("User " + incomeMessage.getChat().getUserName()
+                    + ". ChatId: " + chatId + " is new User. Call registration process.");
+        } else {
+            message.setChatId(chatId);
+            message.setText(messages.getFURTHER_ACTION_MESSAGE());
+            message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+            log.info("User " + incomeMessage.getChat().getUserName()
+                    + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
 //        sendMessage(message);
-        messageProcessor.sendMessage(message);
+            messageProcessor.sendMessage(message);
+        }
     }
-}
 
     public void noRegistrationMessage(long chatId) {
         message.setChatId(chatId);

@@ -39,6 +39,8 @@ public class MessageDispatcher {
     @Autowired
     PickUpPassengerHandler pickUpPassengerHandler;
     @Autowired
+    FindRideHandler findRideHandler;
+    @Autowired
     ResponseMessageProcessor messageProcessor;
 
     SendMessage message = new SendMessage();
@@ -140,14 +142,41 @@ public class MessageDispatcher {
         String messageText = incomeMessage.getText();
         String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
         log.debug("get chatStatus - " + chatStatus);
+       if (chatStatus.contains("-")){
+           String handler = CommonMethods.getHandler(chatStatus);
+           String process = CommonMethods.getProcess(chatStatus);
+           switch (handler){
+               case "START" -> {
+                   startHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               case "ADMIN" -> {
+                   adminHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               case "USER" -> {
+                   userHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               case "CAR" -> {
+                   carHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               case "FIND_RIDE" -> {
+                   findRideHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               case "PICKUP_PASSENGER" -> {
+                   pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
+               }
+               default -> unknownCommandReceived(chatId);
+           }
+
+       } else unknownCommandReceived(chatId);
+
 
         switch (chatStatus) {
             case "NO_STATUS" -> unknownCommandReceived(chatId);
 
-            case "REGISTRATION_USER_EDIT_NAME" -> {
-                log.info("Get edited name " + messageText);
-                message = userHandler.confirmEditedUserFirstName(incomeMessage);
-            }
+//            case "REGISTRATION_USER_EDIT_NAME" -> {
+//                log.info("Get edited name " + messageText);
+////                message = userHandler.confirmEditedUserFirstName(incomeMessage);
+//            }
 
             case "ADD_CAR_MODEL" -> {
                 log.info("Get model " + messageText);
