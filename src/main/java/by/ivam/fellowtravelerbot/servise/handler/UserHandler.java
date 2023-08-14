@@ -80,9 +80,8 @@ TODO разделить функциональные действия и отп�
             }
             case "EDIT_NAME_CHAT_STATUS" -> {
                 log.info("Get edited name " + messageText);
-                saveEditedUserFirstName(chatId);
-//                TODO доделать
-//                sendMessage = confirmEditedUserFirstName(incomeMessage);
+                saveEditedUserFirstName(chatId, messageText);
+                sendMessage = editUserFirstNameSuccessMessage(chatId);
             }
         }
         messageProcessor.sendMessage(sendMessage);
@@ -116,7 +115,7 @@ TODO разделить функциональные действия и отп�
                 userRegistration(chatId);
                 editMessage = userRegistrationSuccessMessage(incomeMessage);
             }
-            case "EDIT_NAME" -> {
+            case "EDIT_NAME_CALLBACK" -> {
                 editMessage = editUserFirstNameMessage(incomeMessage);
             }
 
@@ -146,7 +145,7 @@ TODO разделить функциональные действия и отп�
         editMessageTextGeneralPreset(incomeMessage);
 
         String firstName = incomeMessage.getChat().getFirstName();
-
+//
         editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
 
         Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
@@ -307,8 +306,6 @@ TODO разделить функциональные действия и отп�
         editMessageTextGeneralPreset(incomeMessage);
         long chatId = incomeMessage.getChatId();
         String firstName = userService.findUserById(chatId).getFirstName();
-//        editMessage.setChatId(chatId);
-//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE() + String.format(messages.getEDIT_USER_FIRSTNAME_MESSAGE_POSTFIX(), firstName));
 //        TODO ПРОДУМАТЬ метод кнопки отмена
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
