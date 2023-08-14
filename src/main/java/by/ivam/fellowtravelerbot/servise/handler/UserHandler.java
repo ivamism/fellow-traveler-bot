@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
@@ -70,11 +71,18 @@ TODO разделить функциональные действия и отп�
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         String messageText = incomeMessage.getText();
+        Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus);
         switch (chatStatus) {
-            case "REGISTRATION_GET_EDITED_NAME" -> {
+            case "REGISTRATION_GET_EDITED_NAME_CHAT_STATUS" -> {
                 log.info("Get edited name " + messageText);
                 sendMessage = confirmEditedUserFirstName(incomeMessage);
+            }
+            case "EDIT_NAME_CHAT_STATUS" -> {
+                log.info("Get edited name " + messageText);
+                saveEditedUserFirstName(chatId);
+//                TODO доделать
+//                sendMessage = confirmEditedUserFirstName(incomeMessage);
             }
         }
         messageProcessor.sendMessage(sendMessage);
@@ -85,7 +93,7 @@ TODO разделить функциональные действия и отп�
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-          process = CommonMethods.trimProcess(callback);
+            process = CommonMethods.trimProcess(callback);
         }
 
         log.debug("method handleReceivedCallback. get callback: " + callback);
@@ -108,6 +116,10 @@ TODO разделить функциональные действия и отп�
                 userRegistration(chatId);
                 editMessage = userRegistrationSuccessMessage(incomeMessage);
             }
+            case "EDIT_NAME" -> {
+                editMessage = editUserFirstNameMessage(incomeMessage);
+            }
+
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
@@ -163,7 +175,7 @@ TODO разделить функциональные действия и отп�
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME);
+        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME_CHAT_STATUS);
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -252,26 +264,30 @@ TODO разделить функциональные действия и отп�
         sendMessage.setText(getUserData(chatId));
         //        Create pairs of buttons attributes and add them to list
         Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
-                buttons.getEDIT_USER_NAME_CALLBACK());
+                Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
+//                buttons.getEDIT_USER_NAME_CALLBACK());
         Pair<String, String> changeResidenceButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_RESIDENCE_TEXT(),
-                buttons.getEDIT_USER_RESIDENCE_CALLBACK());
+                Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT);
+//                buttons.getEDIT_USER_RESIDENCE_CALLBACK());
         Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
-                buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
+                Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_REQUEST_CALLBACK);
+//                buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
         Pair<String, String> addCarButton = keyboards.buttonAttributesPairCreator(buttons.getADD_CAR_TEXT(),
-                buttons.getADD_CAR_CALLBACK());
+                Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_REQUEST_CALLBACK);
+//                buttons.getADD_CAR_CALLBACK());
         Pair<String, String> deleteCarButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_CAR_TEXT(),
-                buttons.getREQUEST_DELETE_CAR_CALLBACK());
+                Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK);
+//                buttons.getREQUEST_DELETE_CAR_CALLBACK());
         Pair<String, String> deleteUserButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_ALL_TEXT(),
-                buttons.getDELETE_USER_START_PROCESS_CALLBACK());
-//        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-//                buttons.getCANCEL_CALLBACK());
+                Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
+//                buttons.getDELETE_USER_START_PROCESS_CALLBACK());
+
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         if (carHandler.getUsersCarsQuantity(chatId) == 0) {
             buttonsAttributesList.add(changeNameButton);
             buttonsAttributesList.add(changeResidenceButton);
             buttonsAttributesList.add(addCarButton);
             buttonsAttributesList.add(deleteUserButton);
-            //        buttonsAttributesList.add(cancelButton);
         } else {
             buttonsAttributesList.add(changeNameButton);
             buttonsAttributesList.add(changeResidenceButton);
@@ -279,7 +295,6 @@ TODO разделить функциональные действия и отп�
             buttonsAttributesList.add(changeCarButton);
             buttonsAttributesList.add(deleteCarButton);
             buttonsAttributesList.add(deleteUserButton);
-//        buttonsAttributesList.add(cancelButton);
         }
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
@@ -288,14 +303,16 @@ TODO разделить функциональные действия и отп�
         messageProcessor.sendMessage(sendMessage);
     }
 
-    public EditMessageText editUserFirstNameMessage(Message incomeMessage) {
+    private EditMessageText editUserFirstNameMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
         long chatId = incomeMessage.getChatId();
         String firstName = userService.findUserById(chatId).getFirstName();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(incomeMessage.getMessageId());
+//        editMessage.setChatId(chatId);
+//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE() + String.format(messages.getEDIT_USER_FIRSTNAME_MESSAGE_POSTFIX(), firstName));
+//        TODO ПРОДУМАТЬ метод кнопки отмена
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.USER_EDIT_NAME));
+        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CHAT_STATUS);
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
