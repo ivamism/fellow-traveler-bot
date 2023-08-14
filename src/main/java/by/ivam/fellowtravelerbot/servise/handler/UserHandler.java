@@ -1,16 +1,16 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
+import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
@@ -27,7 +27,7 @@ import java.util.List;
 
 
 /*
-This class handle User registration process and saving User to DB
+This class handle operations with User registration process, editing, deleting, show info and saving User to DB
  */
 
 
@@ -84,8 +84,8 @@ TODO разделить функциональные действия и отп�
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
         String process = callback;
-        if (callback.contains(":")){
-           process = CommonMethods.trimProcess(callback);
+        if (callback.contains(":")) {
+          process = CommonMethods.trimProcess(callback);
         }
 
         log.debug("method handleReceivedCallback. get callback: " + callback);
@@ -134,8 +134,7 @@ TODO разделить функциональные действия и отп�
         editMessageTextGeneralPreset(incomeMessage);
 
         String firstName = incomeMessage.getChat().getFirstName();
-//        editMessage.setChatId(incomeMessage.getChatId());
-//        editMessage.setMessageId(incomeMessage.getMessageId());
+
         editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
 
         Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
@@ -161,12 +160,10 @@ TODO разделить функциональные действия и отп�
     private EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         long chatId = incomeMessage.getChatId();
-//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
         chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME);
-//        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.REGISTRATION_USER_EDIT_NAME));
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -190,7 +187,6 @@ TODO разделить функциональные действия и отп�
         buttonsAttributesList.add(editButton);
         buttonsAttributesList.add(cancelButton);
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-//        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getNAME_TO_CONFIRM_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getEDIT_REG_DATA_CALLBACK()));
         userDTOCreator(incomeMessage, incomeMessageText);
         log.info("method confirmEditedUserFirstName. got user edited firstname and request to confirm edited name");
         return sendMessage;
@@ -198,13 +194,13 @@ TODO разделить функциональные действия и отп�
 
     private EditMessageText requestResidenceMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-//        long chatId = incomeMessage.getChatId();
-//        editMessage.setChatId(chatId);
-//        editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        String callback = Handlers.USER.getHandlerPrefix() + UserOperation.SAVE_SETTLEMENT_CALLBACK.getValue();
-//TODO Изменить колбэк кнопки отмены
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), callback)));
+        List<Pair<String, String>> buttonsAttributesList = adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.SAVE_SETTLEMENT_CALLBACK.getValue());
+
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+        buttonsAttributesList.add(cancelButton);
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method requestResidence.");
         return editMessage;
     }
@@ -216,9 +212,8 @@ TODO разделить функциональные действия и отп�
 
     // Save User to DB
     private EditMessageText userRegistrationSuccessMessage(Message incomeMessage) {
-editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setChatId(incomeMessage.getChatId());
-//        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
+
         editMessage.setText(messages.getSUCCESS_REGISTRATION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
@@ -238,8 +233,7 @@ editMessageTextGeneralPreset(incomeMessage);
 
     public EditMessageText denyRegistration(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setMessageId(incomeMessage.getMessageId());
-//        editMessage.setChatId(incomeMessage.getChatId());
+
         editMessage.setText(messages.getDENY_REGISTRATION_MESSAGE());
         log.info("User deny registration");
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard

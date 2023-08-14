@@ -16,12 +16,15 @@ import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /*
@@ -30,7 +33,7 @@ This class handle Admin functional
 @Service
 @Data
 @Log4j
-public class AdminHandler implements Handler{
+public class AdminHandler implements Handler {
     @Autowired
     UserService userService;
     @Autowired
@@ -154,6 +157,13 @@ public class AdminHandler implements Handler{
 
     public List<Settlement> getSettlementsList() {
         return settlementService.findAll();
+    }
+
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData) {
+        Map<Integer, String> settlementAttributes = getSettlementsList()
+                .stream()
+                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
+        return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
 
     private String firstLetterToUpperCase(String s) {

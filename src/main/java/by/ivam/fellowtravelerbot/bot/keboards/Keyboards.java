@@ -15,8 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -159,37 +158,36 @@ public class Keyboards {
     // Inline keyboard three buttons - horizontal arrangement
     public InlineKeyboardMarkup twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(List<Pair<String, String>> buttonsAttributes) {
 
-            InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
-            if (buttonsAttributes.size()==3) {
-                List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-                List<InlineKeyboardButton> firstRow = new ArrayList<>();
-                List<InlineKeyboardButton> secondRow = new ArrayList<>();
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        if (buttonsAttributes.size() == 3) {
+            List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+            List<InlineKeyboardButton> firstRow = new ArrayList<>();
+            List<InlineKeyboardButton> secondRow = new ArrayList<>();
 
-                InlineKeyboardButton firstButton = new InlineKeyboardButton();
-                firstButton.setText(buttonsAttributes.get(0).getFirst());
-                firstButton.setCallbackData(buttonsAttributes.get(0).getSecond());
+            InlineKeyboardButton firstButton = new InlineKeyboardButton();
+            firstButton.setText(buttonsAttributes.get(0).getFirst());
+            firstButton.setCallbackData(buttonsAttributes.get(0).getSecond());
 
-                InlineKeyboardButton secondButton = new InlineKeyboardButton();
-                secondButton.setText(buttonsAttributes.get(1).getFirst());
-                secondButton.setCallbackData(buttonsAttributes.get(1).getSecond());
+            InlineKeyboardButton secondButton = new InlineKeyboardButton();
+            secondButton.setText(buttonsAttributes.get(1).getFirst());
+            secondButton.setCallbackData(buttonsAttributes.get(1).getSecond());
 
-                InlineKeyboardButton thirdButton = new InlineKeyboardButton();
-                thirdButton.setText(buttonsAttributes.get(2).getFirst());
-                thirdButton.setCallbackData(buttonsAttributes.get(2).getSecond());
+            InlineKeyboardButton thirdButton = new InlineKeyboardButton();
+            thirdButton.setText(buttonsAttributes.get(2).getFirst());
+            thirdButton.setCallbackData(buttonsAttributes.get(2).getSecond());
 
-                firstRow.add(firstButton);
-                firstRow.add(secondButton);
-                secondRow.add(thirdButton);
+            firstRow.add(firstButton);
+            firstRow.add(secondButton);
+            secondRow.add(thirdButton);
 
-                rows.add(firstRow);
-                rows.add(secondRow);
+            rows.add(firstRow);
+            rows.add(secondRow);
 
-                markupInLine.setKeyboard(rows);
-            }
-            else {
-                log.error("Incorrect List of  buttonsAttributes. Keyboard not created");
-                markupInLine = null;
-            }
+            markupInLine.setKeyboard(rows);
+        } else {
+            log.error("Incorrect List of  buttonsAttributes. Keyboard not created");
+            markupInLine = null;
+        }
         return markupInLine;
     }
 
@@ -374,16 +372,26 @@ public class Keyboards {
         inLineKeyboard.setKeyboard(rows);
         return inLineKeyboard;
     }
+
+    public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
+
+        List<Pair<String, String>> buttonsAttributes = attributesType.entrySet()
+                .stream()
+                .map(entry -> Pair.of(entry.getValue(), callbackData + entry.getKey()))
+                .collect(Collectors.toList());
+
+        return buttonsAttributes;
+    }
+
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements, String callbackData) {
 
         List<Pair<String, String>> buttonsAttributes = settlements
                 .stream()
                 .map(settlement -> Pair.of(settlement.getName(), callbackData + settlement.getId()))
                 .collect(Collectors.toList());
-        buttonsAttributes.add(Pair.of(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-
         return buttonsAttributes;
     }
+
     public List<Pair<String, String>> departureLocationListButtonsAttributesCreator(List<DepartureLocation> departureLocations) {
 
         List<Pair<String, String>> buttonsAttributes = departureLocations
