@@ -124,10 +124,7 @@ public class Buttons {
     private final String MAIN_ADMIN_BLOCK_USER = "Заблокировать пользователя";
 
 
-
-    public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
-        return Pair.of(buttonName, buttonCallback);
-    }
+// Buttons attributes
     public Pair<String, String> yesButtonCreate(String buttonCallback) {
         return Pair.of(YES_BUTTON_TEXT, buttonCallback);
     }
@@ -161,6 +158,9 @@ public Pair<String, String> deleteCarButtonCreate() {
     }
 public Pair<String, String> deleteUserButtonCreate() {
         return Pair.of(DELETE_ALL_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
+    }
+public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
+        return Pair.of(DELETE_TEXT, buttonCallback);
     }
 
 

@@ -3,7 +3,6 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
-import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
@@ -98,34 +97,26 @@ TODO разделить функциональные действия и отп�
         log.debug("method handleReceivedCallback. get callback: " + callback);
         log.debug("process: " + process);
         switch (process) {
-            case "START_REGISTRATION_CALLBACK" -> {
-                editMessage = confirmUserFirstName(incomeMessage);
-            }
-            case "DENY_REGISTRATION_CALLBACK" -> {
-                editMessage = denyRegistration(incomeMessage);
-            }
-            case "REQUEST_SETTLEMENT_CALLBACK" -> {
-                editMessage = requestResidenceMessage(incomeMessage);
-            }
-            case "REGISTRATION_EDIT_NAME" -> {
-                editMessage = editUserFirstNameBeforeSaving(incomeMessage);
-            }
+            case "START_REGISTRATION_CALLBACK" -> editMessage = confirmUserFirstName(incomeMessage);
+            case "DENY_REGISTRATION_CALLBACK" -> editMessage = denyRegistration(incomeMessage);
+            case "REQUEST_SETTLEMENT_CALLBACK" -> editMessage = requestResidenceMessage(incomeMessage);
+            case "REGISTRATION_EDIT_NAME" -> editMessage = editUserFirstNameBeforeSaving(incomeMessage);
             case "SAVE_SETTLEMENT_CALLBACK" -> {
                 setSettlementToDTO(chatId, callback);
                 userRegistration(chatId);
                 editMessage = userRegistrationSuccessMessage(incomeMessage);
             }
-            case "EDIT_NAME_CALLBACK" -> {
-                editMessage = editUserFirstNameMessage(incomeMessage);
-            }
-            case "CHANGE_SETTLEMENT_REQUEST_CALLBACK" -> {
-                editMessage = editUserResidenceRequestMessage(incomeMessage);
-            }
+            case "EDIT_NAME_CALLBACK" -> editMessage = editUserFirstNameMessage(incomeMessage);
+            case "CHANGE_SETTLEMENT_REQUEST_CALLBACK" -> editMessage = editUserResidenceRequestMessage(incomeMessage);
             case "CHANGE_SETTLEMENT_CALLBACK" -> {
                 User user = editUserSetResidence(chatId, callback);
                 editMessage = editUserResidenceSuccessMessage(incomeMessage, user);
             }
-
+            case "DELETE_USER" -> editMessage = deleteUserStartProcessMessage(incomeMessage);
+            case "CONFIRM_USER_DELETION" -> {
+                deleteUser(chatId);
+                editMessage = deleteUserSuccessMessage(incomeMessage);
+            }
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
@@ -180,7 +171,6 @@ TODO разделить функциональные действия и отп�
         String incomeMessageText = incomeMessage.getText();
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessage.getText());
-
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK)); // Yes button
@@ -251,17 +241,18 @@ TODO разделить функциональные действия и отп�
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         if (carHandler.getUsersCarsQuantity(chatId) == 0) {
-            buttonsAttributesList.add(buttons.changeNameButtonCreate());
-            buttonsAttributesList.add(buttons.changeResidenceButtonCreate());
-            buttonsAttributesList.add(buttons.addCarButtonCreate());
-            buttonsAttributesList.add(buttons.deleteUserButtonCreate());
+            buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
+            buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
+            buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
+            buttonsAttributesList.add(buttons.deleteUserButtonCreate()); // Delete User button
         } else {
-            buttonsAttributesList.add(buttons.changeNameButtonCreate());
-            buttonsAttributesList.add(buttons.changeResidenceButtonCreate());
-            if (carHandler.getUsersCarsQuantity(chatId) < 2) buttonsAttributesList.add(buttons.addCarButtonCreate());
-            buttonsAttributesList.add(buttons.editCarButtonCreate());
-            buttonsAttributesList.add(buttons.deleteCarButtonCreate());
-            buttonsAttributesList.add(buttons.deleteUserButtonCreate());
+            buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
+            buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
+            if (carHandler.getUsersCarsQuantity(chatId) < 2)
+                buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
+            buttonsAttributesList.add(buttons.editCarButtonCreate()); // Edit User's cars button
+            buttonsAttributesList.add(buttons.deleteCarButtonCreate()); // Delete User's cars button
+            buttonsAttributesList.add(buttons.deleteUserButtonCreate()); // Delete User button
         }
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
@@ -323,16 +314,19 @@ TODO разделить функциональные действия и отп�
 //    Delete User
 
     public EditMessageText deleteUserStartProcessMessage(Message incomeMessage) {
-        editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getDELETE_USER_CONFIRM_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.deleteUserButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
 
     public EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
-        editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
+
         editMessage.setText(messages.getDELETE_USER_DONE_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;
@@ -345,30 +339,26 @@ TODO разделить функциональные действия и отп�
         userService.deleteUser(chatId);
     }
 
-    private UserDTO userDTOCreator(Message incomeMessage) {
+    private void userDTOCreator(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
         userDTO.setChatId(chatId)
                 .setFirstName(incomeMessage.getChat().getFirstName())
                 .setTelegramUserName(incomeMessage.getChat().getUserName());
         userDTOStorageAccess.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator");
-
-        return userDTO;
     }
 
-    private UserDTO userDTOCreator(Message incomeMessage, String firstname) {
+    private void userDTOCreator(Message incomeMessage, String firstname) {
         Long chatId = incomeMessage.getChatId();
         userDTO.setChatId(chatId)
                 .setFirstName(firstname)
                 .setTelegramUserName(incomeMessage.getChat().getUserName());
         userDTOStorageAccess.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator with edited firstname");
-        return userDTO;
     }
 
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
     }
-
 }
