@@ -139,7 +139,6 @@ public class Buttons {
     }
     public Pair<String, String> cancelButtonCreate() {
         return Pair.of(CANCEL_BUTTON_TEXT, Handlers.START.getHandlerPrefix() + Operation.CANCEL_CALLBACK);
-//        return Pair.of(CANCEL_BUTTON_TEXT, String.valueOf(Operation.CANCEL_CALLBACK));
     }
     public Pair<String, String> changeNameButtonCreate() {
         return Pair.of(CHANGE_NAME_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
@@ -162,6 +161,4 @@ public Pair<String, String> deleteUserButtonCreate() {
 public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
         return Pair.of(DELETE_TEXT, buttonCallback);
     }
-
-
 }
