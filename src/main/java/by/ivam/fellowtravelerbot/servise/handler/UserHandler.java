@@ -69,6 +69,7 @@ TODO разделить функциональные действия и отп�
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
+//        TODO метод выбрасывает НПЕ что в сендмессадж чат айди = налл, но при этом все отправляется правильно
         String messageText = incomeMessage.getText();
         Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus);
@@ -125,7 +126,6 @@ TODO разделить функциональные действия и отп�
                 editMessage = editUserResidenceSuccessMessage(incomeMessage, user);
             }
 
-
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
@@ -135,13 +135,9 @@ TODO разделить функциональные действия и отп�
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
 
-        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.START_REGISTRATION_CALLBACK);
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(yesButton);
-        buttonsAttributesList.add(cancelButton);
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.START_REGISTRATION_CALLBACK));
+        buttonsAttributesList.add(buttons.noButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method startRegistration");
         messageProcessor.sendMessage(sendMessage);
@@ -150,21 +146,13 @@ TODO разделить функциональные действия и отп�
     // Ask user to confirm telegram User's first name as UserName or edit it
     private EditMessageText confirmUserFirstName(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-
         String firstName = incomeMessage.getChat().getFirstName();
-//
         editMessage.setText(messages.getCONFIRM_USER_FIRST_MESSAGE() + firstName + "?");
 
-        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK);
-        Pair<String, String> editButton = keyboards.buttonAttributesPairCreator(buttons.getEDIT_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME);
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(yesButton);
-        buttonsAttributesList.add(editButton);
-        buttonsAttributesList.add(cancelButton);
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK));
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME));
+        buttonsAttributesList.add(buttons.cancelButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK));
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
         userDTOCreator(incomeMessage);
@@ -189,21 +177,15 @@ TODO разделить функциональные действия и отп�
     //    request user to confirm that edited userFirstName is correct
     private SendMessage confirmEditedUserFirstName(Message incomeMessage) {
 
-        long chatId = incomeMessage.getChatId();
         String incomeMessageText = incomeMessage.getText();
-        sendMessage.setChatId(chatId);
+        sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getCONFIRM_FIRSTNAME_MESSAGE() + incomeMessage.getText());
 
-        Pair<String, String> yesButton = keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK);
-        Pair<String, String> editButton = keyboards.buttonAttributesPairCreator(buttons.getEDIT_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME);
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getNO_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(yesButton);
-        buttonsAttributesList.add(editButton);
-        buttonsAttributesList.add(cancelButton);
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.REQUEST_SETTLEMENT_CALLBACK)); // Yes button
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_EDIT_NAME)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK)); // No button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         userDTOCreator(incomeMessage, incomeMessageText);
         log.info("method confirmEditedUserFirstName. got user edited firstname and request to confirm edited name");
@@ -213,11 +195,9 @@ TODO разделить функциональные действия и отп�
     private EditMessageText requestResidenceMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.SAVE_SETTLEMENT_CALLBACK.getValue());
-
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
-        buttonsAttributesList.add(cancelButton);
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.SAVE_SETTLEMENT_CALLBACK.getValue()); // List of buttons of Settlements
+        buttonsAttributesList.add(buttons.cancelButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK)); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method requestResidence.");
         return editMessage;
@@ -249,7 +229,7 @@ TODO разделить функциональные действия и отп�
         return user;
     }
 
-    public EditMessageText denyRegistration(Message incomeMessage) {
+    private EditMessageText denyRegistration(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
 
         editMessage.setText(messages.getDENY_REGISTRATION_MESSAGE());
@@ -268,38 +248,20 @@ TODO разделить функциональные действия и отп�
     public void sendUserData(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
-        //        Create pairs of buttons attributes and add them to list
-        Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
-        Pair<String, String> changeResidenceButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_RESIDENCE_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_REQUEST_CALLBACK);
-//                buttons.getEDIT_USER_RESIDENCE_CALLBACK());
-        Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
-                Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_REQUEST_CALLBACK);
-//                buttons.getEDIT_CAR_START_PROCESS_CALLBACK());
-        Pair<String, String> addCarButton = keyboards.buttonAttributesPairCreator(buttons.getADD_CAR_TEXT(),
-                Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_REQUEST_CALLBACK);
-//                buttons.getADD_CAR_CALLBACK());
-        Pair<String, String> deleteCarButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_CAR_TEXT(),
-                Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK);
-//                buttons.getREQUEST_DELETE_CAR_CALLBACK());
-        Pair<String, String> deleteUserButton = keyboards.buttonAttributesPairCreator(buttons.getDELETE_ALL_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
-//                buttons.getDELETE_USER_START_PROCESS_CALLBACK());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         if (carHandler.getUsersCarsQuantity(chatId) == 0) {
-            buttonsAttributesList.add(changeNameButton);
-            buttonsAttributesList.add(changeResidenceButton);
-            buttonsAttributesList.add(addCarButton);
-            buttonsAttributesList.add(deleteUserButton);
+            buttonsAttributesList.add(buttons.changeNameButtonCreate());
+            buttonsAttributesList.add(buttons.changeResidenceButtonCreate());
+            buttonsAttributesList.add(buttons.addCarButtonCreate());
+            buttonsAttributesList.add(buttons.deleteUserButtonCreate());
         } else {
-            buttonsAttributesList.add(changeNameButton);
-            buttonsAttributesList.add(changeResidenceButton);
-            if (carHandler.getUsersCarsQuantity(chatId) < 2) buttonsAttributesList.add(addCarButton);
-            buttonsAttributesList.add(changeCarButton);
-            buttonsAttributesList.add(deleteCarButton);
-            buttonsAttributesList.add(deleteUserButton);
+            buttonsAttributesList.add(buttons.changeNameButtonCreate());
+            buttonsAttributesList.add(buttons.changeResidenceButtonCreate());
+            if (carHandler.getUsersCarsQuantity(chatId) < 2) buttonsAttributesList.add(buttons.addCarButtonCreate());
+            buttonsAttributesList.add(buttons.editCarButtonCreate());
+            buttonsAttributesList.add(buttons.deleteCarButtonCreate());
+            buttonsAttributesList.add(buttons.deleteUserButtonCreate());
         }
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
@@ -313,8 +275,7 @@ TODO разделить функциональные действия и отп�
         long chatId = incomeMessage.getChatId();
         String firstName = userService.findUserById(chatId).getFirstName();
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE() + String.format(messages.getEDIT_USER_FIRSTNAME_MESSAGE_POSTFIX(), firstName));
-//        TODO ПРОДУМАТЬ метод кнопки отмена
-        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CHAT_STATUS);
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
@@ -335,17 +296,12 @@ TODO разделить функциональные действия и отп�
     }
 
     public EditMessageText editUserResidenceRequestMessage(Message incomeMessage) {
-        long chatId = incomeMessage.getChatId();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(incomeMessage.getMessageId());
+        editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_CALLBACK.getValue());
-
-        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
-        buttonsAttributesList.add(cancelButton);
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_CALLBACK.getValue());
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getEDIT_USER_RESIDENCE_CALLBACK())));
 
         log.debug("method editUserResidenceRequestMessage");
         return editMessage;
@@ -354,13 +310,11 @@ TODO разделить функциональные действия и отп�
     public User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
         user.setResidence(adminHandler.getSettlementService().findById(CommonMethods.trimId(callbackData)));
-//        user.setResidence(adminHandler.getSettlementService().findById(Integer.parseInt(callbackData.substring(28))));
         return userService.updateUser(user);
     }
 
     public EditMessageText editUserResidenceSuccessMessage(Message incomeMessage, User user) {
         editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setChatId(chatId);
         editMessage.setText(String.format(messages.getEDIT_USER_RESIDENCE_SUCCESS_MESSAGE(), user.getResidence().getName()) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;
@@ -413,7 +367,6 @@ TODO разделить функциональные действия и отп�
     }
 
     public void editMessageTextGeneralPreset(Message incomeMessage) {
-
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
     }

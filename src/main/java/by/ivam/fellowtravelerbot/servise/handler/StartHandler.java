@@ -34,7 +34,7 @@ public class StartHandler implements Handler {
     ResponseMessageProcessor messageProcessor;
 
 
-    SendMessage message = new SendMessage();
+    SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
     @Override
@@ -45,7 +45,13 @@ public class StartHandler implements Handler {
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         log.debug("method handleReceivedCallback");
+        switch (callback) {
+            case "CANCEL_CALLBACK" -> {
 
+                editMessage = quitProcessMessage(incomeMessage);
+            }
+        }
+        messageProcessor.sendEditedMessage(editMessage);
     }
 
 
@@ -55,10 +61,10 @@ public class StartHandler implements Handler {
 
     public void startCommandReceived(Message incomeMessage) {
         log.info("Start command received");
-        message.setChatId(incomeMessage.getChatId());
-        message.setText("Привет, " + incomeMessage.getChat().getFirstName() + "!");
-        message.setReplyMarkup(keyboards.mainMenu());
-        messageProcessor.sendMessage(message);
+        sendMessage.setChatId(incomeMessage.getChatId());
+        sendMessage.setText("Привет, " + incomeMessage.getChat().getFirstName() + "!");
+        sendMessage.setReplyMarkup(keyboards.mainMenu());
+        messageProcessor.sendMessage(sendMessage);
 //        sendMessage(message);
         startMessaging(incomeMessage);
     }
@@ -75,20 +81,20 @@ public class StartHandler implements Handler {
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is new User. Call registration process.");
         } else {
-            message.setChatId(chatId);
-            message.setText(messages.getFURTHER_ACTION_MESSAGE());
-            message.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
+            sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
 //        sendMessage(message);
-            messageProcessor.sendMessage(message);
+            messageProcessor.sendMessage(sendMessage);
         }
     }
 
     public void noRegistrationMessage(long chatId) {
-        message.setChatId(chatId);
-        message.setText(messages.getNO_REGISTRATION_MESSAGE());
-        messageProcessor.sendMessage(message);
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
+        messageProcessor.sendMessage(sendMessage);
 
     }
 
@@ -99,7 +105,7 @@ public class StartHandler implements Handler {
         return editMessage;
     }
 
-    public EditMessageText quitProcessMessage(Message incomeMessage) {
+    private EditMessageText quitProcessMessage(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setChatId(chatId);

@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.bot.enums;
 
 public enum Operation {
+    CANCEL_CALLBACK,
     START_ADD_NEW,
     ADD_NEW,
     START_EDIT,

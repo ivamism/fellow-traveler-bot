@@ -97,6 +97,21 @@ public class Keyboards {
         markupInLine.setKeyboard(rowsInLine);
         return markupInLine;
     }
+   public InlineKeyboardMarkup oneButtonsInlineKeyboard(Pair<String, String> buttonsAttributes) {
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> firstRowInLine = new ArrayList<>();
+        InlineKeyboardButton firstButton = new InlineKeyboardButton();
+
+        firstButton.setText(buttonsAttributes.getFirst());
+        firstButton.setCallbackData(buttonsAttributes.getSecond());
+        firstRowInLine.add(firstButton);
+        rowsInLine.add(firstRowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        return markupInLine;
+    }
 
     // Inline keyboard two buttons - horizontal arrangement
     public InlineKeyboardMarkup twoButtonsInlineKeyboard(String firstButtonText, String firstButtonCallbackData, String secondButtonText, String secondButtonCallbackData) {

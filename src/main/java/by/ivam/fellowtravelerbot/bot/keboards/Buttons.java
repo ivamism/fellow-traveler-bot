@@ -3,7 +3,12 @@ package by.ivam.fellowtravelerbot.bot.keboards;
 This class contains Strings of buttons names and callback-queries which used in keyboards
  */
 
+import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
+import by.ivam.fellowtravelerbot.bot.enums.Handlers;
+import by.ivam.fellowtravelerbot.bot.enums.Operation;
+import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import lombok.Getter;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Getter
@@ -99,7 +104,7 @@ public class Buttons {
     private final String CHANGE_NAME_TEXT = "Изменить имя";
     private final String CHANGE_RESIDENCE_TEXT = "Изменить место жительства";
     private final String ADD_CAR_TEXT = "Добавить автомобиль";
-    private final String CHANGE_CAR_TEXT = "Изменить автомобиль";
+    private final String EDIT_CAR_TEXT = "Изменить автомобиль";
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
     private final String TOWARD_MINSK_TEXT = "В Минск";
     private final String FROM_MINSK_TEXT = "Из Минска";
@@ -117,4 +122,46 @@ public class Buttons {
     private final String MAIN_ADMIN_DELETE_LOCATION = "Удалить локацию";
     private final String MAIN_ADMIN_SET_ADMIN = "Добавить администратора";
     private final String MAIN_ADMIN_BLOCK_USER = "Заблокировать пользователя";
+
+
+
+    public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
+        return Pair.of(buttonName, buttonCallback);
+    }
+    public Pair<String, String> yesButtonCreate(String buttonCallback) {
+        return Pair.of(YES_BUTTON_TEXT, buttonCallback);
+    }
+    public Pair<String, String> noButtonCreate(String buttonCallback) {
+        return Pair.of(NO_BUTTON_TEXT, buttonCallback);
+    }
+    public Pair<String, String> editButtonCreate(String buttonCallback) {
+        return Pair.of(EDIT_BUTTON_TEXT, buttonCallback);
+    }
+    public Pair<String, String> cancelButtonCreate(String buttonCallback) {
+        return Pair.of(CANCEL_BUTTON_TEXT, buttonCallback);
+    }
+    public Pair<String, String> cancelButtonCreate() {
+        return Pair.of(CANCEL_BUTTON_TEXT, Handlers.START.getHandlerPrefix() + Operation.CANCEL_CALLBACK);
+//        return Pair.of(CANCEL_BUTTON_TEXT, String.valueOf(Operation.CANCEL_CALLBACK));
+    }
+    public Pair<String, String> changeNameButtonCreate() {
+        return Pair.of(CHANGE_NAME_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
+    }
+    public Pair<String, String> changeResidenceButtonCreate() {
+        return Pair.of(CHANGE_RESIDENCE_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_REQUEST_CALLBACK);
+    }
+    public Pair<String, String> editCarButtonCreate() {
+        return Pair.of(EDIT_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_REQUEST_CALLBACK);
+    }
+public Pair<String, String> addCarButtonCreate() {
+        return Pair.of(ADD_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_REQUEST_CALLBACK);
+    }
+public Pair<String, String> deleteCarButtonCreate() {
+        return Pair.of(DELETE_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK);
+    }
+public Pair<String, String> deleteUserButtonCreate() {
+        return Pair.of(DELETE_ALL_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
+    }
+
+
 }

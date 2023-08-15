@@ -218,11 +218,11 @@ public class MessageDispatcher {
                 carHandler.setEditedBeforeSavingCommentary(chatId, messageText);
                 message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
             }
-            case "USER_EDIT_NAME" -> {
-                log.info("Get edited User's firstname " + messageText);
-                userHandler.saveEditedUserFirstName(chatId, messageText);
-                message = userHandler.editUserFirstNameSuccessMessage(chatId);
-            }
+//            case "USER_EDIT_NAME" -> {
+//                log.info("Get edited User's firstname " + messageText);
+//                userHandler.saveEditedUserFirstName(chatId, messageText);
+//                message = userHandler.editUserFirstNameSuccessMessage(chatId);
+//            }
             case "EDIT_FIRST_CAR_MODEL" -> {
                 log.info("Get edited first car's model " + messageText);
                 Car car = carHandler.setFirstCarEditedModel(chatId, messageText);
