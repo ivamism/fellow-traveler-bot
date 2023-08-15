@@ -4,7 +4,6 @@ import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
-import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
@@ -118,6 +117,14 @@ TODO разделить функциональные действия и отп�
             case "EDIT_NAME_CALLBACK" -> {
                 editMessage = editUserFirstNameMessage(incomeMessage);
             }
+            case "CHANGE_SETTLEMENT_REQUEST_CALLBACK" -> {
+                editMessage = editUserResidenceRequestMessage(incomeMessage);
+            }
+            case "CHANGE_SETTLEMENT_CALLBACK" -> {
+                User user = editUserSetResidence(chatId, callback);
+                editMessage = editUserResidenceSuccessMessage(incomeMessage, user);
+            }
+
 
         }
         messageProcessor.sendEditedMessage(editMessage);
@@ -264,9 +271,8 @@ TODO разделить функциональные действия и отп�
         //        Create pairs of buttons attributes and add them to list
         Pair<String, String> changeNameButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_NAME_TEXT(),
                 Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
-//                buttons.getEDIT_USER_NAME_CALLBACK());
         Pair<String, String> changeResidenceButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_RESIDENCE_TEXT(),
-                Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT);
+                Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_REQUEST_CALLBACK);
 //                buttons.getEDIT_USER_RESIDENCE_CALLBACK());
         Pair<String, String> changeCarButton = keyboards.buttonAttributesPairCreator(buttons.getCHANGE_CAR_TEXT(),
                 Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_REQUEST_CALLBACK);
@@ -333,7 +339,13 @@ TODO разделить функциональные действия и отп�
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getEDIT_USER_RESIDENCE_CALLBACK())));
+        List<Pair<String, String>> buttonsAttributesList = adminHandler.settlementsButtonsAttributesListCreator(Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_CALLBACK.getValue());
+
+        Pair<String, String> cancelButton = keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
+                Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK);
+        buttonsAttributesList.add(cancelButton);
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(adminHandler.getSettlementsList(), buttons.getEDIT_USER_RESIDENCE_CALLBACK())));
 
         log.debug("method editUserResidenceRequestMessage");
         return editMessage;
@@ -341,13 +353,14 @@ TODO разделить функциональные действия и отп�
 
     public User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
-        user.setResidence(adminHandler.getSettlementService().findById(Integer.parseInt(callbackData.substring(28))));
+        user.setResidence(adminHandler.getSettlementService().findById(CommonMethods.trimId(callbackData)));
+//        user.setResidence(adminHandler.getSettlementService().findById(Integer.parseInt(callbackData.substring(28))));
         return userService.updateUser(user);
     }
 
-    public EditMessageText editUserResidenceSuccessMessage(long chatId, User user) {
-
-        editMessage.setChatId(chatId);
+    public EditMessageText editUserResidenceSuccessMessage(Message incomeMessage, User user) {
+        editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setChatId(chatId);
         editMessage.setText(String.format(messages.getEDIT_USER_RESIDENCE_SUCCESS_MESSAGE(), user.getResidence().getName()) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;

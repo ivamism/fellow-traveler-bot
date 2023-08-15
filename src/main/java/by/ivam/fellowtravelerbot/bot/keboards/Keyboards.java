@@ -373,7 +373,7 @@ public class Keyboards {
         return inLineKeyboard;
     }
 
-    public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
+      public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
 
         List<Pair<String, String>> buttonsAttributes = attributesType.entrySet()
                 .stream()
