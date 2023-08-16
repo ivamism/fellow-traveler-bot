@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.bot.keboards;
 /*
 This class contains Strings of buttons names and callback-queries which used in keyboards
+and methods od creation of buttons attributes pairs (name and callback data)
  */
 
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;

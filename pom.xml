@@ -31,12 +31,6 @@
 		</dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
-<!--		<dependency>-->
-<!--			<groupId>org.telegram</groupId>-->
-<!--			<artifactId>telegrambots</artifactId>-->
-<!--			<version>6.5.0</version>-->
-<!--		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-spring-boot-starter -->
 		<dependency>
@@ -77,12 +71,6 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.1.7.Final</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-<!--		<dependency>-->
-<!--			<groupId>org.hibernate.validator</groupId>-->
-<!--			<artifactId>hibernate-validator</artifactId>-->
-<!--			<version>8.0.0.Final</version>-->
-<!--		</dependency>-->
 
 
 		<dependency>
