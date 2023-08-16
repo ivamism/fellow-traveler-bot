@@ -28,6 +28,7 @@ public class CallbackDispatcher {
     public void onCallbackReceived(CallbackQuery callbackQuery) {
         Message incomeMessage = callbackQuery.getMessage();
         String callbackData = callbackQuery.getData();
+        log.info("Get callbackData: " + callbackData);
         String handler = getHandler(callbackData);
         String callback = getCallback(callbackData);
         log.info("Get callBack: " + callbackData);

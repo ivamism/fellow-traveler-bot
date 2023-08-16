@@ -14,31 +14,6 @@ import java.util.stream.Collectors;
 @Data
 @Log4j
 public class CommonMethods {
-    public static int trimId1(String callbackData) {
-        StringBuilder s = new StringBuilder(callbackData);
-
-        while (Character.isDigit(s.charAt(0)) == false) {
-            s.deleteCharAt(0);
-        }
-        int id = Integer.parseInt(s.toString());
-        log.debug("find id - " + id);
-
-        return id;
-    }
-
-    public static int trimId3(String callbackData) {
-        Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(callbackData);
-        String s = "";
-        while (matcher.find()) {
-            s = matcher.group();
-        }
-
-        int id = Integer.parseInt(s);
-        log.debug("find id - " + id);
-
-        return id;
-    }
 
     public static String trimProcess(String s) {
         String[] strings = s.split(":");

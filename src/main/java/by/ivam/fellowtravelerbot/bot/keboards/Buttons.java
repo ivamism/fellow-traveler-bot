@@ -83,7 +83,6 @@ public class Buttons {
     private final String CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_CALLBACK = "CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_CALLBACK";
 
 
-
     // Buttons Names
 
     private final String YES_BUTTON_TEXT = "Да";
@@ -125,41 +124,56 @@ public class Buttons {
     private final String MAIN_ADMIN_BLOCK_USER = "Заблокировать пользователя";
 
 
-// Buttons attributes
+    // Buttons attributes
     public Pair<String, String> yesButtonCreate(String buttonCallback) {
         return Pair.of(YES_BUTTON_TEXT, buttonCallback);
     }
+
     public Pair<String, String> noButtonCreate(String buttonCallback) {
         return Pair.of(NO_BUTTON_TEXT, buttonCallback);
     }
+
     public Pair<String, String> editButtonCreate(String buttonCallback) {
         return Pair.of(EDIT_BUTTON_TEXT, buttonCallback);
     }
+
     public Pair<String, String> cancelButtonCreate(String buttonCallback) {
         return Pair.of(CANCEL_BUTTON_TEXT, buttonCallback);
     }
+
     public Pair<String, String> cancelButtonCreate() {
         return Pair.of(CANCEL_BUTTON_TEXT, Handlers.START.getHandlerPrefix() + Operation.CANCEL_CALLBACK);
     }
+
     public Pair<String, String> changeNameButtonCreate() {
         return Pair.of(CHANGE_NAME_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CALLBACK);
     }
+
     public Pair<String, String> changeResidenceButtonCreate() {
         return Pair.of(CHANGE_RESIDENCE_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.CHANGE_SETTLEMENT_REQUEST_CALLBACK);
     }
+
     public Pair<String, String> editCarButtonCreate() {
         return Pair.of(EDIT_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_REQUEST_CALLBACK);
     }
-public Pair<String, String> addCarButtonCreate() {
+
+    public Pair<String, String> addCarButtonCreate() {
         return Pair.of(ADD_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_REQUEST_CALLBACK);
     }
-public Pair<String, String> deleteCarButtonCreate() {
+
+    public Pair<String, String> deleteCarButtonCreate() {
         return Pair.of(DELETE_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK);
     }
-public Pair<String, String> deleteUserButtonCreate() {
+
+    public Pair<String, String> deleteUserButtonCreate() {
         return Pair.of(DELETE_ALL_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
     }
-public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
+
+    public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
         return Pair.of(DELETE_TEXT, buttonCallback);
     }
+    public Pair<String, String> skipButtonCreate(String buttonCallback) {
+        return Pair.of(SKIP_STEP_TEXT, buttonCallback);
+    }
+
 }

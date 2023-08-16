@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.bot;
 
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
+import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
@@ -97,7 +98,8 @@ public class MessageDispatcher {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to get User's stored data");
-                    carHandler.startAddCarProcess(incomeMessage);
+//                    carHandler.startAddCarProcess(incomeMessage);
+                    carHandler.handleReceivedCallback(String.valueOf(CarOperation.ADD_CAR_REQUEST_CALLBACK), incomeMessage);
                 }
             }
             case "Найти попутку" -> {
@@ -170,111 +172,111 @@ public class MessageDispatcher {
        } else unknownCommandReceived(chatId);
 
 
-        switch (chatStatus) {
-            case "NO_STATUS" -> unknownCommandReceived(chatId);
-
-//            case "REGISTRATION_USER_EDIT_NAME" -> {
-//                log.info("Get edited name " + messageText);
-////                message = userHandler.confirmEditedUserFirstName(incomeMessage);
+//        switch (chatStatus) {
+//            case "NO_STATUS" -> unknownCommandReceived(chatId);
+//
+////            case "REGISTRATION_USER_EDIT_NAME" -> {
+////                log.info("Get edited name " + messageText);
+//////                message = userHandler.confirmEditedUserFirstName(incomeMessage);
+////            }
+//
+////            case "ADD_CAR_MODEL" -> {
+////                log.info("Get model " + messageText);
+////                carHandler.setModel(chatId, messageText);
+////                message = carHandler.requestColor(incomeMessage);
+////            }
+//            case "ADD_CAR_COLOR" -> {
+//                log.info("Get color " + messageText);
+//                carHandler.setColor(chatId, messageText);
+//                message = carHandler.requestPlateNumber(incomeMessage);
 //            }
-
-            case "ADD_CAR_MODEL" -> {
-                log.info("Get model " + messageText);
-                carHandler.setModel(chatId, messageText);
-                message = carHandler.requestColor(incomeMessage);
-            }
-            case "ADD_CAR_COLOR" -> {
-                log.info("Get color " + messageText);
-                carHandler.setColor(chatId, messageText);
-                message = carHandler.requestPlateNumber(incomeMessage);
-            }
-            case "ADD_CAR_PLATES" -> {
-                log.info("Get plate number " + messageText);
-                carHandler.setPlateNumber(chatId, messageText);
-                message = carHandler.requestCommentary(incomeMessage);
-            }
-            case "ADD_CAR_COMMENTARY" -> {
-                log.info("Get commentary " + messageText);
-                carHandler.setCommentary(chatId, messageText);
-                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
-            }
-            case "ADD_CAR_EDIT_MODEL" -> {
-                log.info("Get edited model " + messageText);
-                carHandler.setEditedBeforeSavingModel(chatId, messageText);
-                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
-            }
-            case "ADD_CAR_EDIT_COLOR" -> {
-                log.info("Get edited color " + messageText);
-                carHandler.setEditedBeforeSavingColor(chatId, messageText);
-                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
-            }
-            case "ADD_CAR_EDIT_PLATES" -> {
-                log.info("Get edited plates " + messageText);
-                carHandler.setEditedBeforeSavingPlateNumber(chatId, messageText);
-                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
-            }
-            case "ADD_CAR_EDIT_COMMENTARY" -> {
-                log.info("Get edited commentary " + messageText);
-                carHandler.setEditedBeforeSavingCommentary(chatId, messageText);
-                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
-            }
-//            case "USER_EDIT_NAME" -> {
-//                log.info("Get edited User's firstname " + messageText);
-//                userHandler.saveEditedUserFirstName(chatId, messageText);
-//                message = userHandler.editUserFirstNameSuccessMessage(chatId);
+//            case "ADD_CAR_PLATES" -> {
+//                log.info("Get plate number " + messageText);
+//                carHandler.setPlateNumber(chatId, messageText);
+//                message = carHandler.requestCommentary(incomeMessage);
 //            }
-            case "EDIT_FIRST_CAR_MODEL" -> {
-                log.info("Get edited first car's model " + messageText);
-                Car car = carHandler.setFirstCarEditedModel(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_SECOND_CAR_MODEL" -> {
-                log.info("Get edited second car's model " + messageText);
-                Car car = carHandler.setSecondCarEditedModel(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_FIRST_CAR_COLOR" -> {
-                log.info("Get edited first car's color " + messageText);
-                Car car = carHandler.setFirstCarEditedColor(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_SECOND_CAR_COLOR" -> {
-                log.info("Get edited second car's color " + messageText);
-                Car car = carHandler.setSecondCarEditedColor(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_FIRST_CAR_PLATES" -> {
-                log.info("Get edited first car's plates " + messageText);
-                Car car = carHandler.setFirstCarEditedPlates(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_SECOND_CAR_PLATES" -> {
-                log.info("Get edited second car's plates " + messageText);
-                Car car = carHandler.setSecondCarEditedPlates(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_FIRST_CAR_COMMENTARY" -> {
-                log.info("Get edited first car's commentary " + messageText);
-                Car car = carHandler.setFirstCarEditedCommentary(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "EDIT_SECOND_CAR_COMMENTARY" -> {
-                log.info("Get edited second car's commentary " + messageText);
-                Car car = carHandler.setSecondCarEditedCommentary(chatId, messageText);
-                message = carHandler.editionCarSuccessMessage(chatId, car);
-            }
-            case "ADD_SETTLEMENT_NAME" -> {
-                log.info("Get Settlement name  " + messageText);
-                Settlement settlement = adminHandler.saveSettlement(chatId, messageText);
-                message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
-            }
-            case "ADD_DEPARTURE_LOCATION_NAME" -> {
-                log.info("Get DepartureLocation name  " + messageText);
-                DepartureLocation location = adminHandler.departureLocationSave(chatId, messageText);
-                message = adminHandler.departureLocationSaveSuccessMessage(chatId, location);
-            }
-        }
-        messageProcessor.sendMessage(message);
+//            case "ADD_CAR_COMMENTARY" -> {
+//                log.info("Get commentary " + messageText);
+//                carHandler.setCommentary(chatId, messageText);
+//                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+//            }
+//            case "ADD_CAR_EDIT_MODEL" -> {
+//                log.info("Get edited model " + messageText);
+//                carHandler.setEditedBeforeSavingModel(chatId, messageText);
+//                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+//            }
+//            case "ADD_CAR_EDIT_COLOR" -> {
+//                log.info("Get edited color " + messageText);
+//                carHandler.setEditedBeforeSavingColor(chatId, messageText);
+//                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+//            }
+//            case "ADD_CAR_EDIT_PLATES" -> {
+//                log.info("Get edited plates " + messageText);
+//                carHandler.setEditedBeforeSavingPlateNumber(chatId, messageText);
+//                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+//            }
+//            case "ADD_CAR_EDIT_COMMENTARY" -> {
+//                log.info("Get edited commentary " + messageText);
+//                carHandler.setEditedBeforeSavingCommentary(chatId, messageText);
+//                message = carHandler.checkDataBeforeSaveCarMessage(incomeMessage);
+//            }
+////            case "USER_EDIT_NAME" -> {
+////                log.info("Get edited User's firstname " + messageText);
+////                userHandler.saveEditedUserFirstName(chatId, messageText);
+////                message = userHandler.editUserFirstNameSuccessMessage(chatId);
+////            }
+//            case "EDIT_FIRST_CAR_MODEL" -> {
+//                log.info("Get edited first car's model " + messageText);
+//                Car car = carHandler.setFirstCarEditedModel(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_SECOND_CAR_MODEL" -> {
+//                log.info("Get edited second car's model " + messageText);
+//                Car car = carHandler.setSecondCarEditedModel(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_FIRST_CAR_COLOR" -> {
+//                log.info("Get edited first car's color " + messageText);
+//                Car car = carHandler.setFirstCarEditedColor(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_SECOND_CAR_COLOR" -> {
+//                log.info("Get edited second car's color " + messageText);
+//                Car car = carHandler.setSecondCarEditedColor(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_FIRST_CAR_PLATES" -> {
+//                log.info("Get edited first car's plates " + messageText);
+//                Car car = carHandler.setFirstCarEditedPlates(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_SECOND_CAR_PLATES" -> {
+//                log.info("Get edited second car's plates " + messageText);
+//                Car car = carHandler.setSecondCarEditedPlates(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_FIRST_CAR_COMMENTARY" -> {
+//                log.info("Get edited first car's commentary " + messageText);
+//                Car car = carHandler.setFirstCarEditedCommentary(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "EDIT_SECOND_CAR_COMMENTARY" -> {
+//                log.info("Get edited second car's commentary " + messageText);
+//                Car car = carHandler.setSecondCarEditedCommentary(chatId, messageText);
+//                message = carHandler.editionCarSuccessMessage(chatId, car);
+//            }
+//            case "ADD_SETTLEMENT_NAME" -> {
+//                log.info("Get Settlement name  " + messageText);
+//                Settlement settlement = adminHandler.saveSettlement(chatId, messageText);
+//                message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
+//            }
+//            case "ADD_DEPARTURE_LOCATION_NAME" -> {
+//                log.info("Get DepartureLocation name  " + messageText);
+//                DepartureLocation location = adminHandler.departureLocationSave(chatId, messageText);
+//                message = adminHandler.departureLocationSaveSuccessMessage(chatId, location);
+//            }
+//        }
+//        messageProcessor.sendMessage(message);
     }
 
     private void unknownCommandReceived(long chatId) {
