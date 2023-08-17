@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.DTO.CarDTO;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.repository.CarRepository;
 import lombok.extern.log4j.Log4j;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class CarServiceImplementation implements CarService {
     @Autowired
     private CarRepository carRepository;
+    @Autowired
+    UserService userService;
 
     @Override
     public Car findById(int id) {
@@ -21,9 +24,15 @@ public class CarServiceImplementation implements CarService {
     }
 
     @Override
-    public Car addNewCar(Car car) {
+    public Car addNewCar(CarDTO carDTO, long chatId) {
+        Car car = new Car();
+        car.setModel(carDTO.getModel())
+                .setColor(carDTO.getColor())
+                .setPlateNumber(carDTO.getPlateNumber())
+                .setCommentary(carDTO.getCommentary())
+                .setUser(userService.findUserById(chatId));
         carRepository.save(car);
-        log.info("CarService: Car " + car + " saved to DB");
+        log.info("CarService: Car " + carDTO + " saved to DB");
         return car;
     }
 

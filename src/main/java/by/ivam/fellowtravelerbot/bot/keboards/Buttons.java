@@ -172,11 +172,29 @@ public class Buttons {
     public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
         return Pair.of(DELETE_TEXT, buttonCallback);
     }
+
     public Pair<String, String> skipButtonCreate(String buttonCallback) {
         return Pair.of(SKIP_STEP_TEXT, buttonCallback);
     }
-public Pair<String, String> saveButtonCreate(String buttonCallback) {
+
+    public Pair<String, String> saveButtonCreate(String buttonCallback) {
         return Pair.of(SAVE_BUTTON_TEXT, buttonCallback);
+    }
+
+   public Pair<String, String> modelButtonCreate(String buttonCallback) {
+        return Pair.of(MODEL_TEXT, buttonCallback);
+    }
+
+   public Pair<String, String> colorButtonCreate(String buttonCallback) {
+        return Pair.of(COLOR_TEXT, buttonCallback);
+    }
+
+   public Pair<String, String> platesButtonCreate(String buttonCallback) {
+        return Pair.of(PLATES_TEXT, buttonCallback);
+    }
+
+   public Pair<String, String> commentaryButtonCreate(String buttonCallback) {
+        return Pair.of(COMMENTARY_TEXT, buttonCallback);
     }
 
 }
