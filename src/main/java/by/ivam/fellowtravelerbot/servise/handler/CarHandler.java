@@ -60,19 +60,19 @@ public class CarHandler implements Handler {
         Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         switch (chatStatus) {
-            case "ADD_CAR_MODEL" -> {
+            case "ADD_CAR_MODEL_CHAT_STATUS" -> {
                 setModel(chatId, messageText);
                 sendMessage = requestColor(incomeMessage);
             }
-            case "ADD_CAR_COLOR" -> {
+            case "ADD_CAR_COLOR_CHAT_STATUS" -> {
                 setColor(chatId, messageText);
                 sendMessage = requestPlateNumber(incomeMessage);
             }
-            case "ADD_CAR_PLATES" -> {
+            case "ADD_CAR_PLATES_CHAT_STATUS" -> {
                 setPlateNumber(chatId, messageText);
                 sendMessage = requestCommentary(incomeMessage);
             }
-            case "ADD_CAR_COMMENTARY" -> {
+            case "ADD_CAR_COMMENTARY_CHAT_STATUS" -> {
                 setCommentary(chatId, messageText);
                 sendMessage = checkDataBeforeSaveCarMessage(incomeMessage);
             }
@@ -92,10 +92,17 @@ public class CarHandler implements Handler {
         log.debug("process: " + process);
         switch (process) {
             case "ADD_CAR_REQUEST_CALLBACK" -> startAddCarProcess(incomeMessage);
-            case "ADD_CAR_START" -> editMessage = requestModel(incomeMessage);
+            case "ADD_CAR_START_CALLBACK" -> editMessage = requestModel(incomeMessage);
             case "ADD_CAR_SKIP_COMMENT_CALLBACK" -> {
                 setCommentary(chatId, "");
                 editMessage = checkDataBeforeSaveCarMessageSkipComment(incomeMessage);
+            }
+            case "ADD_CAR_SAVE_CAR_CALLBACK" -> {
+                Car car = saveCar(chatId);
+                editMessage = saveCarMessage(incomeMessage, car);
+                }
+            case "ADD_CAR_EDIT_CAR_CALLBACK" -> {
+                editMessage = editCarBeforeSavingStartMessage(incomeMessage);
             }
 
         }
@@ -116,7 +123,7 @@ public class CarHandler implements Handler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_START_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_START)); // Delete User button
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_START_CALLBACK)); // Delete User button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
@@ -140,7 +147,7 @@ public class CarHandler implements Handler {
 
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_MODEL);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_MODEL_CHAT_STATUS);
 
         log.info("CarHandler method requestModel: request to send car model");
 
@@ -158,7 +165,7 @@ public class CarHandler implements Handler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_COLOR);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_COLOR_CHAT_STATUS);
 
         log.info("CarHandler method requestColor: request to send color");
 
@@ -176,7 +183,7 @@ public class CarHandler implements Handler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_PLATES);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_PLATES_CHAT_STATUS);
 
         log.info("CarHandler method requestPlateNumber: request to send plate number");
 
@@ -197,7 +204,7 @@ public class CarHandler implements Handler {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_COMMENTARY);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_COMMENTARY_CHAT_STATUS);
 
         log.info("CarHandler method requestCommentary: request to send commentary");
 
@@ -219,7 +226,13 @@ public class CarHandler implements Handler {
         editMessageTextGeneralPreset(incomeMessage);
 
         editMessage.setText(String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary()));
-        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_SAVE_CAR_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_EDIT_CAR_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        editMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
 
         log.info("CarHandler method checkDataBeforeSaveCarMessageSkipComment: send request to check data");
         return editMessage;
@@ -230,7 +243,12 @@ public class CarHandler implements Handler {
         sendMessage.setChatId(incomeMessage.getChatId());
         String messageText = String.format(messages.getADD_CAR_CHECK_DATA_BEFORE_SAVE_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
         sendMessage.setText(messageText);
-        sendMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_SAVE_CAR_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_EDIT_CAR_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        sendMessage.setReplyMarkup(keyboards.threeButtonsInlineKeyboard(buttons.getSAVE_BUTTON_TEXT(), buttons.getADD_CAR_SAVE_CAR_CALLBACK(), buttons.getEDIT_BUTTON_TEXT(), buttons.getADD_CAR_EDIT_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
 
         log.info("CarHandler method checkDataBeforeSaveCarMessage: send request to check data");
         return sendMessage;

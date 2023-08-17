@@ -175,5 +175,8 @@ public class Buttons {
     public Pair<String, String> skipButtonCreate(String buttonCallback) {
         return Pair.of(SKIP_STEP_TEXT, buttonCallback);
     }
+public Pair<String, String> saveButtonCreate(String buttonCallback) {
+        return Pair.of(SAVE_BUTTON_TEXT, buttonCallback);
+    }
 
 }
