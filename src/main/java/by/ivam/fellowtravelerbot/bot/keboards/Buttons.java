@@ -196,5 +196,10 @@ public class Buttons {
    public Pair<String, String> commentaryButtonCreate(String buttonCallback) {
         return Pair.of(COMMENTARY_TEXT, buttonCallback);
     }
+public Pair<String, String> firstChoiceButtonCreate(String buttonCallback) {
+        return Pair.of(FIRST_TEXT, buttonCallback);
+    }public Pair<String, String> secondChoiceButtonCreate(String buttonCallback) {
+        return Pair.of(SECOND_TEXT, buttonCallback);
+    }
 
 }
