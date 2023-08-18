@@ -85,7 +85,7 @@ public class Messages {
             У Вас добавлено максимально возможное количество автомобилей.
             Для того, чтобы добавить автомобиль необходимо удалить один из имеющихся.
             Хотите удалить?""";
-    private final String DELETE_CAR_PREFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
+    private final String DELETE_CAR_CHOOSE_MESSAGE = "Выберите автомобиль для удаления.\n\n";
     private final String DELETE_CAR_POSTFIX_MESSAGE = "У Вас добавлено максимально возможное количество автомобилей.\n";
     private final String DELETE_ALL_CARS_MESSAGE = "Все Ваши автомобили удалены.\n";
 

@@ -155,6 +155,7 @@ public class CarHandler implements Handler {
                     editMessage = changeCarPlatesRequestMessage(incomeMessage, CommonMethods.trimId(callback));
             case "EDIT_CAR_COMMENTARY_CALLBACK" ->
                     editMessage = editCarCommentaryRequestMessage(incomeMessage, CommonMethods.trimId(callback));
+            case "DELETE_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToDelete(incomeMessage);
 
         }
         messageProcessor.sendEditedMessage(editMessage);
@@ -314,7 +315,11 @@ public class CarHandler implements Handler {
     private void startDeleteCarProcessMessageCreate(Message incomeMessage) {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText(messages.getDELETE_CAR_START_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        sendMessage.setReplyMarkup(keyboards.twoButtonsInlineKeyboard(buttons.getYES_BUTTON_TEXT(), buttons.getREQUEST_DELETE_CAR_CALLBACK(), buttons.getNO_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
         log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
         messageProcessor.sendMessage(sendMessage);
     }
@@ -340,11 +345,12 @@ public class CarHandler implements Handler {
     }
 
     public EditMessageText sendCarListToDelete(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
         Long chatId = incomeMessage.getChatId();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(incomeMessage.getMessageId());
-        editMessage.setText(prepareCarListToSend(chatId));
+
+        editMessage.setText(messages.getDELETE_CAR_CHOOSE_MESSAGE() + prepareCarListToSend(chatId));
         if (getUsersCarsQuantity(chatId) == 2) {
+//            TODO продолжить с этих кнопок
             editMessage.setReplyMarkup(keyboards.fourButtonsColumnInlineKeyboard(buttons.getFIRST_TEXT(), buttons.getDELETE_FIRST_CAR_CALLBACK(), buttons.getSECOND_TEXT(), buttons.getDELETE_SECOND_CAR_CALLBACK(), buttons.getDELETE_ALL_TEXT(), buttons.getDELETE_ALL_CARS_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getADD_CAR_START_DENY_CALLBACK()));
         } else if (getUsersCarsQuantity(chatId) == 1) {
             editMessage.setReplyMarkup(keyboards.twoButtonsColumnInlineKeyboard(buttons.getDELETE_TEXT(), buttons.getDELETE_FIRST_CAR_CALLBACK(), buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
@@ -652,7 +658,6 @@ public class CarHandler implements Handler {
     public int getUsersCarsQuantity(long chatId) {
         return getUsersCarsList(chatId).size();
     }
-
 
 
     public void editMessageTextGeneralPreset(Message incomeMessage) {
