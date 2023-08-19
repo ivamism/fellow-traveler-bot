@@ -165,11 +165,14 @@ public class Buttons {
         return Pair.of(DELETE_CAR_TEXT, Handlers.CAR.getHandlerPrefix() + CarOperation.DELETE_CAR_REQUEST_CALLBACK);
     }
 
-    public Pair<String, String> deleteUserButtonCreate() {
+    public Pair<String, String> deleteButtonCreate() {
         return Pair.of(DELETE_ALL_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
     }
+    public Pair<String, String> deleteAllButtonCreate(String buttonCallback) {
+        return Pair.of(DELETE_ALL_TEXT, buttonCallback);
+    }
 
-    public Pair<String, String> deleteUserButtonCreate(String buttonCallback) {
+    public Pair<String, String> deleteButtonCreate(String buttonCallback) {
         return Pair.of(DELETE_TEXT, buttonCallback);
     }
 

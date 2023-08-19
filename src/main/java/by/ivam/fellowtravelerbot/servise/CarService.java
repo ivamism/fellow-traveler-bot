@@ -15,8 +15,5 @@ public interface CarService {
 
     void deleteCarById(int id);
 
-    void deleteCar(Car car);
-
-    void deleteAllUsersCars(long chatId);
-    Car updateCar (Car car);
+    void deleteAllUsersCars(List<Integer> carIdList);
 }

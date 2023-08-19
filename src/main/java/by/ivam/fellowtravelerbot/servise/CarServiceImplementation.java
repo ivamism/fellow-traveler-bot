@@ -49,20 +49,11 @@ log.info("CarService: get User's cars list");
     }
 
     @Override
-    public void deleteCar(Car car) {
-        carRepository.delete(car);
-        log.info("CarService: delete car: " + car);
+    public void deleteAllUsersCars(List<Integer> carIdList) {
+        carIdList.forEach(id -> deleteCarById(id));
+
+//        carRepository.deleteAllByUser_chatId(chatId);
+        log.info("CarService: deleteAllUsersCars");
     }
 
-    @Override
-    public void deleteAllUsersCars(long chatId) {
-        carRepository.deleteAllByUser_chatId(chatId);
-        log.info("CarService: delete all cars belongs to User userId: " + chatId);
-    }
-
-    @Override
-    public Car updateCar(Car car) {
-        log.info("CarService: update car: "+car);
-        return carRepository.save(car);
-    }
 }

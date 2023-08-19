@@ -244,7 +244,7 @@ TODO разделить функциональные действия и отп�
             buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
             buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
             buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
-            buttonsAttributesList.add(buttons.deleteUserButtonCreate()); // Delete User button
+            buttonsAttributesList.add(buttons.deleteButtonCreate()); // Delete User button
         } else {
             buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
             buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
@@ -252,7 +252,7 @@ TODO разделить функциональные действия и отп�
                 buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
             buttonsAttributesList.add(buttons.editCarButtonCreate()); // Edit User's cars button
             buttonsAttributesList.add(buttons.deleteCarButtonCreate()); // Delete User's cars button
-            buttonsAttributesList.add(buttons.deleteUserButtonCreate()); // Delete User button
+            buttonsAttributesList.add(buttons.deleteButtonCreate()); // Delete User button
         }
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
@@ -318,7 +318,7 @@ TODO разделить функциональные действия и отп�
         editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.deleteUserButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
+        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
