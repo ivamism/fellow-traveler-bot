@@ -54,11 +54,24 @@ public class PickUpPassengerHandler implements Handler{
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
+        String messageText = incomeMessage.getText();
+        Long chatId = incomeMessage.getChatId();
+        log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
+        String process = chatStatus;
+        if (chatStatus.contains(":")) {
+            process = trimProcess(chatStatus);
+        }
     }
 
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         log.debug("method handleReceivedCallback. get callback: " + callback);
+        Long chatId = incomeMessage.getChatId();
+        String process = callback;
+        if (callback.contains(":")) {
+            process = trimProcess(callback);
+        }
+
     }
 
 

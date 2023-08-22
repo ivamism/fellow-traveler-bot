@@ -1,5 +1,7 @@
 package by.ivam.fellowtravelerbot.bot;
 
+import by.ivam.fellowtravelerbot.bot.dispatcher.CallbackDispatcher;
+import by.ivam.fellowtravelerbot.bot.dispatcher.MessageDispatcher;
 import by.ivam.fellowtravelerbot.config.BotConfig;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j;
@@ -40,13 +42,7 @@ public class Bot extends TelegramLongPollingBot {
             messageDispatcher.onMessageReceived(update.getMessage());
         } else if (update.hasCallbackQuery()) {
             callbackDispatcher.onCallbackReceived(update.getCallbackQuery());
-//            String callbackData = update.getCallbackQuery().getData();
-//            Message incomeMessage = update.getCallbackQuery().getMessage();
-//            int messageId = incomeMessage.getMessageId();
-//            long chatId = incomeMessage.getChatId();
-//            String messageText = incomeMessage.getText();
-//            String userName = incomeMessage.getChat().getFirstName();
-//            log.info("get callback: " + callbackData);
+
         }
     }
     public  void sendMessage(SendMessage message) {

@@ -1,5 +1,7 @@
-package by.ivam.fellowtravelerbot.bot;
+package by.ivam.fellowtravelerbot.bot.dispatcher;
 
+import by.ivam.fellowtravelerbot.bot.Messages;
+import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 @Data
 @Log4j
-public class MessageDispatcher {
+public class MessageDispatcher implements Dispatcher{
     @Autowired
     StartHandler startHandler;
     @Autowired
@@ -126,7 +128,6 @@ public class MessageDispatcher {
                 log.debug("got request to add new DepartureLocation");
                 if (adminHandler.checkIsAdmin(chatId)) {
                     adminHandler.handleReceivedCommand(command, incomeMessage);
-//                    message = adminHandler.departureLocationSettlementRequestMessage(chatId);
                 } else {
                     log.debug("user " + chatId + " not an Admin");
                     unknownCommandReceived(chatId);
@@ -141,8 +142,8 @@ public class MessageDispatcher {
         String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
         log.debug("get chatStatus - " + chatStatus);
         if (chatStatus.contains("-")) {
-            String handler = CommonMethods.getHandler(chatStatus);
-            String process = CommonMethods.getProcess(chatStatus);
+            String handler = getHandler(chatStatus);
+            String process = getProcess(chatStatus);
             switch (handler) {
                 case "START" -> startHandler.handleReceivedMessage(process, incomeMessage);
                 case "ADMIN" -> adminHandler.handleReceivedMessage(process, incomeMessage);
