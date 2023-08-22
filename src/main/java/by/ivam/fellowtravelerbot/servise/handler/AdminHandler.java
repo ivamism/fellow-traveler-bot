@@ -202,7 +202,7 @@ public class AdminHandler implements Handler {
         return settlementService.findAll();
     }
     private List<DepartureLocation> getDepartureLocationListBySettlement(int settlementId) {
-        return  null; //locationService.
+        return  locationService.findAllBySettlement(settlementId);
     }
 
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData) {
@@ -211,10 +211,10 @@ public class AdminHandler implements Handler {
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
         return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
-//    public List<Pair<String, String>> departureLocationButtonsAttributesListCreator(String callbackData, int settlementId) {
-//        Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
-//                .stream()
-//                .collect(Collectors.toMap(location -> location.getId(), location -> location.getName()));
-//        return keyboards.buttonsAttributesListCreator(locationAttributes, callbackData);
-//    }
+    public List<Pair<String, String>> departureLocationButtonsAttributesListCreator(String callbackData, int settlementId) {
+        Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
+                .stream()
+                .collect(Collectors.toMap(location -> location.getId(), location -> location.getName()));
+        return keyboards.buttonsAttributesListCreator(locationAttributes, callbackData);
+    }
 }

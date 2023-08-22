@@ -26,7 +26,6 @@ public class Keyboards {
     @Autowired
     Buttons buttons;
 
-
 // Main Admin menu
     public ReplyKeyboardMarkup mainAdminMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
@@ -166,7 +165,6 @@ public class Keyboards {
     }
 
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements, String callbackData) {
-
         return settlements
                 .stream()
                 .map(settlement -> Pair.of(settlement.getName(), callbackData + settlement.getId()))
@@ -176,9 +174,5 @@ public class Keyboards {
     public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
         return Pair.of(buttonName, buttonCallback);
     }
-
-
-
-
 }
 

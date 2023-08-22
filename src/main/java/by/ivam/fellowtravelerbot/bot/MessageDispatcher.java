@@ -138,7 +138,6 @@ public class MessageDispatcher {
     private void handleUserMessage(Message incomeMessage) {
         log.debug("method handleUserMessage");
         long chatId = incomeMessage.getChatId();
-//        String messageText = incomeMessage.getText();
         String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
         log.debug("get chatStatus - " + chatStatus);
         if (chatStatus.contains("-")) {
