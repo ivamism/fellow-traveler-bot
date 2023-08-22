@@ -9,7 +9,7 @@ public interface Handler {
 
     void handleReceivedMessage(String chatStatus, Message incomeMessage);
     void handleReceivedCallback(String callback, Message incomeMessage);
-    void handleReceivedCommand(String command, Message incomemessage);
+
     default String trimProcess(String s) {
         return s.split(":")[0];
     }
@@ -28,6 +28,5 @@ public interface Handler {
         ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();
         messageProcessor.sendEditedMessage(editMessage);
     }
-
 
 }

@@ -50,6 +50,7 @@ public class PickUpPassengerHandler implements Handler{
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
+
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
@@ -60,10 +61,7 @@ public class PickUpPassengerHandler implements Handler{
         log.debug("method handleReceivedCallback. get callback: " + callback);
     }
 
-    @Override
-    public void handleReceivedCommand(String command, Message incomemessage) {
 
-    }
 
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
@@ -178,6 +176,5 @@ public Settlement getSettlementFromCallback(String callbackData){
     private void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-//        return editMessage;
     }
 }

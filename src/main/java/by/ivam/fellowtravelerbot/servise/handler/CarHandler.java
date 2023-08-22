@@ -53,11 +53,6 @@ public class CarHandler implements Handler {
     EditMessageText editMessage = new EditMessageText();
 
     @Override
-    public void handleReceivedCommand(String command, Message incomemessage) {
-        log.debug("method handleReceivedCommand. received command: " + command);
-    }
-
-    @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
         String messageText = incomeMessage.getText();
@@ -65,7 +60,7 @@ public class CarHandler implements Handler {
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         String process = chatStatus;
         if (chatStatus.contains(":")) {
-            process = CommonMethods.trimProcess(chatStatus);
+            process = trimProcess(chatStatus);
         }
         switch (process) {
             case "ADD_CAR_MODEL_CHAT_STATUS" -> {
@@ -101,19 +96,19 @@ public class CarHandler implements Handler {
                 sendMessage = checkDataBeforeSaveCarMessage(incomeMessage);
             }
             case "EDIT_CAR_MODEL_CHAT_STATUS" -> {
-                Car car = setCarEditedModel(CommonMethods.trimId(chatStatus), messageText);
+                Car car = setCarEditedModel(trimId(chatStatus), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COLOR_CHAT_STATUS" -> {
-                Car car = setCarEditedColor(CommonMethods.trimId(chatStatus), messageText);
+                Car car = setCarEditedColor(trimId(chatStatus), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_PLATES_CHAT_STATUS" -> {
-                Car car = setCarEditedPlates(CommonMethods.trimId(chatStatus), messageText);
+                Car car = setCarEditedPlates(trimId(chatStatus), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COMMENTARY_CHAT_STATUS" -> {
-                Car car = setCarEditedCommentary(CommonMethods.trimId(chatStatus), messageText);
+                Car car = setCarEditedCommentary(trimId(chatStatus), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
         }
@@ -125,7 +120,7 @@ public class CarHandler implements Handler {
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-            process = CommonMethods.trimProcess(callback);
+            process = trimProcess(callback);
         }
         log.debug("process: " + process);
         switch (process) {
@@ -148,18 +143,18 @@ public class CarHandler implements Handler {
                     editMessage = changeCommentaryBeforeSavingRequestMessage(incomeMessage);
             case "EDIT_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToEdit(incomeMessage);
             case "EDIT_CAR_CHOOSE_CAR_CALLBACK" ->
-                    editMessage = editCarMessage(incomeMessage, CommonMethods.trimId(callback));
+                    editMessage = editCarMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_MODEL_CALLBACK" ->
-                    editMessage = editCarModelRequestMessage(incomeMessage, CommonMethods.trimId(callback));
+                    editMessage = editCarModelRequestMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_COLOR_CALLBACK" ->
-                    editMessage = editCarColorRequestMessage(incomeMessage, CommonMethods.trimId(callback));
+                    editMessage = editCarColorRequestMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_PLATES_CALLBACK" ->
-                    editMessage = changeCarPlatesRequestMessage(incomeMessage, CommonMethods.trimId(callback));
+                    editMessage = changeCarPlatesRequestMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_COMMENTARY_CALLBACK" ->
-                    editMessage = editCarCommentaryRequestMessage(incomeMessage, CommonMethods.trimId(callback));
+                    editMessage = editCarCommentaryRequestMessage(incomeMessage, trimId(callback));
             case "DELETE_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToDelete(incomeMessage);
             case "DELETE_CAR_CALLBACK" -> {
-                String deletedCar = deleteCar(CommonMethods.trimId(callback));
+                String deletedCar = deleteCar(trimId(callback));
                 editMessage = deleteCarMessage(incomeMessage, deletedCar);
             }
             case "DELETE_ALL_CARS_CALLBACK" -> {
@@ -221,7 +216,7 @@ public class CarHandler implements Handler {
     }
 
     private void setColor(Long chatId, String color) {
-        addCarStorageAccess.setColor(chatId, CommonMethods.firstLetterToUpperCase(color));
+        addCarStorageAccess.setColor(chatId, firstLetterToUpperCase(color));
         log.debug("CarHandler method setColor: set color " + color + " to carDTO and send to storage");
     }
 
@@ -261,7 +256,7 @@ public class CarHandler implements Handler {
         if (commentary.isEmpty()) {
             addCarStorageAccess.setCommentary(chatId, commentary);
         } else {
-            addCarStorageAccess.setCommentary(chatId, CommonMethods.firstLetterToUpperCase(commentary));
+            addCarStorageAccess.setCommentary(chatId, firstLetterToUpperCase(commentary));
         }
         log.debug("CarHandler method setCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
@@ -437,7 +432,7 @@ public class CarHandler implements Handler {
     }
 
     private void setEditedBeforeSavingColor(Long chatId, String color) {
-        addCarStorageAccess.setColor(chatId, CommonMethods.firstLetterToUpperCase(color));
+        addCarStorageAccess.setColor(chatId, firstLetterToUpperCase(color));
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedModel: set model " + color + " to carDTO and send to storage");
     }
@@ -471,7 +466,7 @@ public class CarHandler implements Handler {
     }
 
     private void setEditedBeforeSavingCommentary(Long chatId, String commentary) {
-        addCarStorageAccess.setCommentary(chatId, CommonMethods.firstLetterToUpperCase(commentary));
+        addCarStorageAccess.setCommentary(chatId, firstLetterToUpperCase(commentary));
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedCommentary: set commentary " + commentary + " to carDTO and send to storage");
     }
@@ -545,7 +540,7 @@ public class CarHandler implements Handler {
 
     private Car setCarEditedColor(int carId, String color) {
         log.debug("CarHandler method setCarEditedColor: set new value of color " + color);
-        return carService.findById(carId).setColor(CommonMethods.firstLetterToUpperCase(color));
+        return carService.findById(carId).setColor(firstLetterToUpperCase(color));
     }
 
     private EditMessageText changeCarPlatesRequestMessage(Message incomeMessage, int carId) {
@@ -578,7 +573,7 @@ public class CarHandler implements Handler {
 
     private Car setCarEditedCommentary(int carId, String commentary) {
         log.debug("CarHandler method setCarEditedCommentary: set new value of plates " + commentary);
-        return carService.findById(carId).setCommentary(CommonMethods.firstLetterToUpperCase(commentary));
+        return carService.findById(carId).setCommentary(firstLetterToUpperCase(commentary));
     }
 
     public SendMessage editionCarSuccessMessage(long chatId, Car car) {

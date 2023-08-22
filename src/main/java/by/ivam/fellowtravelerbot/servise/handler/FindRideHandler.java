@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 
@@ -28,6 +30,9 @@ public class FindRideHandler implements Handler{
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     ResponseMessageProcessor messageProcessor;
+
+    SendMessage sendMessage = new SendMessage();
+    EditMessageText editMessage = new EditMessageText();
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
@@ -38,9 +43,9 @@ public class FindRideHandler implements Handler{
         log.debug("method handleReceivedCallback. get callback: " + callback);
     }
 
-    @Override
-    public void handleReceivedCommand(String command, Message incomemessage) {
 
+    public void editMessageTextGeneralPreset(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
     }
-
 }

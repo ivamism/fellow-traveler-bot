@@ -68,7 +68,6 @@ TODO разделить функциональные действия и отп�
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-//        TODO метод выбрасывает НПЕ что в сендмессадж чат айди = налл, но при этом все отправляется правильно
         String messageText = incomeMessage.getText();
         Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus);
@@ -91,7 +90,7 @@ TODO разделить функциональные действия и отп�
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-            process = CommonMethods.trimProcess(callback);
+            process = trimProcess(callback);
         }
 
         log.debug("method handleReceivedCallback. get callback: " + callback);
@@ -119,11 +118,6 @@ TODO разделить функциональные действия и отп�
             }
         }
         messageProcessor.sendEditedMessage(editMessage);
-    }
-
-    @Override
-    public void handleReceivedCommand(String command, Message incomemessage) {
-
     }
 
     // Start registration User process
@@ -199,7 +193,7 @@ TODO разделить функциональные действия и отп�
     }
 
     private void setSettlementToDTO(long chatId, String callbackData) {
-        userDTOStorageAccess.setResidence(chatId, settlementService.findById(CommonMethods.trimId(callbackData)));
+        userDTOStorageAccess.setResidence(chatId, settlementService.findById(trimId(callbackData)));
         log.debug("method setResidenceToDTO");
     }
 
@@ -305,7 +299,7 @@ TODO разделить функциональные действия и отп�
 
     public User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
-        user.setResidence(adminHandler.getSettlementService().findById(CommonMethods.trimId(callbackData)));
+        user.setResidence(adminHandler.getSettlementService().findById(trimId(callbackData)));
         return userService.updateUser(user);
     }
 
@@ -361,7 +355,6 @@ TODO разделить функциональные действия и отп�
         userDTOStorageAccess.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator with edited firstname");
     }
-
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

@@ -97,7 +97,7 @@ public class AdminHandler implements Handler {
         messageProcessor.sendEditedMessage(editMessage);
     }
 
-    @Override
+
     public void handleReceivedCommand(String command, Message incomemessage) {
         long chatId = incomemessage.getChatId();
         switch (command) {

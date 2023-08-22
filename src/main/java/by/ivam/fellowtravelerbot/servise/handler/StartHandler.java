@@ -54,12 +54,6 @@ public class StartHandler implements Handler {
         messageProcessor.sendEditedMessage(editMessage);
     }
 
-    @Override
-    public void handleReceivedCommand(String command, Message incomemessage) {
-
-    }
-
-
     public boolean checkRegistration(long chatId) {
         return userService.findById(chatId).isEmpty();
     }
@@ -80,7 +74,6 @@ public class StartHandler implements Handler {
 
         if (checkRegistration(chatId)) {
 
-//        sendMessage(userHandler.startRegistration(chatId));
             userHandler.startRegistration(chatId);
 
             log.info("User " + incomeMessage.getChat().getUserName()
@@ -100,7 +93,6 @@ public class StartHandler implements Handler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
         messageProcessor.sendMessage(sendMessage);
-
     }
 
     public EditMessageText noRegistrationEditMessage(long chatId) {
@@ -120,6 +112,4 @@ public class StartHandler implements Handler {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         return editMessage;
     }
-
-
 }
