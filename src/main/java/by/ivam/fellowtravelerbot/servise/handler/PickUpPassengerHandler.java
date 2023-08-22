@@ -60,6 +60,11 @@ public class PickUpPassengerHandler implements Handler{
         log.debug("method handleReceivedCallback. get callback: " + callback);
     }
 
+    @Override
+    public void handleReceivedCommand(String command, Message incomemessage) {
+
+    }
+
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE());

@@ -120,6 +120,11 @@ TODO разделить функциональные действия и отп�
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
+
+    @Override
+    public void handleReceivedCommand(String command, Message incomemessage) {
+
+    }
     // Start registration User process
 
     public void startRegistration(long chatId) {

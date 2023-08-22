@@ -3,9 +3,6 @@ package by.ivam.fellowtravelerbot.bot;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
-import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.handler.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
@@ -65,21 +62,21 @@ public class MessageDispatcher {
     }
 
     private void handleBotCommand(Message incomeMessage) {
-        String messageText = incomeMessage.getText();
+        String command = incomeMessage.getText();
         long chatId = incomeMessage.getChatId();
-        log.info("Received message: " + messageText);
-        switch (messageText) {
+        log.info("Received message: " + command);
+        switch (command) {
             case "/start" -> {
                 startHandler.startCommandReceived(incomeMessage);
                 log.info("Start chat with " + incomeMessage.getChat().getUserName() + ". ChatId: " + chatId);
             }
             case "/showMasterAdminMenu" -> {
-                log.debug("get Message: " + messageText + " - request to send admin menu from user " + chatId);
+                log.debug("get Message: " + command + " - request to send admin menu from user " + chatId);
                 adminCommandReceived(chatId);
             }
             case "/help", "Помощь" -> {
                 helpCommandReceived(chatId);
-                log.debug("get Message: " + messageText);
+                log.debug("get Message: " + command);
             }
             case "/profile", "Мои данные" -> {
                 if (startHandler.checkRegistration(chatId)) {
@@ -91,14 +88,13 @@ public class MessageDispatcher {
             }
             case "/registration" -> {
                 startHandler.startMessaging(incomeMessage);
-                log.debug("get Message: " + messageText + " - Start registration process");
+                log.debug("get Message: " + command + " - Start registration process");
             }
             case "/add_car" -> {
                 if (startHandler.checkRegistration(chatId)) {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to get User's stored data");
-//                    carHandler.startAddCarProcess(incomeMessage);
                     carHandler.handleReceivedCallback(String.valueOf(CarOperation.ADD_CAR_REQUEST_CALLBACK), incomeMessage);
                 }
             }
@@ -120,7 +116,7 @@ public class MessageDispatcher {
             case "Добавить нас. пункт" -> {
                 log.debug("got request to add new Settlement");
                 if (adminHandler.checkIsAdmin(chatId)) {
-                    message = adminHandler.settlementNameRequestMessage(chatId);
+                    adminHandler.handleReceivedCommand(command, incomeMessage);
                 } else {
                     log.debug("user " + chatId + " not an Admin");
                     unknownCommandReceived(chatId);
@@ -129,7 +125,8 @@ public class MessageDispatcher {
             case "Добавить локацию" -> {
                 log.debug("got request to add new DepartureLocation");
                 if (adminHandler.checkIsAdmin(chatId)) {
-                    message = adminHandler.departureLocationSettlementRequestMessage(chatId);
+                    adminHandler.handleReceivedCommand(command, incomeMessage);
+//                    message = adminHandler.departureLocationSettlementRequestMessage(chatId);
                 } else {
                     log.debug("user " + chatId + " not an Admin");
                     unknownCommandReceived(chatId);
@@ -141,35 +138,23 @@ public class MessageDispatcher {
     private void handleUserMessage(Message incomeMessage) {
         log.debug("method handleUserMessage");
         long chatId = incomeMessage.getChatId();
-        String messageText = incomeMessage.getText();
+//        String messageText = incomeMessage.getText();
         String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
         log.debug("get chatStatus - " + chatStatus);
-       if (chatStatus.contains("-")){
-           String handler = CommonMethods.getHandler(chatStatus);
-           String process = CommonMethods.getProcess(chatStatus);
-           switch (handler){
-               case "START" -> {
-                   startHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               case "ADMIN" -> {
-                   adminHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               case "USER" -> {
-                   userHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               case "CAR" -> {
-                   carHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               case "FIND_RIDE" -> {
-                   findRideHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               case "PICKUP_PASSENGER" -> {
-                   pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
-               }
-               default -> unknownCommandReceived(chatId);
-           }
+        if (chatStatus.contains("-")) {
+            String handler = CommonMethods.getHandler(chatStatus);
+            String process = CommonMethods.getProcess(chatStatus);
+            switch (handler) {
+                case "START" -> startHandler.handleReceivedMessage(process, incomeMessage);
+                case "ADMIN" -> adminHandler.handleReceivedMessage(process, incomeMessage);
+                case "USER" -> userHandler.handleReceivedMessage(process, incomeMessage);
+                case "CAR" -> carHandler.handleReceivedMessage(process, incomeMessage);
+                case "FIND_RIDE" -> findRideHandler.handleReceivedMessage(process, incomeMessage);
+                case "PICKUP_PASSENGER" -> pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
+                default -> unknownCommandReceived(chatId);
+            }
 
-       } else unknownCommandReceived(chatId);
+        } else unknownCommandReceived(chatId);
 
 
 //        switch (chatStatus) {

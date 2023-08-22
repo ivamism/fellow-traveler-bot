@@ -9,7 +9,16 @@ public interface Handler {
 
     void handleReceivedMessage(String chatStatus, Message incomeMessage);
     void handleReceivedCallback(String callback, Message incomeMessage);
-
+    void handleReceivedCommand(String command, Message incomemessage);
+    default String trimProcess(String s) {
+        return s.split(":")[0];
+    }
+    default int trimId(String s) {
+        return Integer.parseInt(s.split(":")[1]);
+    }
+    default String firstLetterToUpperCase(String s) {
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
 
     default void sendMessage (SendMessage message){
         ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();
@@ -19,4 +28,6 @@ public interface Handler {
         ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();
         messageProcessor.sendEditedMessage(editMessage);
     }
+
+
 }

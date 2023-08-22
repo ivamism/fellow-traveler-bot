@@ -38,4 +38,9 @@ public class FindRideHandler implements Handler{
         log.debug("method handleReceivedCallback. get callback: " + callback);
     }
 
+    @Override
+    public void handleReceivedCommand(String command, Message incomemessage) {
+
+    }
+
 }

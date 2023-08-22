@@ -53,6 +53,11 @@ public class CarHandler implements Handler {
     EditMessageText editMessage = new EditMessageText();
 
     @Override
+    public void handleReceivedCommand(String command, Message incomemessage) {
+        log.debug("method handleReceivedCommand. received command: " + command);
+    }
+
+    @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
         String messageText = incomeMessage.getText();
@@ -122,7 +127,6 @@ public class CarHandler implements Handler {
         if (callback.contains(":")) {
             process = CommonMethods.trimProcess(callback);
         }
-        log.debug("method handleReceivedCallback. get callback: " + callback);
         log.debug("process: " + process);
         switch (process) {
             case "ADD_CAR_REQUEST_CALLBACK" -> startAddCarProcess(incomeMessage);
@@ -165,6 +169,7 @@ public class CarHandler implements Handler {
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
+
 
 // add User's car step-by-step process
 
@@ -601,9 +606,11 @@ public class CarHandler implements Handler {
     private List<Car> getUsersCarsList(long chatId) {
         return carService.usersCarList(chatId);
     }
+
     public int getUsersCarsQuantity(long chatId) {
         return getUsersCarsList(chatId).size();
     }
+
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

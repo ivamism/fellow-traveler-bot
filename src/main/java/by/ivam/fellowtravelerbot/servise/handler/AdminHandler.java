@@ -2,6 +2,8 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
+import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -58,12 +60,49 @@ public class AdminHandler implements Handler {
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-        log.debug("method handleReceivedMessage");
+        String messageText = incomeMessage.getText();
+        Long chatId = incomeMessage.getChatId();
+        log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
+        String process = chatStatus;
+        if (chatStatus.contains(":")) {
+            process = trimProcess(chatStatus);
+        }
+        switch (process) {
+            case "ADD_SETTLEMENT_NAME_CHAT_STATUS" -> {
+                Settlement settlement = saveSettlement(chatId, messageText);
+                sendMessage = settlementSaveSuccessMessage(chatId, settlement);
+            }
+        }
+        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         log.debug("method handleReceivedCallback. get callback: " + callback);
+        Long chatId = incomeMessage.getChatId();
+        String process = callback;
+        if (callback.contains(":")) {
+            process = trimProcess(callback);
+        }
+        log.debug("process: " + process);
+//        switch (process){
+//
+//        }
+    }
+
+    @Override
+    public void handleReceivedCommand(String command, Message incomemessage) {
+        long chatId = incomemessage.getChatId();
+        switch (command) {
+            case "Добавить нас. пункт" -> {
+                sendMessage = settlementNameRequestMessage(chatId);
+            }
+            case "Добавить локацию" -> {
+                sendMessage = departureLocationSettlementRequestMessage(chatId);
+            }
+
+        }
+        messageProcessor.sendMessage(sendMessage);
     }
 
     public boolean checkIsAdmin(long chatId) {
@@ -81,11 +120,11 @@ public class AdminHandler implements Handler {
     }
 
     // Handle Settlement
-    public SendMessage settlementNameRequestMessage(long chatId) {
+    private SendMessage settlementNameRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_SETTLEMENT_NAME_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.getCANCEL_BUTTON_TEXT(), buttons.getCANCEL_CALLBACK()));
-        chatStatusStorageAccess.addChatStatus(chatId, String.valueOf(ChatStatus.ADD_SETTLEMENT_NAME));
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        chatStatusStorageAccess.addChatStatus(chatId, Handlers.ADMIN.getHandlerPrefix() + AdminOperation.ADD_SETTLEMENT_NAME_CHAT_STATUS);
         log.debug("AdminHandler method settlementNameRequestMessage");
         return sendMessage;
     }
@@ -93,7 +132,7 @@ public class AdminHandler implements Handler {
     public Settlement saveSettlement(Long chatId, String settlementName) {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method saveSettlement: call to save " + settlementName + " to DB");
-        return settlementService.addNewSettlement(CommonMethods.firstLetterToUpperCase(settlementName));
+        return settlementService.addNewSettlement(firstLetterToUpperCase(settlementName));
     }
 
     public SendMessage settlementSaveSuccessMessage(long chatId, Settlement settlement) {
@@ -118,8 +157,7 @@ public class AdminHandler implements Handler {
     public void departureLocationSetSettlement(long chatId, String callbackData) {
         log.debug("AdminHandler method departureLocationSetSettlement");
         DepartureLocationDTO location = new DepartureLocationDTO();
-//        location.setSettlement(settlementService.findById(Integer.parseInt(callbackData.substring(36))));
-        location.setSettlement(settlementService.findById(CommonMethods.trimId2(callbackData)));
+        location.setSettlement(settlementService.findById(trimId(callbackData)));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
 
@@ -166,7 +204,7 @@ public class AdminHandler implements Handler {
         return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
 
-    private String firstLetterToUpperCase(String s) {
+    private String first_LetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 }
