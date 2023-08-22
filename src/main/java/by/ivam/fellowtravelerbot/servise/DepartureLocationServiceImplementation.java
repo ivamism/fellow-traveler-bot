@@ -30,6 +30,11 @@ public class DepartureLocationServiceImplementation implements DepartureLocation
     }
 
     @Override
+    public List<DepartureLocation> findAllBySettlement(int settlementId) {
+        return departureLocationRepository.findAllBySettlement_Id(settlementId);
+    }
+
+    @Override
     public DepartureLocation addNewLocation(DepartureLocationDTO locationDTO) {
         DepartureLocation location = new DepartureLocation();
         location.setName(locationDTO.getName())

@@ -8,6 +8,7 @@ import java.util.List;
 public interface DepartureLocationService {
     DepartureLocation findById(int id);
     List<DepartureLocation> findAll();
+    List<DepartureLocation> findAllBySettlement(int settlementId);
     DepartureLocation addNewLocation(DepartureLocationDTO locationDTO);
     DepartureLocation updateLocation(int id);
     void deleteById(int id);

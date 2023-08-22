@@ -8,5 +8,5 @@ import java.util.List;
 public interface CarRepository extends JpaRepository<Car, Integer> {
 
     List<Car> findAllByUser_chatId(Long chatId);
-    void deleteAllByUser_chatId(Long chatId);
+
 }

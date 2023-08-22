@@ -125,8 +125,8 @@ TODO разделить функциональные действия и отп�
     public void handleReceivedCommand(String command, Message incomemessage) {
 
     }
-    // Start registration User process
 
+    // Start registration User process
     public void startRegistration(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getSTART_REGISTRATION());
