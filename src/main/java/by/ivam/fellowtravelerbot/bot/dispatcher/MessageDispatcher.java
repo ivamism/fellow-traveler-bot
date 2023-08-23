@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 @Data
 @Log4j
-public class MessageDispatcher implements Dispatcher{
+public class MessageDispatcher implements Dispatcher {
     @Autowired
     StartHandler startHandler;
     @Autowired
@@ -115,17 +115,8 @@ public class MessageDispatcher implements Dispatcher{
                     pickUpPassengerHandler.startCreateNewRequest(chatId);
                 }
             }
-            case "Добавить нас. пункт" -> {
-                log.debug("got request to add new Settlement");
-                if (adminHandler.checkIsAdmin(chatId)) {
-                    adminHandler.handleReceivedCommand(command, incomeMessage);
-                } else {
-                    log.debug("user " + chatId + " not an Admin");
-                    unknownCommandReceived(chatId);
-                }
-            }
-            case "Добавить локацию" -> {
-                log.debug("got request to add new DepartureLocation");
+            case "Добавить нас. пункт", "Добавить локацию" -> {
+                log.debug("got admin command");
                 if (adminHandler.checkIsAdmin(chatId)) {
                     adminHandler.handleReceivedCommand(command, incomeMessage);
                 } else {
