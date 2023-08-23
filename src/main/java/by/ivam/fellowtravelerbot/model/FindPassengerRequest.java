@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Data
 @Accessors(chain = true)
 @Entity
-public class PickUpPassengerRequest {
+public class FindPassengerRequest {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,9 @@ public class PickUpPassengerRequest {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    LocalDate departureDate;
-    LocalTime departureTime;
-    boolean isActive;
+    private LocalDate departureDate;
+    private LocalTime departureTime;
+
+    private String commentary;
+    private boolean isActive;
     }

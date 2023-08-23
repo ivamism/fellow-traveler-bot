@@ -9,10 +9,9 @@ public enum Handlers {
     USER("USER-"),
     CAR("CAR-"),
     FIND_RIDE("FIND_RIDE-"),
-    PICKUP_PASSENGER("PICKUP_PASSENGER-");
+    FIND_PASSENGER("FIND_PASSENGER-");
 
     private final String handlerPrefix;
-
     Handlers(String handlerPrefix) {
         this.handlerPrefix = handlerPrefix;
     }

@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Data
 @Accessors(chain = true)
-public class PickUpPassengerRequestDTO {
+public class FindPassengerRequestDTO {
 
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
@@ -31,4 +31,5 @@ public class PickUpPassengerRequestDTO {
     private Car car;
     LocalDate departureDate;
     LocalTime departureTime;
+    private String commentary;
 }

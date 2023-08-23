@@ -23,7 +23,7 @@ public class CallbackDispatcher implements Dispatcher {
     @Autowired
     FindRideHandler findRideHandler;
     @Autowired
-    PickUpPassengerHandler pickUpPassengerHandler;
+    FindPassengerHandler pickUpPassengerHandler;
 
     public void onCallbackReceived(CallbackQuery callbackQuery) {
         Message incomeMessage = callbackQuery.getMessage();

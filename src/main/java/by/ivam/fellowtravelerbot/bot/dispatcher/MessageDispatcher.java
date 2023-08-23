@@ -37,7 +37,7 @@ public class MessageDispatcher implements Dispatcher {
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
-    PickUpPassengerHandler pickUpPassengerHandler;
+    FindPassengerHandler pickUpPassengerHandler;
     @Autowired
     FindRideHandler findRideHandler;
     @Autowired
@@ -141,7 +141,7 @@ public class MessageDispatcher implements Dispatcher {
                 case "USER" -> userHandler.handleReceivedMessage(process, incomeMessage);
                 case "CAR" -> carHandler.handleReceivedMessage(process, incomeMessage);
                 case "FIND_RIDE" -> findRideHandler.handleReceivedMessage(process, incomeMessage);
-                case "PICKUP_PASSENGER" -> pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
+                case "FIND_PASSENGER" -> pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
                 default -> unknownCommandReceived(chatId);
             }
 

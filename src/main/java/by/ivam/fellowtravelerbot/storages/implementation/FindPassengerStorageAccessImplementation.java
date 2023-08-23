@@ -1,11 +1,11 @@
 package by.ivam.fellowtravelerbot.storages.implementation;
 
-import by.ivam.fellowtravelerbot.DTO.PickUpPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.Storages;
-import by.ivam.fellowtravelerbot.storages.interfaces.PickUpPassengerStorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,14 @@ import java.time.LocalTime;
 @Component
 @Data
 @Log4j
-public class PickUpStorageAccessImplementation implements PickUpPassengerStorageAccess {
+public class FindPassengerStorageAccessImplementation implements FindPassengerStorageAccess {
     @Autowired
     Storages storage;
 
     @Override
-    public void addPickUpPassengerDTO(long chatId, PickUpPassengerRequestDTO pickUpPassengerRequestDTO) {
-        storage.getPickUpPassengerRequestDTOStorage().put(chatId, pickUpPassengerRequestDTO);
-        log.debug("add carDTO to storage " + pickUpPassengerRequestDTO + " with userId " + chatId);
+    public void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
+        storage.getPickUpPassengerRequestDTOStorage().put(chatId, findPassengerRequestDTO);
+        log.debug("add carDTO to storage " + findPassengerRequestDTO + " with userId " + chatId);
     }
 
     @Override

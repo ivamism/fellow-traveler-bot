@@ -1,7 +1,9 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.DTO.PickUpPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
+import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.bot.Messages;
@@ -11,7 +13,7 @@ import by.ivam.fellowtravelerbot.servise.CarService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
-import by.ivam.fellowtravelerbot.storages.interfaces.PickUpPassengerStorageAccess;
+import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import java.util.List;
 @Service
 @Data
 @Log4j
-public class PickUpPassengerHandler implements Handler{
+public class FindPassengerHandler implements Handler{
     @Autowired
     Messages messages;
     @Autowired
@@ -42,7 +44,7 @@ public class PickUpPassengerHandler implements Handler{
     @Autowired
     CarService carService;
     @Autowired
-    PickUpPassengerStorageAccess pickUpPassengerStorageAccess;
+    FindPassengerStorageAccess findPassengerStorageAccess;
     @Autowired
     SettlementService settlementService;
     @Autowired
@@ -74,27 +76,24 @@ public class PickUpPassengerHandler implements Handler{
 
     }
 
-
-
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getYES_BUTTON_TEXT(),
-                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_CALLBACK())); //yes button
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                buttons.getCANCEL_CALLBACK())); //cancel button
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_CALLBACK)); // Add car button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+
         log.debug("method: startCreatePickUpPassengerRequestProcess");
         messageProcessor.sendMessage(sendMessage);
     }
 
     public void createPickUpPassengerRequestDTO(long chatId) {
-        PickUpPassengerRequestDTO pickUpPassengerRequestDTO = new PickUpPassengerRequestDTO();
-        pickUpPassengerRequestDTO.setUser(userService.findUserById(chatId));
-        pickUpPassengerStorageAccess.addPickUpPassengerDTO(chatId, pickUpPassengerRequestDTO);
-        log.debug("method: createPickUpPassengerRequestDTO - create DTO " + pickUpPassengerRequestDTO + " and save it in storage");
+        FindPassengerRequestDTO findPassengerRequestDTO = new FindPassengerRequestDTO();
+        findPassengerRequestDTO.setUser(userService.findUserById(chatId));
+        findPassengerStorageAccess.addPickUpPassengerDTO(chatId, findPassengerRequestDTO);
+        log.debug("method: createPickUpPassengerRequestDTO - create DTO " + findPassengerRequestDTO + " and save it in storage");
     }
 
     public EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
@@ -117,7 +116,7 @@ public class PickUpPassengerHandler implements Handler{
 
     public void createNewRequestSetDirection(long chatId, Direction direction) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        pickUpPassengerStorageAccess.setDirection(chatId, direction);
+        findPassengerStorageAccess.setDirection(chatId, direction);
     }
 
     public EditMessageText createNewRequestChooseResidenceToMinskMessage(Message incomeMessage) {
@@ -154,14 +153,14 @@ public class PickUpPassengerHandler implements Handler{
 
     public void createNewRequestSetSettlement(long chatId, Settlement settlement) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        pickUpPassengerStorageAccess.setSettlement(chatId, settlement);
+        findPassengerStorageAccess.setSettlement(chatId, settlement);
 
     }
 
     public void createNewRequestSetSettlement(long chatId, String settlementName) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
 
-        pickUpPassengerStorageAccess.setSettlement(chatId, settlementService.findByName(settlementName));
+        findPassengerStorageAccess.setSettlement(chatId, settlementService.findByName(settlementName));
     }
     public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);

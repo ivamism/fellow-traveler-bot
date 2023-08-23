@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.storages.interfaces;
 
-import by.ivam.fellowtravelerbot.DTO.PickUpPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
 import by.ivam.fellowtravelerbot.model.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
@@ -8,9 +8,9 @@ import by.ivam.fellowtravelerbot.model.Settlement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public interface PickUpPassengerStorageAccess {
+public interface FindPassengerStorageAccess {
 
-    void addPickUpPassengerDTO(long chatId, PickUpPassengerRequestDTO pickUpPassengerRequestDTO);
+    void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
 
     void setDirection (long chatId, Direction direction);
 

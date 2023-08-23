@@ -105,7 +105,7 @@ public class Messages {
     private final String ADD_LOCATION_NAME_MESSAGE = "Впишите название места выезда";
     private final String ADD_LOCATION_SUCCESS_MESSAGE = "Место выезда:\n\n  Id: %d\n  Название: %s\n  Населенный пункт: %s\n  успешно сохранено";
 
-    //    PickUpPassengerRequest
+    //    FindPassengerRequest
 //    Creation new request
     private final String CREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
     private final String CREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
