@@ -41,7 +41,7 @@ public class CallbackDispatcher implements Dispatcher {
             case "FIND_RIDE" -> {
                 findRideHandler.handleReceivedCallback(callback, incomeMessage);
             }
-            case "PICKUP_PASSENGER" -> {
+            case "FIND_PAS" -> {
                 pickUpPassengerHandler.handleReceivedCallback(callback, incomeMessage);
             }
         }

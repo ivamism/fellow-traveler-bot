@@ -13,6 +13,9 @@ public interface Handler {
     default String trimProcess(String s) {
         return s.split(":")[0];
     }
+    default String trimSecondSubstring(String s) {
+        return s.split(":")[1];
+    }
     default int trimId(String s) {
         return Integer.parseInt(s.split(":")[1]);
     }

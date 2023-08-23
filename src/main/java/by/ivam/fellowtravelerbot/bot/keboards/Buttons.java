@@ -168,6 +168,7 @@ public class Buttons {
     public Pair<String, String> deleteButtonCreate() {
         return Pair.of(DELETE_ALL_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.DELETE_USER);
     }
+
     public Pair<String, String> deleteAllButtonCreate(String buttonCallback) {
         return Pair.of(DELETE_ALL_TEXT, buttonCallback);
     }
@@ -184,25 +185,36 @@ public class Buttons {
         return Pair.of(SAVE_BUTTON_TEXT, buttonCallback);
     }
 
-   public Pair<String, String> modelButtonCreate(String buttonCallback) {
+    public Pair<String, String> modelButtonCreate(String buttonCallback) {
         return Pair.of(MODEL_TEXT, buttonCallback);
     }
 
-   public Pair<String, String> colorButtonCreate(String buttonCallback) {
+    public Pair<String, String> colorButtonCreate(String buttonCallback) {
         return Pair.of(COLOR_TEXT, buttonCallback);
     }
 
-   public Pair<String, String> platesButtonCreate(String buttonCallback) {
+    public Pair<String, String> platesButtonCreate(String buttonCallback) {
         return Pair.of(PLATES_TEXT, buttonCallback);
     }
 
-   public Pair<String, String> commentaryButtonCreate(String buttonCallback) {
+    public Pair<String, String> commentaryButtonCreate(String buttonCallback) {
         return Pair.of(COMMENTARY_TEXT, buttonCallback);
     }
-public Pair<String, String> firstChoiceButtonCreate(String buttonCallback) {
+
+    public Pair<String, String> firstChoiceButtonCreate(String buttonCallback) {
         return Pair.of(FIRST_TEXT, buttonCallback);
-    }public Pair<String, String> secondChoiceButtonCreate(String buttonCallback) {
+    }
+
+    public Pair<String, String> secondChoiceButtonCreate(String buttonCallback) {
         return Pair.of(SECOND_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> towardMinskButtonCreate(String buttonCallback) {
+        return Pair.of(TOWARD_MINSK_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> fromMinskButtonCreate(String buttonCallback) {
+        return Pair.of(FROM_MINSK_TEXT, buttonCallback);
     }
 
 }
