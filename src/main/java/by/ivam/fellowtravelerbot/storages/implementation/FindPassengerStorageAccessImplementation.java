@@ -34,7 +34,7 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
 
     @Override
     public void setSettlement(long chatId, Settlement settlement) {
-        storage.getPickUpPassengerRequestDTOStorage().get(chatId).setSettlement(settlement);
+        storage.getPickUpPassengerRequestDTOStorage().get(chatId).setDepartureSettlement(settlement);
         log.debug("set settlement: " + settlement + " with userId " + chatId);
     }
 

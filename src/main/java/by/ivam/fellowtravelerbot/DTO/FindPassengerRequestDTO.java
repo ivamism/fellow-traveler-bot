@@ -1,7 +1,9 @@
 package by.ivam.fellowtravelerbot.DTO;
 
-import by.ivam.fellowtravelerbot.model.*;
-import jakarta.persistence.*;
+import by.ivam.fellowtravelerbot.model.Car;
+import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.model.Settlement;
+import by.ivam.fellowtravelerbot.model.User;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,22 +14,13 @@ import java.time.LocalTime;
 @Accessors(chain = true)
 public class FindPassengerRequestDTO {
 
-    @ManyToOne
-    @JoinColumn(name = "user_chat_id")
     private User user;
     private String direction;
-
-    @ManyToOne
-    @JoinColumn(name = "settlement_id")
-    private Settlement settlement;
-
-    @ManyToOne
-    @JoinColumn(name = "departure_location_id")
+    private Settlement departureSettlement;
+    private Settlement destinationSettlement;
     private DepartureLocation departureLocation;
-    @ManyToOne
-    @JoinColumn(name = "car_id")
     private Car car;
-    LocalDate departureDate;
-    LocalTime departureTime;
+    private LocalDate departureDate;
+    private LocalTime departureTime;
     private String commentary;
 }

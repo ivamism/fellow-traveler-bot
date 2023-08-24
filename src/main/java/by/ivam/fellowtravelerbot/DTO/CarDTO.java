@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 public class CarDTO {
 
-//    private String vendor;
     private String model;
     private String color;
     private String plateNumber;

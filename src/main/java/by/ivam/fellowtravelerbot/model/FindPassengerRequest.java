@@ -21,9 +21,12 @@ public class FindPassengerRequest {
     private User user;
     private String direction;
     @ManyToOne
-    @JoinColumn(name = "settlement_id")
-    private Settlement settlement;
+    @JoinColumn()
+    private Settlement departureSettlement;
 
+    @ManyToOne
+    @JoinColumn()
+    private Settlement destinationSettlement;
     @ManyToOne
     @JoinColumn(name = "departure_location_id")
     private DepartureLocation departureLocation;
