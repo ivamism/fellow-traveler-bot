@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Component
 @Data
 @Log4j
-public class CallbackDispatcher implements Dispatcher {
+public class CallbackDispatcher extends Dispatcher {
     @Autowired
     StartHandler startHandler;
     @Autowired

@@ -15,9 +15,7 @@ public class FindPassengerRequestDTO {
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "direction")
-    private Direction direction;
+    private String direction;
 
     @ManyToOne
     @JoinColumn(name = "settlement_id")

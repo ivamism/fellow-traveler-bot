@@ -78,9 +78,23 @@ public class FindPassengerHandler implements Handler {
                 createPickUpPassengerRequestDTO(chatId);
                 editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
             }
+            case "CREATE_FIND_PAS_REQUEST_DIRECTION" -> {
+                String direction = createNewRequestSetDirection(chatId, trimSecondSubstring(callback));
+                if (direction.equals(Direction.FROM_MINSK));
+                else if ((direction.equals(Direction.TOWARDS_MINSK)));
+//                editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
+            }
+
         }
         messageProcessor.sendEditedMessage(editMessage);
     }
+
+//    else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
+//                log.info("callback to choose Settlement for DepartureLocation");
+//                if (callbackData.substring(50).equals(String.valueOf(Direction.TOWARDS_MINSK))) {
+//                    pickUpPassengerHandler.createNewRequestSetDirection(chatId, Direction.TOWARDS_MINSK);
+//                    editMessageText =  pickUpPassengerHandler.createNewRequestChooseResidenceToMinskMessage(incomeMessage);
+//                }
 
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
@@ -118,9 +132,10 @@ public class FindPassengerHandler implements Handler {
         return editMessage;
     }
 
-    public void createNewRequestSetDirection(long chatId, Direction direction) {
+    public String createNewRequestSetDirection(long chatId, String direction) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
         findPassengerStorageAccess.setDirection(chatId, direction);
+        return direction;
     }
 
     public EditMessageText createNewRequestChooseResidenceToMinskMessage(Message incomeMessage) {

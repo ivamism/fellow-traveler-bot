@@ -2,7 +2,6 @@ package by.ivam.fellowtravelerbot.storages.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.DepartureLocation;
-import by.ivam.fellowtravelerbot.model.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.Storages;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
@@ -28,7 +27,7 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
     }
 
     @Override
-    public void setDirection(long chatId, Direction direction) {
+    public void setDirection(long chatId, String direction) {
         storage.getPickUpPassengerRequestDTOStorage().get(chatId).setDirection(direction);
         log.debug("set direction: " + direction + " with userId " + chatId);
     }

@@ -19,9 +19,7 @@ public class FindPassengerRequest {
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "direction")
-    private Direction direction;
+    private String direction;
     @ManyToOne
     @JoinColumn(name = "settlement_id")
     private Settlement settlement;
@@ -38,4 +36,4 @@ public class FindPassengerRequest {
 
     private String commentary;
     private boolean isActive;
-    }
+}

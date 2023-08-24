@@ -1,7 +1,6 @@
 package by.ivam.fellowtravelerbot.bot.dispatcher;
 
 import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 @Data
 @Log4j
-public class MessageDispatcher implements Dispatcher {
+public class MessageDispatcher extends Dispatcher {
     @Autowired
     StartHandler startHandler;
     @Autowired
@@ -37,11 +36,11 @@ public class MessageDispatcher implements Dispatcher {
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
-    FindPassengerHandler pickUpPassengerHandler;
+    FindPassengerHandler findPassengerHandler;
     @Autowired
     FindRideHandler findRideHandler;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
+//    @Autowired
+//    ResponseMessageProcessor messageProcessor;
 
     SendMessage message = new SendMessage();
 
@@ -112,7 +111,7 @@ public class MessageDispatcher implements Dispatcher {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to find a fellow");
-                    pickUpPassengerHandler.startCreateNewRequest(chatId);
+                    findPassengerHandler.startCreateNewRequest(chatId);
                 }
             }
             case "Добавить нас. пункт", "Добавить локацию" -> {
@@ -141,7 +140,7 @@ public class MessageDispatcher implements Dispatcher {
                 case "USER" -> userHandler.handleReceivedMessage(process, incomeMessage);
                 case "CAR" -> carHandler.handleReceivedMessage(process, incomeMessage);
                 case "FIND_RIDE" -> findRideHandler.handleReceivedMessage(process, incomeMessage);
-                case "FIND_PASSENGER" -> pickUpPassengerHandler.handleReceivedMessage(process, incomeMessage);
+                case "FIND_PASSENGER" -> findPassengerHandler.handleReceivedMessage(process, incomeMessage);
                 default -> unknownCommandReceived(chatId);
             }
 
@@ -258,7 +257,8 @@ public class MessageDispatcher implements Dispatcher {
     private void unknownCommandReceived(long chatId) {
         message.setChatId(chatId);
         message.setText(messages.getUNKNOWN_COMMAND());
-        messageProcessor.sendMessage(message);
+        sendMessage(message);
+//        messageProcessor.sendMessage(message);
         log.info("received unknown command");
     }
 
@@ -272,7 +272,8 @@ public class MessageDispatcher implements Dispatcher {
         message.setChatId(chatId);
         message.setText(messages.getHELP_TEXT());
         log.debug("method helpCommandReceived");
-        messageProcessor.sendMessage(message);
+//        messageProcessor.sendMessage(message);
+        sendMessage(message);
     }
 }
 
