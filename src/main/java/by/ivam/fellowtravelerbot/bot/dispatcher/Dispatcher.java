@@ -17,7 +17,6 @@ public class Dispatcher {
         messageProcessor.sendEditedMessage(responseMessage);
     }
 
-
     public String getHandler(String s) {
         return s.split("-")[0];
     }

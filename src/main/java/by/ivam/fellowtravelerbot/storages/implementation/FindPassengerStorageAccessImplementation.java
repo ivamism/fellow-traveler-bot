@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.storages.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.Storages;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
@@ -21,27 +21,47 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
     Storages storage;
 
     @Override
+    public FindPassengerRequestDTO getDTO(long chatId) {
+        return storage.getFindPassengerRequestDTOStorage().get(chatId);
+    }
+
+    @Override
     public void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
-        storage.getPickUpPassengerRequestDTOStorage().put(chatId, findPassengerRequestDTO);
+        storage.getFindPassengerRequestDTOStorage().put(chatId, findPassengerRequestDTO);
         log.debug("add carDTO to storage " + findPassengerRequestDTO + " with userId " + chatId);
     }
 
     @Override
+    public void update(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
+        storage.getFindPassengerRequestDTOStorage().replace(chatId, findPassengerRequestDTO);
+        log.debug("update carDTO in storage " + findPassengerRequestDTO + " with userId " + chatId);
+    }
+
+    @Override
     public void setDirection(long chatId, String direction) {
-        storage.getPickUpPassengerRequestDTOStorage().get(chatId).setDirection(direction);
+        storage.getFindPassengerRequestDTOStorage().get(chatId).setDirection(direction);
         log.debug("set direction: " + direction + " with userId " + chatId);
     }
 
     @Override
-    public void setSettlement(long chatId, Settlement settlement) {
-        storage.getPickUpPassengerRequestDTOStorage().get(chatId).setDepartureSettlement(settlement);
+    public void setDepartureSettlement(long chatId, Settlement settlement) {
+        storage.getFindPassengerRequestDTOStorage().get(chatId).setDepartureSettlement(settlement);
         log.debug("set settlement: " + settlement + " with userId " + chatId);
     }
 
     @Override
-    public void setDepartureLocation(long chatId, DepartureLocation departureLocation) {
-        storage.getPickUpPassengerRequestDTOStorage().get(chatId).setDepartureLocation(departureLocation);
-        log.debug("set departureLocation: " + departureLocation + " with userId " + chatId);
+    public void setDestinationSettlement(long chatId, Settlement settlement) {
+    }
+
+    @Override
+    public void setDepartureLocation(long chatId, Location location) {
+        storage.getFindPassengerRequestDTOStorage().get(chatId).setDepartureLocation(location);
+        log.debug("set location: " + location + " with userId " + chatId);
+    }
+
+    @Override
+    public void setDestinationLocation(long chatId, Location location) {
+
     }
 
     @Override
@@ -51,6 +71,11 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
 
     @Override
     public void setTime(long chatId, LocalTime departureTime) {
+
+    }
+
+    @Override
+    public void setCommentary(long chatId, String commentary) {
 
     }
 }

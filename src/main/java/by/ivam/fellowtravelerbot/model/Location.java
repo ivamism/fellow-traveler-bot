@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Entity
-public class DepartureLocation {
+public class Location {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

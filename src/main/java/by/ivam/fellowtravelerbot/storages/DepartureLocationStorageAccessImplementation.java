@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.storages;
 
-import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
+import by.ivam.fellowtravelerbot.DTO.LocationDTO;
 import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -17,7 +17,7 @@ public class DepartureLocationStorageAccessImplementation implements DepartureLo
     Storages storage;
 
     @Override
-    public void addLocation(long chatId, DepartureLocationDTO locationDTO) {
+    public void addLocation(long chatId, LocationDTO locationDTO) {
         storage.departureLocationDTOStorage.put(chatId, locationDTO);
         log.debug("put location " + locationDTO + ", chatId: " + chatId + " to storage");
     }
@@ -39,8 +39,8 @@ public class DepartureLocationStorageAccessImplementation implements DepartureLo
     }
 
     @Override
-    public DepartureLocationDTO findDTO(long chatId) {
-        DepartureLocationDTO locationDTO = Optional.ofNullable(storage.departureLocationDTOStorage.get(chatId)).orElseThrow();
+    public LocationDTO findDTO(long chatId) {
+        LocationDTO locationDTO = Optional.ofNullable(storage.departureLocationDTOStorage.get(chatId)).orElseThrow();
         log.debug("get locationDTO from storage " + locationDTO);
         return locationDTO;
     }

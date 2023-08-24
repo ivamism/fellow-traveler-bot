@@ -79,9 +79,14 @@ public class FindPassengerHandler implements Handler {
                 editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
             }
             case "CREATE_FIND_PAS_REQUEST_DIRECTION" -> {
-                String direction = createNewRequestSetDirection(chatId, trimSecondSubstring(callback));
-                if (direction.equals(Direction.FROM_MINSK));
-                else if ((direction.equals(Direction.TOWARDS_MINSK)));
+                String direction = trimSecondSubstring(callback);
+                createNewRequestSetDirection(chatId, direction);
+                if (direction.equals(String.valueOf(Direction.FROM_MINSK))) {
+                    createNewRequestSetDepartureSettlement(chatId, "Минск");
+
+                } else if ((direction.equals(String.valueOf(Direction.TOWARDS_MINSK)))) {
+
+                }
 //                editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
             }
 
@@ -90,7 +95,7 @@ public class FindPassengerHandler implements Handler {
     }
 
 //    else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
-//                log.info("callback to choose Settlement for DepartureLocation");
+//                log.info("callback to choose Settlement for Location");
 //                if (callbackData.substring(50).equals(String.valueOf(Direction.TOWARDS_MINSK))) {
 //                    pickUpPassengerHandler.createNewRequestSetDirection(chatId, Direction.TOWARDS_MINSK);
 //                    editMessageText =  pickUpPassengerHandler.createNewRequestChooseResidenceToMinskMessage(incomeMessage);
@@ -132,10 +137,10 @@ public class FindPassengerHandler implements Handler {
         return editMessage;
     }
 
-    public String createNewRequestSetDirection(long chatId, String direction) {
-        log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        findPassengerStorageAccess.setDirection(chatId, direction);
-        return direction;
+    public void createNewRequestSetDirection(long chatId, String direction) {
+        log.debug("method createNewRequestSetDirection");
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDirection(direction);
+        findPassengerStorageAccess.update(chatId, dto);
     }
 
     public EditMessageText createNewRequestChooseResidenceToMinskMessage(Message incomeMessage) {
@@ -172,14 +177,20 @@ public class FindPassengerHandler implements Handler {
 
     public void createNewRequestSetSettlement(long chatId, Settlement settlement) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        findPassengerStorageAccess.setSettlement(chatId, settlement);
-
+        findPassengerStorageAccess.setDepartureSettlement(chatId, settlement);
     }
 
-    public void createNewRequestSetSettlement(long chatId, String settlementName) {
-        log.debug("method createPickUpPassengerRequestProcessSetDirection");
+    public void createNewRequestSetDepartureSettlement(long chatId, String settlementName) {
+        log.debug("method createNewRequestSetDepartureSettlement");
+        Settlement settlement = settlementService.findByName(settlementName);
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureSettlement(settlement);
+        findPassengerStorageAccess.update(chatId, dto);
+//        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
+    }
 
-        findPassengerStorageAccess.setSettlement(chatId, settlementService.findByName(settlementName));
+    public void createNewRequestSetDestinationSettlement(long chatId, String settlementName) {
+        log.debug("method createPickUpPassengerRequestProcessSetDirection");
+        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
     }
 
     public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage) {

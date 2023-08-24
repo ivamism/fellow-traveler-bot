@@ -1,13 +1,13 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
+import by.ivam.fellowtravelerbot.DTO.LocationDTO;
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
@@ -71,8 +71,8 @@ public class AdminHandler implements Handler {
                 Settlement settlement = saveSettlement(chatId, messageText);
                 sendMessage = settlementSaveSuccessMessage(chatId, settlement);
             }case "DEPARTURE_LOCATION_REQUEST_NAME_CHAT_STATUS" -> {
-                DepartureLocation departureLocation = departureLocationSave(chatId, messageText);
-                sendMessage = departureLocationSaveSuccessMessage(chatId, departureLocation);
+                Location location = departureLocationSave(chatId, messageText);
+                sendMessage = departureLocationSaveSuccessMessage(chatId, location);
             }
 
         }
@@ -146,7 +146,7 @@ public class AdminHandler implements Handler {
         return sendMessage;
     }
 
-    // Handle DepartureLocation
+    // Handle Location
     private SendMessage departureLocationSettlementRequestMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
@@ -161,7 +161,7 @@ public class AdminHandler implements Handler {
 
     private void departureLocationSetSettlement(long chatId, String callbackData) {
         log.debug("AdminHandler method departureLocationSetSettlement");
-        DepartureLocationDTO location = new DepartureLocationDTO();
+        LocationDTO location = new LocationDTO();
         location.setSettlement(settlementService.findById(trimId(callbackData)));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
@@ -178,9 +178,9 @@ public class AdminHandler implements Handler {
         return editMessage;
     }
 
-    private DepartureLocation departureLocationSave(long chatId, String name) {
+    private Location departureLocationSave(long chatId, String name) {
         log.debug("AdminHandler method departureLocationSave");
-        DepartureLocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
+        LocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
         locationDTO.setName(firstLetterToUpperCase(name));
         departureLocationStorageAccess.deleteLocation(chatId);
         chatStatusStorageAccess.deleteChatStatus(chatId);
@@ -189,7 +189,7 @@ public class AdminHandler implements Handler {
 
     }
 
-    private SendMessage departureLocationSaveSuccessMessage(long chatId, DepartureLocation location) {
+    private SendMessage departureLocationSaveSuccessMessage(long chatId, Location location) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getADD_LOCATION_SUCCESS_MESSAGE(), location.getId(), location.getName(), location.getSettlement().getName()));
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
@@ -201,7 +201,7 @@ public class AdminHandler implements Handler {
     private List<Settlement> getSettlementsList() {
         return settlementService.findAll();
     }
-    private List<DepartureLocation> getDepartureLocationListBySettlement(int settlementId) {
+    private List<Location> getDepartureLocationListBySettlement(int settlementId) {
         return  locationService.findAllBySettlement(settlementId);
     }
 

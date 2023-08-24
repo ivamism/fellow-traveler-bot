@@ -122,7 +122,7 @@
 //                    }
 //                }
 //                case "Добавить локацию" -> {
-//                    log.debug("got request to add new DepartureLocation");
+//                    log.debug("got request to add new Location");
 //                    if (adminHandler.checkIsAdmin(chatId)) {
 //                        message = adminHandler.departureLocationSettlementRequestMessage(chatId);
 //                    } else {
@@ -235,8 +235,8 @@
 //                            message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
 //                        }
 //                        case "ADD_DEPARTURE_LOCATION_NAME" -> {
-//                            log.info("Get DepartureLocation name  " + messageText);
-//                            DepartureLocation location = adminHandler.departureLocationSave(chatId, messageText);
+//                            log.info("Get Location name  " + messageText);
+//                            Location location = adminHandler.departureLocationSave(chatId, messageText);
 //                            message = adminHandler.departureLocationSaveSuccessMessage(chatId, location);
 //                        }
 //                    }
@@ -405,7 +405,7 @@
 //                editMessageText = userHandler.deleteUserSuccessMessage(incomeMessage);
 //                userHandler.deleteUser(chatId);
 //            } else if (callbackData.startsWith(buttons.getADD_LOCATION_GET_SETTLEMENT_CALLBACK().substring(0, 35))) { //  callback to delete User's stored data
-//                log.info("callback to choose Settlement for DepartureLocation");
+//                log.info("callback to choose Settlement for Location");
 //                adminHandler.departureLocationSetSettlement(chatId, callbackData);
 //                editMessageText = adminHandler.departureLocationNameRequestMessage(incomeMessage);
 //            } else if (callbackData.equals(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_CALLBACK())) { //  callback to create pickup passenger request
@@ -413,7 +413,7 @@
 //                pickUpPassengerHandler.createPickUpPassengerRequestDTO(chatId);
 //                editMessageText = pickUpPassengerHandler.createNewRequestChoseDirectionMessage(incomeMessage);
 //            } else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
-//                log.info("callback to choose Settlement for DepartureLocation");
+//                log.info("callback to choose Settlement for Location");
 //                if (callbackData.substring(50).equals(String.valueOf(Direction.TOWARDS_MINSK))) {
 //                    pickUpPassengerHandler.createNewRequestSetDirection(chatId, Direction.TOWARDS_MINSK);
 //                    editMessageText =  pickUpPassengerHandler.createNewRequestChooseResidenceToMinskMessage(incomeMessage);

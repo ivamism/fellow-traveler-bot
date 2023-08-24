@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 @Data
 @Accessors(chain = true)
 @Entity
@@ -14,18 +15,15 @@ public class FindRideRequest {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "direction")
-    private Direction direction;
-     @ManyToOne
+    private String direction;
+    @ManyToOne
     @JoinColumn(name = "settlement_id")
     private Settlement settlement;
-
-    LocalDate departureDate;
-    LocalTime departureTime;
+    private LocalDate departureDate;
+    private LocalTime departureTime;
+    private String commentary;
     boolean isActive;
 }

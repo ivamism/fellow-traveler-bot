@@ -15,18 +15,10 @@ import java.time.LocalTime;
 
 public class FindRideRequestDTO {
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_chat_id")
     private User user;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "direction")
     private Direction direction;
-    @ManyToOne
-    @JoinColumn(name = "settlement_id")
     private Settlement settlement;
-
-    LocalDate departureDate;
-    LocalTime departureTime;
-
+    private LocalDate departureDate;
+    private LocalTime departureTime;
+    private String commentary;
 }

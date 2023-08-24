@@ -246,8 +246,8 @@ public class MessageDispatcher extends Dispatcher {
 //                message = adminHandler.settlementSaveSuccessMessage(chatId, settlement);
 //            }
 //            case "ADD_DEPARTURE_LOCATION_NAME" -> {
-//                log.info("Get DepartureLocation name  " + messageText);
-//                DepartureLocation location = adminHandler.departureLocationSave(chatId, messageText);
+//                log.info("Get Location name  " + messageText);
+//                Location location = adminHandler.departureLocationSave(chatId, messageText);
 //                message = adminHandler.departureLocationSaveSuccessMessage(chatId, location);
 //            }
 //        }

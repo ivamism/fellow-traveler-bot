@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.DTO.DepartureLocationDTO;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.DTO.LocationDTO;
+import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.repository.DepartureLocationRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +18,25 @@ public class DepartureLocationServiceImplementation implements DepartureLocation
     DepartureLocationRepository departureLocationRepository;
 
     @Override
-    public DepartureLocation findById(int id) {
-        DepartureLocation location = Optional.ofNullable(departureLocationRepository.findById(id).get()).orElseThrow();
+    public Location findById(int id) {
+        Location location = Optional.ofNullable(departureLocationRepository.findById(id).get()).orElseThrow();
         log.info("Get location by id" + location);
         return location;
     }
 
     @Override
-    public List<DepartureLocation> findAll() {
+    public List<Location> findAll() {
         return null;
     }
 
     @Override
-    public List<DepartureLocation> findAllBySettlement(int settlementId) {
+    public List<Location> findAllBySettlement(int settlementId) {
         return departureLocationRepository.findAllBySettlement_Id(settlementId);
     }
 
     @Override
-    public DepartureLocation addNewLocation(DepartureLocationDTO locationDTO) {
-        DepartureLocation location = new DepartureLocation();
+    public Location addNewLocation(LocationDTO locationDTO) {
+        Location location = new Location();
         location.setName(locationDTO.getName())
                 .setSettlement(locationDTO.getSettlement());
         departureLocationRepository.save(location);
@@ -44,7 +44,7 @@ public class DepartureLocationServiceImplementation implements DepartureLocation
     }
 
     @Override
-    public DepartureLocation updateLocation(int id) {
+    public Location updateLocation(int id) {
         return null;
     }
 

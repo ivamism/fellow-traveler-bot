@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.DTO;
 
 import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.model.DepartureLocation;
+import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.model.User;
 import lombok.Data;
@@ -17,8 +17,10 @@ public class FindPassengerRequestDTO {
     private User user;
     private String direction;
     private Settlement departureSettlement;
+    private Location departureLocation;
+
     private Settlement destinationSettlement;
-    private DepartureLocation departureLocation;
+    private Location destinationLocation;
     private Car car;
     private LocalDate departureDate;
     private LocalTime departureTime;
