@@ -60,7 +60,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         }
         switch (process) {
             case "CREATE_FIND_PASSENGER_REQUEST_CALLBACK" -> {
-                createPickUpPassengerRequestDTO(chatId);
+                createFindPassengerRequestDTO(chatId);
                 editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
             }
             case "CREATE_FIND_PAS_REQUEST_DIRECTION" -> {
@@ -70,9 +70,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     createNewRequestSetDepartureSettlement(chatId, "Минск");
 
                 } else if ((direction.equals(String.valueOf(Direction.TOWARDS_MINSK)))) {
-
+                    editMessage = createNewRequestChooseResidenceAsDepartureMessage(incomeMessage);
                 }
-//                editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
+
             }
 
         }
@@ -99,7 +99,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendBotMessage(sendMessage);
     }
 
-    public void createPickUpPassengerRequestDTO(long chatId) {
+    public void createFindPassengerRequestDTO(long chatId) {
         FindPassengerRequestDTO findPassengerRequestDTO = new FindPassengerRequestDTO();
         findPassengerRequestDTO.setUser(userService.findUserById(chatId));
         findPassengerStorageAccess.addPickUpPassengerDTO(chatId, findPassengerRequestDTO);
@@ -128,20 +128,23 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         findPassengerStorageAccess.update(chatId, dto);
     }
 
-    public EditMessageText createNewRequestChooseResidenceToMinskMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(settlement.getName(),
-                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK() + settlement.getId())); //Chose residence button
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getANOTHER_TEXT(),
-                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())); //Chose another settlement button
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                buttons.getCANCEL_CALLBACK())); //cancel button
+        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
+        buttonsAttributesList.add(buttons.anotherButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        //        keyboards.buttonAttributesPairCreator(settlement.getName(),
+//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK() + settlement.getId())); //Chose residence button
+
+//                keyboards.buttonAttributesPairCreator(buttons.getANOTHER_TEXT(),
+//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())); //Chose another settlement button
+
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createNewRequestChooseResidenceToMinskMessage");
+        log.debug("method: createNewRequestChooseResidenceAsDepartureMessage");
 
         return editMessage;
     }

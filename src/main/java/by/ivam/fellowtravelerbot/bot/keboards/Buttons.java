@@ -125,6 +125,10 @@ public class Buttons {
 
 
     // Buttons attributes
+    public Pair<String, String> buttonCreate(String buttonText, String buttonCallback) {
+        return Pair.of(buttonText, buttonCallback);
+    }
+
     public Pair<String, String> yesButtonCreate(String buttonCallback) {
         return Pair.of(YES_BUTTON_TEXT, buttonCallback);
     }
@@ -215,6 +219,10 @@ public class Buttons {
 
     public Pair<String, String> fromMinskButtonCreate(String buttonCallback) {
         return Pair.of(FROM_MINSK_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> anotherButtonCreate(String buttonCallback) {
+        return Pair.of(ANOTHER_TEXT, buttonCallback);
     }
 
 }
