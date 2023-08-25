@@ -30,25 +30,25 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @Log4j
-public class CarHandler implements Handler {
+public class CarHandler extends Hndlr implements HandlerInterface {
     @Autowired
     CarDTO carDTO;
-    @Autowired
-    Messages messages;
+//    @Autowired
+//    Messages messages;
     @Autowired
     CarService carService;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
+//    @Autowired
+//    Keyboards keyboards;
+//    @Autowired
+//    Buttons buttons;
     @Autowired
     AddCarStorageAccess addCarStorageAccess;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+//    @Autowired
+//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserService userService;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
+//    @Autowired
+//    ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -112,7 +112,8 @@ public class CarHandler implements Handler {
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
         }
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -162,7 +163,8 @@ public class CarHandler implements Handler {
                 editMessage = deleteAllCarsMessage(incomeMessage);
             }
         }
-        messageProcessor.sendEditedMessage(editMessage);
+        sendEditMessage(editMessage);
+//        messageProcessor.sendEditedMessage(editMessage);
     }
 
 
@@ -185,7 +187,8 @@ public class CarHandler implements Handler {
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
         log.info("CarHandler method startAddCarProcessMessageCreate: send request to confirm start of process to add a new car");
-        messageProcessor.sendMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
     }
 
     private EditMessageText requestModel(Message incomeMessage) {
@@ -320,7 +323,8 @@ public class CarHandler implements Handler {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
-        messageProcessor.sendMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
     }
 
     public EditMessageText sendCarListToDelete(Message incomeMessage) {

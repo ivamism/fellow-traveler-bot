@@ -33,17 +33,17 @@ This class handle operations with User registration process, editing, deleting, 
 @Service
 @Data
 @Log4j
-public class UserHandler implements Handler {
-    @Autowired
-    Messages messages;
+public class UserHandler extends Hndlr implements HandlerInterface {
+//    @Autowired
+//    Messages messages;
     @Autowired
     UserService userService;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+//    @Autowired
+//    Keyboards keyboards;
+//    @Autowired
+//    Buttons buttons;
+//    @Autowired
+//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserDTOStorageAccess userDTOStorageAccess;
     @Autowired
@@ -54,16 +54,13 @@ public class UserHandler implements Handler {
     SettlementService settlementService;
     @Autowired
     CarHandler carHandler;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
+//    @Autowired
+//    ResponseMessageProcessor messageProcessor;
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
 
     /*  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
-TODO Реализовать процесс возврата к регистрации
 TODO разделить функциональные действия и отправку сообщений
-  Переделать онлайн клавиатуры на прием листа пар
-
      */
 
     @Override
@@ -82,7 +79,8 @@ TODO разделить функциональные действия и отп�
                 sendMessage = editUserFirstNameSuccessMessage(chatId);
             }
         }
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -117,7 +115,8 @@ TODO разделить функциональные действия и отп�
                 editMessage = deleteUserSuccessMessage(incomeMessage);
             }
         }
-        messageProcessor.sendEditedMessage(editMessage);
+        sendEditMessage(editMessage);
+//        messageProcessor.sendEditedMessage(editMessage);
     }
 
     // Start registration User process
@@ -130,7 +129,8 @@ TODO разделить функциональные действия и отп�
         buttonsAttributesList.add(buttons.noButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.DENY_REGISTRATION_CALLBACK));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method startRegistration");
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     // Ask user to confirm telegram User's first name as UserName or edit it
@@ -256,8 +256,8 @@ TODO разделить функциональные действия и отп�
 
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.info("send message with stored User's data and keyboard with further action menu");
-
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     private EditMessageText editUserFirstNameMessage(Message incomeMessage) {

@@ -34,25 +34,25 @@ This class handle Admin functional
 @Service
 @Data
 @Log4j
-public class AdminHandler implements Handler {
+public class AdminHandler extends Hndlr implements HandlerInterface {
     @Autowired
     UserService userService;
     @Autowired
     SettlementService settlementService;
     @Autowired
     DepartureLocationService locationService;
-    @Autowired
-    Messages messages;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+//    @Autowired
+//    Messages messages;
+//    @Autowired
+//    Keyboards keyboards;
+//    @Autowired
+//    Buttons buttons;
+//    @Autowired
+//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
+//    @Autowired
+//    ResponseMessageProcessor messageProcessor;
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
@@ -76,7 +76,8 @@ public class AdminHandler implements Handler {
             }
 
         }
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -94,7 +95,8 @@ public class AdminHandler implements Handler {
                 editMessage = departureLocationNameRequestMessage(incomeMessage);
             }
         }
-        messageProcessor.sendEditedMessage(editMessage);
+        sendEditMessage(editMessage);
+//        messageProcessor.sendEditedMessage(editMessage);
     }
 
 
@@ -105,7 +107,8 @@ public class AdminHandler implements Handler {
             case "Добавить локацию" -> sendMessage = departureLocationSettlementRequestMessage(chatId);
 
         }
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
     public boolean checkIsAdmin(long chatId) {
@@ -118,7 +121,8 @@ public class AdminHandler implements Handler {
         sendMessage.setText(messages.getADMIN_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.mainAdminMenu());
         log.debug("AdminHandler method checkIsAdmin");
-        messageProcessor.sendMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
     }
 
     // Handle Settlement

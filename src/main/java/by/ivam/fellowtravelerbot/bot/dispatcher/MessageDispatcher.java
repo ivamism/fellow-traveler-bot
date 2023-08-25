@@ -39,9 +39,6 @@ public class MessageDispatcher extends Dispatcher {
     FindPassengerHandler findPassengerHandler;
     @Autowired
     FindRideHandler findRideHandler;
-//    @Autowired
-//    ResponseMessageProcessor messageProcessor;
-
     SendMessage message = new SendMessage();
 
     private final List<String> botCommandsList =
@@ -257,8 +254,7 @@ public class MessageDispatcher extends Dispatcher {
     private void unknownCommandReceived(long chatId) {
         message.setChatId(chatId);
         message.setText(messages.getUNKNOWN_COMMAND());
-        sendMessage(message);
-//        messageProcessor.sendMessage(message);
+        sendBotMessage(message);
         log.info("received unknown command");
     }
 
@@ -272,8 +268,7 @@ public class MessageDispatcher extends Dispatcher {
         message.setChatId(chatId);
         message.setText(messages.getHELP_TEXT());
         log.debug("method helpCommandReceived");
-//        messageProcessor.sendMessage(message);
-        sendMessage(message);
+        sendBotMessage(message);
     }
 }
 

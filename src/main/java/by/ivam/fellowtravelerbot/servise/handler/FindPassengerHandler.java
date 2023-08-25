@@ -30,15 +30,15 @@ import java.util.List;
 @Service
 @Data
 @Log4j
-public class FindPassengerHandler implements Handler {
-    @Autowired
-    Messages messages;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+public class FindPassengerHandler extends Hndlr implements HandlerInterface {
+//    @Autowired
+//    Messages messages;
+//    @Autowired
+//    Keyboards keyboards;
+//    @Autowired
+//    Buttons buttons;
+//    @Autowired
+//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserService userService;
     @Autowired
@@ -47,8 +47,6 @@ public class FindPassengerHandler implements Handler {
     FindPassengerStorageAccess findPassengerStorageAccess;
     @Autowired
     SettlementService settlementService;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -91,7 +89,8 @@ public class FindPassengerHandler implements Handler {
             }
 
         }
-        messageProcessor.sendEditedMessage(editMessage);
+//        messageProcessor.sendEditedMessage(editMessage);
+        sendEditMessage(editMessage);
     }
 
 //    else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
@@ -111,7 +110,7 @@ public class FindPassengerHandler implements Handler {
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
         log.debug("method: startCreatePickUpPassengerRequestProcess");
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
     }
 
     public void createPickUpPassengerRequestDTO(long chatId) {

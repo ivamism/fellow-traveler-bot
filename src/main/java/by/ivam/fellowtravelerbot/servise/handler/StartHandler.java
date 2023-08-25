@@ -17,21 +17,22 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler implements Handler {
-    @Autowired
-    Messages messages;
+public class StartHandler extends Hndlr implements HandlerInterface {
     @Autowired
     UserService userService;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
+//    @Autowired
+//    Messages messages;
+
+//    @Autowired
+//    Keyboards keyboards;
+//    @Autowired
+//    Buttons buttons;
     @Autowired
     UserHandler userHandler;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
+//    @Autowired
+//    ChatStatusStorageAccess chatStatusStorageAccess;
+//    @Autowired
+//    ResponseMessageProcessor messageProcessor;
 
 
     SendMessage sendMessage = new SendMessage();
@@ -47,11 +48,11 @@ public class StartHandler implements Handler {
         log.debug("method handleReceivedCallback");
         switch (callback) {
             case "CANCEL_CALLBACK" -> {
-
                 editMessage = quitProcessMessage(incomeMessage);
             }
         }
-        messageProcessor.sendEditedMessage(editMessage);
+        sendEditMessage(editMessage);
+//        messageProcessor.sendEditedMessage(editMessage);
     }
 
     public boolean checkRegistration(long chatId) {
@@ -63,8 +64,8 @@ public class StartHandler implements Handler {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText("Привет, " + incomeMessage.getChat().getFirstName() + "!");
         sendMessage.setReplyMarkup(keyboards.mainMenu());
-        messageProcessor.sendMessage(sendMessage);
-//        sendMessage(message);
+//        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
         startMessaging(incomeMessage);
     }
 
@@ -84,23 +85,24 @@ public class StartHandler implements Handler {
             sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
-//        sendMessage(message);
-            messageProcessor.sendMessage(sendMessage);
+            sendBotMessage(sendMessage);
+//            messageProcessor.sendMessage(sendMessage);
         }
     }
 
     public void noRegistrationMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
-        messageProcessor.sendMessage(sendMessage);
+        sendBotMessage(sendMessage);
+//        messageProcessor.sendMessage(sendMessage);
     }
 
-    public EditMessageText noRegistrationEditMessage(long chatId) {
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(editMessage.getMessageId());
-        editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
-        return editMessage;
-    }
+//    public EditMessageText noRegistrationEditMessage(long chatId) {
+//        editMessage.setChatId(chatId);
+//        editMessage.setMessageId(editMessage.getMessageId());
+//        editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
+//        return editMessage;
+//    }
 
     private EditMessageText quitProcessMessage(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();

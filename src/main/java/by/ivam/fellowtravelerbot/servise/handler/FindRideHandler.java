@@ -19,18 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class FindRideHandler implements Handler{
-    @Autowired
-    Messages messages;
-    @Autowired
-    Keyboards keyboards;
-    @Autowired
-    Buttons buttons;
-    @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
-    @Autowired
-    ResponseMessageProcessor messageProcessor;
-
+public class FindRideHandler extends Hndlr implements HandlerInterface{
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
     @Override
