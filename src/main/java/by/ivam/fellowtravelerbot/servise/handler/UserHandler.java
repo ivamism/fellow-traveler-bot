@@ -1,16 +1,11 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
-import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
-import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
-import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -33,17 +28,9 @@ This class handle operations with User registration process, editing, deleting, 
 @Service
 @Data
 @Log4j
-public class UserHandler extends Hndlr implements HandlerInterface {
-//    @Autowired
-//    Messages messages;
+public class UserHandler extends Handler implements HandlerInterface {
     @Autowired
     UserService userService;
-//    @Autowired
-//    Keyboards keyboards;
-//    @Autowired
-//    Buttons buttons;
-//    @Autowired
-//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserDTOStorageAccess userDTOStorageAccess;
     @Autowired
@@ -54,8 +41,6 @@ public class UserHandler extends Hndlr implements HandlerInterface {
     SettlementService settlementService;
     @Autowired
     CarHandler carHandler;
-//    @Autowired
-//    ResponseMessageProcessor messageProcessor;
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
 
@@ -80,7 +65,6 @@ TODO разделить функциональные действия и отп�
             }
         }
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -116,7 +100,6 @@ TODO разделить функциональные действия и отп�
             }
         }
         sendEditMessage(editMessage);
-//        messageProcessor.sendEditedMessage(editMessage);
     }
 
     // Start registration User process
@@ -130,7 +113,6 @@ TODO разделить функциональные действия и отп�
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method startRegistration");
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     // Ask user to confirm telegram User's first name as UserName or edit it
@@ -146,9 +128,7 @@ TODO разделить функциональные действия и отп�
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
         userDTOCreator(incomeMessage);
-
         log.debug("method confirmUserFirstName");
-
         return editMessage;
     }
 
@@ -210,11 +190,10 @@ TODO разделить функциональные действия и отп�
 
     private User userRegistration(long chatId) {
         User user = userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
-
         chatStatusStorageAccess.deleteChatStatus(chatId);
         userDTOStorageAccess.deleteUserDTO(chatId);
-        log.info("method userRegistration. Call saving to DB user: " + user);
 
+        log.info("method userRegistration. Call saving to DB user: " + user);
         return user;
     }
 
@@ -257,7 +236,6 @@ TODO разделить функциональные действия и отп�
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.info("send message with stored User's data and keyboard with further action menu");
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     private EditMessageText editUserFirstNameMessage(Message incomeMessage) {
@@ -355,6 +333,7 @@ TODO разделить функциональные действия и отп�
         userDTOStorageAccess.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator with edited firstname");
     }
+
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

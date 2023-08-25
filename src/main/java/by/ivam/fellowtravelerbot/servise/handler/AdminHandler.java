@@ -1,18 +1,13 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.LocationDTO;
-import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
-import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -34,25 +29,15 @@ This class handle Admin functional
 @Service
 @Data
 @Log4j
-public class AdminHandler extends Hndlr implements HandlerInterface {
+public class AdminHandler extends Handler implements HandlerInterface {
     @Autowired
     UserService userService;
     @Autowired
     SettlementService settlementService;
     @Autowired
     DepartureLocationService locationService;
-//    @Autowired
-//    Messages messages;
-//    @Autowired
-//    Keyboards keyboards;
-//    @Autowired
-//    Buttons buttons;
-//    @Autowired
-//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
-//    @Autowired
-//    ResponseMessageProcessor messageProcessor;
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
@@ -70,14 +55,13 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
             case "ADD_SETTLEMENT_NAME_CHAT_STATUS" -> {
                 Settlement settlement = saveSettlement(chatId, messageText);
                 sendMessage = settlementSaveSuccessMessage(chatId, settlement);
-            }case "DEPARTURE_LOCATION_REQUEST_NAME_CHAT_STATUS" -> {
+            }
+            case "DEPARTURE_LOCATION_REQUEST_NAME_CHAT_STATUS" -> {
                 Location location = departureLocationSave(chatId, messageText);
                 sendMessage = departureLocationSaveSuccessMessage(chatId, location);
             }
-
         }
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -89,14 +73,13 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
             process = trimProcess(callback);
         }
         log.debug("process: " + process);
-        switch (process){
+        switch (process) {
             case "DEPARTURE_LOCATION_SET_SETTLEMENT_CALLBACK" -> {
                 departureLocationSetSettlement(chatId, callback);
                 editMessage = departureLocationNameRequestMessage(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
-//        messageProcessor.sendEditedMessage(editMessage);
     }
 
 
@@ -105,10 +88,8 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
         switch (command) {
             case "Добавить нас. пункт" -> sendMessage = settlementNameRequestMessage(chatId);
             case "Добавить локацию" -> sendMessage = departureLocationSettlementRequestMessage(chatId);
-
         }
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     public boolean checkIsAdmin(long chatId) {
@@ -121,7 +102,6 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
         sendMessage.setText(messages.getADMIN_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.mainAdminMenu());
         log.debug("AdminHandler method checkIsAdmin");
-//        messageProcessor.sendMessage(sendMessage);
         sendBotMessage(sendMessage);
     }
 
@@ -190,7 +170,6 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
         chatStatusStorageAccess.deleteChatStatus(chatId);
 
         return locationService.addNewLocation(locationDTO);
-
     }
 
     private SendMessage departureLocationSaveSuccessMessage(long chatId, Location location) {
@@ -205,8 +184,9 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
     private List<Settlement> getSettlementsList() {
         return settlementService.findAll();
     }
+
     private List<Location> getDepartureLocationListBySettlement(int settlementId) {
-        return  locationService.findAllBySettlement(settlementId);
+        return locationService.findAllBySettlement(settlementId);
     }
 
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData) {
@@ -215,6 +195,7 @@ public class AdminHandler extends Hndlr implements HandlerInterface {
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
         return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
+
     public List<Pair<String, String>> departureLocationButtonsAttributesListCreator(String callbackData, int settlementId) {
         Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
                 .stream()

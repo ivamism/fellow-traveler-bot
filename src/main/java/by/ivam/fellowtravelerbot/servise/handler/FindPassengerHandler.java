@@ -1,18 +1,13 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
-import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.model.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.servise.CarService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -30,15 +25,7 @@ import java.util.List;
 @Service
 @Data
 @Log4j
-public class FindPassengerHandler extends Hndlr implements HandlerInterface {
-//    @Autowired
-//    Messages messages;
-//    @Autowired
-//    Keyboards keyboards;
-//    @Autowired
-//    Buttons buttons;
-//    @Autowired
-//    ChatStatusStorageAccess chatStatusStorageAccess;
+public class FindPassengerHandler extends Handler implements HandlerInterface {
     @Autowired
     UserService userService;
     @Autowired
@@ -89,7 +76,6 @@ public class FindPassengerHandler extends Hndlr implements HandlerInterface {
             }
 
         }
-//        messageProcessor.sendEditedMessage(editMessage);
         sendEditMessage(editMessage);
     }
 

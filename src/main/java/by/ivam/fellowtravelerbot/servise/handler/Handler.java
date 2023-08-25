@@ -1,35 +1,47 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
+import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
+import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
+import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
-public interface Handler {
+public class Handler {
+    @Autowired
+    Messages messages;
+    @Autowired
+    Keyboards keyboards;
+    @Autowired
+    Buttons buttons;
+    @Autowired
+    ChatStatusStorageAccess chatStatusStorageAccess;
+    @Autowired
+    ResponseMessageProcessor messageProcessor;
 
-    void handleReceivedMessage(String chatStatus, Message incomeMessage);
-    void handleReceivedCallback(String callback, Message incomeMessage);
-
-    default String trimProcess(String s) {
+    public String trimProcess(String s) {
         return s.split(":")[0];
     }
-    default String trimSecondSubstring(String s) {
+
+    public String trimSecondSubstring(String s) {
         return s.split(":")[1];
     }
-    default int trimId(String s) {
+
+    public int trimId(String s) {
         return Integer.parseInt(s.split(":")[1]);
     }
-    default String firstLetterToUpperCase(String s) {
+
+    public String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    default void sendMessage (SendMessage message){
-        ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();
+    public void sendBotMessage(SendMessage message) {
         messageProcessor.sendMessage(message);
     }
-    default void sendEditMessage (EditMessageText editMessage){
-        ResponseMessageProcessor messageProcessor = new ResponseMessageProcessor();
+
+    public void sendEditMessage(EditMessageText editMessage) {
         messageProcessor.sendEditedMessage(editMessage);
     }
-
 }

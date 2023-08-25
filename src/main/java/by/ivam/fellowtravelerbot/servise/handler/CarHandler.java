@@ -1,16 +1,11 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
-import by.ivam.fellowtravelerbot.bot.Messages;
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
-import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.servise.CarService;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import by.ivam.fellowtravelerbot.storages.interfaces.AddCarStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -30,25 +25,15 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @Log4j
-public class CarHandler extends Hndlr implements HandlerInterface {
+public class CarHandler extends Handler implements HandlerInterface {
     @Autowired
     CarDTO carDTO;
-//    @Autowired
-//    Messages messages;
     @Autowired
     CarService carService;
-//    @Autowired
-//    Keyboards keyboards;
-//    @Autowired
-//    Buttons buttons;
     @Autowired
     AddCarStorageAccess addCarStorageAccess;
-//    @Autowired
-//    ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     UserService userService;
-//    @Autowired
-//    ResponseMessageProcessor messageProcessor;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -113,7 +98,6 @@ public class CarHandler extends Hndlr implements HandlerInterface {
             }
         }
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
 
     @Override
@@ -143,12 +127,9 @@ public class CarHandler extends Hndlr implements HandlerInterface {
             case "ADD_CAR_EDIT_COMMENTARY_CALLBACK" ->
                     editMessage = changeCommentaryBeforeSavingRequestMessage(incomeMessage);
             case "EDIT_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToEdit(incomeMessage);
-            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" ->
-                    editMessage = editCarMessage(incomeMessage, trimId(callback));
-            case "EDIT_CAR_MODEL_CALLBACK" ->
-                    editMessage = editCarModelRequestMessage(incomeMessage, trimId(callback));
-            case "EDIT_CAR_COLOR_CALLBACK" ->
-                    editMessage = editCarColorRequestMessage(incomeMessage, trimId(callback));
+            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" -> editMessage = editCarMessage(incomeMessage, trimId(callback));
+            case "EDIT_CAR_MODEL_CALLBACK" -> editMessage = editCarModelRequestMessage(incomeMessage, trimId(callback));
+            case "EDIT_CAR_COLOR_CALLBACK" -> editMessage = editCarColorRequestMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_PLATES_CALLBACK" ->
                     editMessage = changeCarPlatesRequestMessage(incomeMessage, trimId(callback));
             case "EDIT_CAR_COMMENTARY_CALLBACK" ->
@@ -164,7 +145,6 @@ public class CarHandler extends Hndlr implements HandlerInterface {
             }
         }
         sendEditMessage(editMessage);
-//        messageProcessor.sendEditedMessage(editMessage);
     }
 
 
@@ -187,7 +167,6 @@ public class CarHandler extends Hndlr implements HandlerInterface {
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
 
         log.info("CarHandler method startAddCarProcessMessageCreate: send request to confirm start of process to add a new car");
-//        messageProcessor.sendMessage(sendMessage);
         sendBotMessage(sendMessage);
     }
 
@@ -323,7 +302,6 @@ public class CarHandler extends Hndlr implements HandlerInterface {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.info("CarHandler method startDeleteCarProcessMessageCreate: send request to confirm start of process to delete a car");
-//        messageProcessor.sendMessage(sendMessage);
         sendBotMessage(sendMessage);
     }
 

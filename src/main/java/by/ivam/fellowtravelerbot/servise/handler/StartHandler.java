@@ -1,11 +1,6 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
-import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
-import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.servise.UserService;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,24 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler extends Hndlr implements HandlerInterface {
+public class StartHandler extends Handler implements HandlerInterface {
     @Autowired
     UserService userService;
-//    @Autowired
-//    Messages messages;
-
-//    @Autowired
-//    Keyboards keyboards;
-//    @Autowired
-//    Buttons buttons;
     @Autowired
     UserHandler userHandler;
-//    @Autowired
-//    ChatStatusStorageAccess chatStatusStorageAccess;
-//    @Autowired
-//    ResponseMessageProcessor messageProcessor;
-
-
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -47,12 +29,9 @@ public class StartHandler extends Hndlr implements HandlerInterface {
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         log.debug("method handleReceivedCallback");
         switch (callback) {
-            case "CANCEL_CALLBACK" -> {
-                editMessage = quitProcessMessage(incomeMessage);
-            }
+            case "CANCEL_CALLBACK" -> editMessage = quitProcessMessage(incomeMessage);
         }
         sendEditMessage(editMessage);
-//        messageProcessor.sendEditedMessage(editMessage);
     }
 
     public boolean checkRegistration(long chatId) {
@@ -64,7 +43,6 @@ public class StartHandler extends Hndlr implements HandlerInterface {
         sendMessage.setChatId(incomeMessage.getChatId());
         sendMessage.setText("Привет, " + incomeMessage.getChat().getFirstName() + "!");
         sendMessage.setReplyMarkup(keyboards.mainMenu());
-//        messageProcessor.sendMessage(sendMessage);
         sendBotMessage(sendMessage);
         startMessaging(incomeMessage);
     }
@@ -86,7 +64,6 @@ public class StartHandler extends Hndlr implements HandlerInterface {
             log.info("User " + incomeMessage.getChat().getUserName()
                     + ". ChatId: " + chatId + " is registered User. Suggested to choose next step.");
             sendBotMessage(sendMessage);
-//            messageProcessor.sendMessage(sendMessage);
         }
     }
 
@@ -94,15 +71,7 @@ public class StartHandler extends Hndlr implements HandlerInterface {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
         sendBotMessage(sendMessage);
-//        messageProcessor.sendMessage(sendMessage);
     }
-
-//    public EditMessageText noRegistrationEditMessage(long chatId) {
-//        editMessage.setChatId(chatId);
-//        editMessage.setMessageId(editMessage.getMessageId());
-//        editMessage.setText(messages.getNO_REGISTRATION_MESSAGE());
-//        return editMessage;
-//    }
 
     private EditMessageText quitProcessMessage(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
