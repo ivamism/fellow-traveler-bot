@@ -155,9 +155,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementList);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(settlementList, callbackData)));
-        log.debug("method: createNewRequestChooseResidenceToMinskMessage");
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
 
+        log.debug("method: createNewRequestChooseResidenceToMinskMessage");
         return editMessage;
     }
     public void createNewRequestSetDepartureSettlement(long chatId, int settlementId) {

@@ -171,8 +171,6 @@ public class Keyboards {
                 .collect(Collectors.toList());
     }
 
-    public Pair<String, String> buttonAttributesPairCreator(String buttonName, String buttonCallback) {
-        return Pair.of(buttonName, buttonCallback);
-    }
+
 }
 
