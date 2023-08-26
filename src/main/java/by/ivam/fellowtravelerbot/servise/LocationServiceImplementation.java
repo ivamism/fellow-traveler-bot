@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @Log4j
-public class DepartureLocationServiceImplementation implements DepartureLocationService {
+public class LocationServiceImplementation implements LocationService {
 
     @Autowired
     DepartureLocationRepository departureLocationRepository;

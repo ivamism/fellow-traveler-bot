@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Direction;
+import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
@@ -25,6 +26,8 @@ import java.util.List;
 public class FindPassengerHandler extends Handler implements HandlerInterface {
     @Autowired
     FindPassengerStorageAccess findPassengerStorageAccess;
+    @Autowired
+    AdminHandler adminHandler;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
@@ -58,24 +61,30 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 String direction = trimSecondSubstring(callback);
                 createNewRequestSetDirection(chatId, direction);
                 if (direction.equals(String.valueOf(Direction.FROM_MINSK))) {
-                    createNewRequestSetDepartureSettlement(chatId, "Минск");
+                    int settlementId = settlementService.findByName("Минск").getId();
+                    createNewRequestSetDepartureSettlement(chatId, settlementId);
+                    editMessage = createNewRequestChooseDepartureLocationMessage(incomeMessage, settlementId);
 
                 } else if ((direction.equals(String.valueOf(Direction.TOWARDS_MINSK)))) {
                     editMessage = createNewRequestChooseResidenceAsDepartureMessage(incomeMessage);
                 }
-
+            }
+            case "CREATE_REQ_DEP_SETTLEMENT" -> {
+                int settlementId = trimId(callback);
+                createNewRequestSetDepartureSettlement(chatId, settlementId);
+                editMessage = createNewRequestChooseDepartureLocationMessage(incomeMessage, settlementId);
+            }
+            case "CREATE_REQ_ANOTHER_SETTLEMENT" -> {
+                editMessage = createNewRequestChooseAnotherSettlementAsDepartureMessage(incomeMessage);
+            }
+            case "CREATE_REQUEST_DEP_LOCATION" -> {
+                createNewRequestProcessSetDepartureLocation(chatId, trimId(callback));
+//                editMessage = createNewRequestChooseAnotherSettlementAsDepartureMessage(incomeMessage);
             }
 
         }
         sendEditMessage(editMessage);
     }
-
-//    else if (callbackData.startsWith(buttons.getCREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_CALLBACK())) { //  callback to delete User's stored data
-//                log.info("callback to choose Settlement for Location");
-//                if (callbackData.substring(50).equals(String.valueOf(Direction.TOWARDS_MINSK))) {
-//                    pickUpPassengerHandler.createNewRequestSetDirection(chatId, Direction.TOWARDS_MINSK);
-//                    editMessageText =  pickUpPassengerHandler.createNewRequestChooseResidenceToMinskMessage(incomeMessage);
-//                }
 
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
@@ -128,11 +137,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
         buttonsAttributesList.add(buttons.anotherButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        //        keyboards.buttonAttributesPairCreator(settlement.getName(),
-//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK() + settlement.getId())); //Chose residence button
-
-//                keyboards.buttonAttributesPairCreator(buttons.getANOTHER_TEXT(),
-//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())); //Chose another settlement button
 
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseResidenceAsDepartureMessage");
@@ -140,61 +144,47 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public EditMessageText createNewRequestChooseAnotherSettlementToMinskMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChooseAnotherSettlementAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
-        String callbackData = buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK();
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_CALLBACK.getValue();
+//        String callbackData = buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK();
 
         String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
         List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
-
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementList);
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(keyboards.settlementsButtonsAttributesListCreator(settlementList, callbackData)));
         log.debug("method: createNewRequestChooseResidenceToMinskMessage");
 
         return editMessage;
     }
-
-    public void createNewRequestSetSettlement(long chatId, Settlement settlement) {
-        log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        findPassengerStorageAccess.setDepartureSettlement(chatId, settlement);
-    }
-
-    public void createNewRequestSetDepartureSettlement(long chatId, String settlementName) {
+    public void createNewRequestSetDepartureSettlement(long chatId, int settlementId) {
         log.debug("method createNewRequestSetDepartureSettlement");
-        Settlement settlement = settlementService.findByName(settlementName);
+        Settlement settlement = settlementService.findById(settlementId);
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureSettlement(settlement);
         findPassengerStorageAccess.update(chatId, dto);
 //        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
     }
-
-    public void createNewRequestSetDestinationSettlement(long chatId, String settlementName) {
-        log.debug("method createPickUpPassengerRequestProcessSetDirection");
-        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
-    }
-
-    public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage) {
+    public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
-
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(settlement.getName(),
-//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_CALLBACK() + settlement.getId())); //Chose residence button
-//        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getANOTHER_TEXT(),
-//                buttons.getCREATE_PICKUP_PASSENGER_REQUEST_ANOTHER_SETTLEMENT_CALLBACK())); //Chose another settlement button
-        buttonsAttributesList.add(keyboards.buttonAttributesPairCreator(buttons.getCANCEL_BUTTON_TEXT(),
-                buttons.getCANCEL_CALLBACK())); //cancel button
-        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DEP_LOCATION_CALLBACK.getValue();
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.departureLocationButtonsAttributesListCreator(callbackData, settlementId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createPickUpPassengerRequestProcessChoseDirectionMessage");
 
         return editMessage;
     }
 
-    public void createPickUpPassengerRequestProcessSetDepartureLocation(long chatId, Settlement settlement) {
+    public void createNewRequestProcessSetDepartureLocation(long chatId, int locationId) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
-    }
-
-    public Settlement getSettlementFromCallback(String callbackData) {
-        return settlementService.findById(Integer.parseInt(callbackData.substring(51)));
+        Location location = locationService.findById(locationId);
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureLocation(location);
+        findPassengerStorageAccess.update(chatId, dto);
     }
 
     private void editMessageTextGeneralPreset(Message incomeMessage) {

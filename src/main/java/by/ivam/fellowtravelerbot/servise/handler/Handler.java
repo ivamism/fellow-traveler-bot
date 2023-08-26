@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.servise.CarService;
-import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
+import by.ivam.fellowtravelerbot.servise.LocationService;
 import by.ivam.fellowtravelerbot.servise.SettlementService;
 import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
@@ -27,7 +27,7 @@ public class Handler {
     @Autowired
     SettlementService settlementService;
     @Autowired
-    DepartureLocationService locationService;
+    LocationService locationService;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired

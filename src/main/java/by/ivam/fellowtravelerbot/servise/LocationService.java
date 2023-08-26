@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.model.Location;
 
 import java.util.List;
 
-public interface DepartureLocationService {
+public interface LocationService {
     Location findById(int id);
     List<Location> findAll();
     List<Location> findAllBySettlement(int settlementId);

@@ -185,6 +185,13 @@ public class AdminHandler extends Handler implements HandlerInterface {
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
         return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData, List<Settlement> settlementList) {
+        Map<Integer, String> settlementAttributes = settlementList
+                .stream()
+                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
+        return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
+    }
+
 
     public List<Pair<String, String>> departureLocationButtonsAttributesListCreator(String callbackData, int settlementId) {
         Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
