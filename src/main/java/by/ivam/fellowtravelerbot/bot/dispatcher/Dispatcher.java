@@ -1,11 +1,24 @@
 package by.ivam.fellowtravelerbot.bot.dispatcher;
 
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.servise.handler.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 public class Dispatcher {
+    @Autowired
+    StartHandler startHandler;
+    @Autowired
+    AdminHandler adminHandler;
+    @Autowired
+    UserHandler userHandler;
+    @Autowired
+    CarHandler carHandler;
+    @Autowired
+    FindPassengerHandler findPassengerHandler;
+    @Autowired
+    FindRideHandler findRideHandler;
     @Autowired
     ResponseMessageProcessor messageProcessor;
 

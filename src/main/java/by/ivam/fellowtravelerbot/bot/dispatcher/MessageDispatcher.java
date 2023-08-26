@@ -4,7 +4,6 @@ import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.servise.handler.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -22,24 +21,13 @@ import java.util.stream.Collectors;
 @Log4j
 public class MessageDispatcher extends Dispatcher {
     @Autowired
-    StartHandler startHandler;
-    @Autowired
-    AdminHandler adminHandler;
-    @Autowired
-    UserHandler userHandler;
-    @Autowired
-    CarHandler carHandler;
-    @Autowired
     Keyboards keyboards;
     @Autowired
     Messages messages;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
-    @Autowired
-    FindPassengerHandler findPassengerHandler;
-    @Autowired
-    FindRideHandler findRideHandler;
-    SendMessage message = new SendMessage();
+
+    SendMessage sendMessage = new SendMessage();
 
     private final List<String> botCommandsList =
             Arrays.stream(BotCommands.values())
@@ -252,9 +240,9 @@ public class MessageDispatcher extends Dispatcher {
     }
 
     private void unknownCommandReceived(long chatId) {
-        message.setChatId(chatId);
-        message.setText(messages.getUNKNOWN_COMMAND());
-        sendBotMessage(message);
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getUNKNOWN_COMMAND());
+        sendBotMessage(sendMessage);
         log.info("received unknown command");
     }
 
@@ -265,10 +253,10 @@ public class MessageDispatcher extends Dispatcher {
     }
 
     private void helpCommandReceived(long chatId) {
-        message.setChatId(chatId);
-        message.setText(messages.getHELP_TEXT());
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getHELP_TEXT());
         log.debug("method helpCommandReceived");
-        sendBotMessage(message);
+        sendBotMessage(sendMessage);
     }
 }
 

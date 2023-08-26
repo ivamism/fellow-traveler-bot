@@ -5,9 +5,6 @@ import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.servise.CarService;
-import by.ivam.fellowtravelerbot.servise.SettlementService;
-import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -27,13 +24,7 @@ import java.util.List;
 @Log4j
 public class FindPassengerHandler extends Handler implements HandlerInterface {
     @Autowired
-    UserService userService;
-    @Autowired
-    CarService carService;
-    @Autowired
     FindPassengerStorageAccess findPassengerStorageAccess;
-    @Autowired
-    SettlementService settlementService;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 

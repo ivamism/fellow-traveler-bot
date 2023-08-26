@@ -4,8 +4,6 @@ import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
-import by.ivam.fellowtravelerbot.servise.SettlementService;
-import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -30,15 +28,11 @@ This class handle operations with User registration process, editing, deleting, 
 @Log4j
 public class UserHandler extends Handler implements HandlerInterface {
     @Autowired
-    UserService userService;
-    @Autowired
     UserDTOStorageAccess userDTOStorageAccess;
     @Autowired
     UserDTO userDTO;
     @Autowired
     AdminHandler adminHandler;
-    @Autowired
-    SettlementService settlementService;
     @Autowired
     CarHandler carHandler;
     EditMessageText editMessage = new EditMessageText();
@@ -277,7 +271,7 @@ TODO разделить функциональные действия и отп�
 
     public User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
-        user.setResidence(adminHandler.getSettlementService().findById(trimId(callbackData)));
+        user.setResidence(settlementService.findById(trimId(callbackData)));
         return userService.updateUser(user);
     }
 

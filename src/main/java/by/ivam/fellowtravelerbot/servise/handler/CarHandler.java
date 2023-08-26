@@ -29,11 +29,7 @@ public class CarHandler extends Handler implements HandlerInterface {
     @Autowired
     CarDTO carDTO;
     @Autowired
-    CarService carService;
-    @Autowired
     AddCarStorageAccess addCarStorageAccess;
-    @Autowired
-    UserService userService;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 

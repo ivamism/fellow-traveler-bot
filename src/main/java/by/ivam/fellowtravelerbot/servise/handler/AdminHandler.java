@@ -5,9 +5,6 @@ import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.servise.DepartureLocationService;
-import by.ivam.fellowtravelerbot.servise.SettlementService;
-import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -30,12 +27,6 @@ This class handle Admin functional
 @Data
 @Log4j
 public class AdminHandler extends Handler implements HandlerInterface {
-    @Autowired
-    UserService userService;
-    @Autowired
-    SettlementService settlementService;
-    @Autowired
-    DepartureLocationService locationService;
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
 
@@ -81,7 +72,6 @@ public class AdminHandler extends Handler implements HandlerInterface {
         }
         sendEditMessage(editMessage);
     }
-
 
     public void handleReceivedCommand(String command, Message incomemessage) {
         long chatId = incomemessage.getChatId();

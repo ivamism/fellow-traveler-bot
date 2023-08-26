@@ -1,6 +1,5 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.servise.UserService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Data
 @Log4j
 public class StartHandler extends Handler implements HandlerInterface {
-    @Autowired
-    UserService userService;
     @Autowired
     UserHandler userHandler;
     SendMessage sendMessage = new SendMessage();
