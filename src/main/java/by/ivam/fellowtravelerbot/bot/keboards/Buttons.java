@@ -41,6 +41,9 @@ public class Buttons {
     private final String DELETE_CAR_TEXT = "Удалить автомобиль";
     private final String TOWARD_MINSK_TEXT = "В Минск";
     private final String FROM_MINSK_TEXT = "Из Минска";
+    private final String TODAY_TEXT = "Сегодня";
+    private final String TOMORROW_TEXT = "Завтра";
+
 
     //    Main menu buttons
     private final String MAIN_FIND_CAR = "Найти попутку";
@@ -157,4 +160,11 @@ public class Buttons {
     public Pair<String, String> anotherButtonCreate(String buttonCallback) {
         return Pair.of(ANOTHER_TEXT, buttonCallback);
     }
+    public Pair<String, String> todayButtonCreate(String buttonCallback) {
+        return Pair.of(TODAY_TEXT, buttonCallback);
+    }
+    public Pair<String, String> tomorrowButtonCreate(String buttonCallback) {
+        return Pair.of(TOMORROW_TEXT, buttonCallback);
+    }
+
 }

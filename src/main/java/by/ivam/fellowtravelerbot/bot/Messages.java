@@ -107,9 +107,13 @@ public class Messages {
 
     //    FindPassengerRequest
 //    Creation new request
-    private final String CREATE_PICKUP_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
-    private final String CREATE_PICKUP_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
-    private final String CREATE_PICKUP_PASSENGER_REQUEST_SETTLEMENT_MESSAGE = "Выберите населенный пункт";
-    private final String CREATE_PICKUP_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
+    private final String CREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
+    private final String CREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_MESSAGE = "Выберите населенный пункт выезда";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE = "Выберите населенный пункт назначения";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE = "Выберите место назначения";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE = "Выберите день";
+    private final String CREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE = "Напишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
 
 }
