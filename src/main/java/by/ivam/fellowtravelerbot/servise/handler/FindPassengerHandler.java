@@ -18,8 +18,12 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 // This class handle operations with search passengers
 @Service
@@ -44,6 +48,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         if (chatStatus.contains(":")) {
             process = trimProcess(chatStatus);
         }
+        switch (process) {
+            case "CREATE_REQUEST_TIME_STATUS" -> {
+                LocalTime time = getTime(messageText, chatId);
+                createNewRequestSetTimeLocation(chatId, time);
+                sendMessage = nextStep(chatId);
+            }
+        }
+        sendBotMessage(sendMessage);
+
     }
 
     @Override
@@ -124,14 +137,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendBotMessage(sendMessage);
     }
 
-    public void createFindPassengerRequestDTO(long chatId) {
+    private void createFindPassengerRequestDTO(long chatId) {
         FindPassengerRequestDTO findPassengerRequestDTO = new FindPassengerRequestDTO();
         findPassengerRequestDTO.setUser(userService.findUserById(chatId));
         findPassengerStorageAccess.addPickUpPassengerDTO(chatId, findPassengerRequestDTO);
         log.debug("method: createFindPassengerRequestDTO - create DTO " + findPassengerRequestDTO + " and save it in storage");
     }
 
-    public EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
+    private EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE());
 
@@ -147,13 +160,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public void createNewRequestSetDirection(long chatId, String direction) {
+    private void createNewRequestSetDirection(long chatId, String direction) {
         log.debug("method createNewRequestSetDirection");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDirection(direction);
         findPassengerStorageAccess.update(chatId, dto);
     }
 
-    public EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
+    private EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
@@ -169,7 +182,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public EditMessageText createNewRequestChooseAnotherSettlementAsDepartureMessage(Message incomeMessage) {
+    private EditMessageText createNewRequestChooseAnotherSettlementAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_MESSAGE());
         String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SETTLEMENT_CALLBACK.getValue();
@@ -184,14 +197,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: createNewRequestChooseAnotherSettlementAsDepartureMessage");
         return editMessage;
     }
-    public void createNewRequestSetDepartureSettlement(long chatId, int settlementId) {
+
+    private void createNewRequestSetDepartureSettlement(long chatId, int settlementId) {
         log.debug("method createNewRequestSetDepartureSettlement");
         Settlement settlement = settlementService.findById(settlementId);
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureSettlement(settlement);
         findPassengerStorageAccess.update(chatId, dto);
 //        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
     }
-    public EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage, int settlementId) {
+
+    private EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
         String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DEP_LOCATION_CALLBACK.getValue();
@@ -204,20 +219,21 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public void createNewRequestSetDepartureLocation(long chatId, int locationId) {
+    private void createNewRequestSetDepartureLocation(long chatId, int locationId) {
         log.debug("method createNewRequestSetDepartureLocation");
         Location location = locationService.findById(locationId);
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureLocation(location);
         findPassengerStorageAccess.update(chatId, dto);
     }
-    public void createNewRequestSetDestinationSettlement(long chatId, int settlementId) {
+
+    private void createNewRequestSetDestinationSettlement(long chatId, int settlementId) {
         log.debug("method createNewRequestSetDestinationSettlement");
         Settlement settlement = settlementService.findById(settlementId);
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDestinationSettlement(settlement);
         findPassengerStorageAccess.update(chatId, dto);
     }
 
-    public EditMessageText createNewRequestChooseResidenceAsDestinationMessage(Message incomeMessage) {
+    private EditMessageText createNewRequestChooseResidenceAsDestinationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
@@ -232,7 +248,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
         return editMessage;
     }
-    public EditMessageText createNewRequestChooseAnotherSettlementAsDestinationMessage(Message incomeMessage) {
+
+    private EditMessageText createNewRequestChooseAnotherSettlementAsDestinationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
         String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
@@ -247,7 +264,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: createNewRequestChooseAnotherSettlementAsDestinationMessage");
         return editMessage;
     }
-    public EditMessageText createNewRequestChooseDestinationLocationMessage(Message incomeMessage, int settlementId) {
+
+    private EditMessageText createNewRequestChooseDestinationLocationMessage(Message incomeMessage, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE());
         String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
@@ -260,13 +278,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public void createNewRequestSetDestinationLocation(long chatId, int locationId) {
+    private void createNewRequestSetDestinationLocation(long chatId, int locationId) {
         log.debug("method createPickUpPassengerRequestProcessSetDirection");
         Location location = locationService.findById(locationId);
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDestinationLocation(location);
         findPassengerStorageAccess.update(chatId, dto);
     }
-    public EditMessageText createNewRequestChooseDateMessage(Message incomeMessage) {
+
+    private EditMessageText createNewRequestChooseDateMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE());
 
@@ -281,27 +300,100 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    public void createNewRequestSetDate(long chatId, String date) {
+    private void createNewRequestSetDate(long chatId, String date) {
         log.debug("method createNewRequestSetDate");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
         LocalDate rideDate = LocalDate.now();
-        if (date.equals(String.valueOf(Date.TODAY))){
+        if (date.equals(String.valueOf(Date.TODAY))) {
             dto.setDepartureDate(rideDate);
-        } else if(date.equals(String.valueOf(Date.TOMORROW))){
+        } else if (date.equals(String.valueOf(Date.TOMORROW))) {
             dto.setDepartureDate(rideDate.plusDays(1));
         }
-         findPassengerStorageAccess.update(chatId, dto);
+        findPassengerStorageAccess.update(chatId, dto);
     }
 
-    public EditMessageText createNewRequestChooseTimeMessage(Message incomeMessage) {
+    private EditMessageText createNewRequestChooseTimeMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
-
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_TIME_STATUS);
         log.debug("method: createNewRequestChooseResidenceAsDestinationMessage");
 
         return editMessage;
     }
+
+    private void createNewRequestSetTimeLocation(long chatId, LocalTime time) {
+        log.debug("method createPickUpPassengerRequestProcessSetDirection");
+
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureTime(time);
+        findPassengerStorageAccess.update(chatId, dto);
+    }
+
+    private LocalTime getTime(String timeString, long chatId) {
+        LocalTime time = LocalTime.of(0, 0, 0, 100);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH);
+//        LocalDate dateTime = LocalDate.parse(dateInString, formatter);
+
+        DateTimeFormatter dotFormatter = DateTimeFormatter.ofPattern("HH.mm");
+        DateTimeFormatter colonFormatter = DateTimeFormatter.ofPattern("H:m");
+        DateTimeFormatter dashFormatter = DateTimeFormatter.ofPattern("H-m");
+
+
+        String[] strings;
+        if (timeString.contains(("."))) {
+            time = parseTime(timeString, dotFormatter, chatId);
+
+//            strings = timeString.split(".");
+        } else if (timeString.contains((":"))) {
+            time = parseTime(timeString, colonFormatter, chatId);
+//            strings = timeString.split(":");
+        } else if (timeString.contains(("-"))) {
+            time = parseTime(timeString, dashFormatter, chatId);
+//            strings = timeString.split("-");
+        }
+        return time;
+    }
+
+    private LocalTime parseTime(String timeString, DateTimeFormatter formatter, long chatId) {
+        LocalTime time = LocalTime.of(0, 0, 0, 0);
+        try {
+            time = LocalTime.parse(timeString, formatter);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            createNewRequestInvalidTimeFormatMessage(chatId);
+        }
+        return time;
+    }
+
+//    private boolean isValidParsedTime(String[] strings) {
+//        boolean isValid = false;
+//        if (strings.length == 2) {
+//            List<String> stringList = Arrays.stream(strings).toList();
+//            Stream<String> stream = stringList.stream();
+////            stream.noneMatch(s -> s.contains())
+//        }
+//
+//        return isValid;
+//    }
+
+    private void createNewRequestInvalidTimeFormatMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        sendBotMessage(sendMessage);
+    }
+
+    private SendMessage nextStep(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("nextStep");
+        log.debug("method: nextStep");
+
+        return sendMessage;
+    }
+
+
     private void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

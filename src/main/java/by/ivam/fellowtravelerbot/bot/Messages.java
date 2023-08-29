@@ -115,5 +115,6 @@ public class Messages {
     private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE = "Выберите место назначения";
     private final String CREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE = "Выберите день";
     private final String CREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE = "Напишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
+    private final String CREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE = "Неверно указан формат даты.\n\nНапишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
 
 }
