@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.bot.enums;
 import lombok.Getter;
 
 @Getter
-public enum Date {
+public enum Day {
     TODAY,
     TOMORROW
 }
