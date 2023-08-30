@@ -48,7 +48,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         }
         switch (process) {
             case "CREATE_REQUEST_TIME_STATUS" -> {
-                LocalTime time = getTime(messageText, chatId);
+                LocalTime time = getTime(messageText);
                 if (time.toNanoOfDay() == 100) {
                     sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
                 } else {
@@ -315,6 +315,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText createNewRequestChooseTimeTodayMessage(Message incomeMessage) {
+//        TODO добавить  кнопки с промежутками времени
+
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
@@ -344,30 +346,31 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private boolean isToday(String day) {
+//        TODO добавить проверку day на совпадение со значениями enum Day
         boolean isToday = false;
         if (day.equals(String.valueOf(Day.TODAY))) isToday = true;
         log.debug("method isToday = " + isToday);
         return isToday;
     }
 
-    private LocalTime getTime(String timeString, long chatId) {
+    private LocalTime getTime(String timeString) {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
 
         if (timeString.contains(("."))) {
             DateTimeFormatter dotFormatter = DateTimeFormatter.ofPattern("H.m");
-            time = parseTime(timeString, dotFormatter, chatId);
+            time = parseTime(timeString, dotFormatter);
         } else if (timeString.contains((":"))) {
             DateTimeFormatter colonFormatter = DateTimeFormatter.ofPattern("H:m");
-            time = parseTime(timeString, colonFormatter, chatId);
+            time = parseTime(timeString, colonFormatter);
         } else if (timeString.contains(("-"))) {
             DateTimeFormatter dashFormatter = DateTimeFormatter.ofPattern("H-m");
-            time = parseTime(timeString, dashFormatter, chatId);
+            time = parseTime(timeString, dashFormatter);
         }
         log.debug("method getTime. time = " + time);
         return time;
     }
 
-    private LocalTime parseTime(String timeString, DateTimeFormatter formatter, long chatId) {
+    private LocalTime parseTime(String timeString, DateTimeFormatter formatter) {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
         try {
             time = LocalTime.parse(timeString, formatter);
