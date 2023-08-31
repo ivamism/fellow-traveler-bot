@@ -43,6 +43,7 @@ public class FindPassengerRequest {
     private LocalDate departureDate;
     private LocalTime departureTime;
 
+    @Column(length = 1000)
     private String commentary;
     private boolean isActive;
 }

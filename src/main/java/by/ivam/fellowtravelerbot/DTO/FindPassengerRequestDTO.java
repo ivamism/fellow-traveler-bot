@@ -18,12 +18,11 @@ public class FindPassengerRequestDTO {
     private String direction;
     private Settlement departureSettlement;
     private Location departureLocation;
-
     private Settlement destinationSettlement;
     private Location destinationLocation;
-    private Car car;
-    private int seatsQuantity;
     private LocalDate departureDate;
     private LocalTime departureTime;
+    private Car car;
+    private int seatsQuantity;
     private String commentary;
 }

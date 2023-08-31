@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
@@ -62,10 +63,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "CREATE_REQUEST_SEATS_STATUS" -> {
                 if (seatsQuantityIsValid(messageText)) {
                     createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
-                    sendMessage = nextStep(chatId);
+                    sendMessage = createNewRequestCommentaryMessage(incomeMessage);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
+            }
+            case "CREATE_REQUEST_COMMENTARY_STATUS" -> {
+                createNewRequestSetCommentary(chatId, messageText);
+                if (messageText.length() <= 1000) sendMessage = nextStep(chatId);
 
             }
         }
@@ -394,6 +399,31 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private void createNewRequestSetSeatsQuantity(long chatId, int seatsQuantity) {
         log.debug("method createNewRequestSetSeatsQuantity");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setSeatsQuantity(seatsQuantity);
+        findPassengerStorageAccess.update(chatId, dto);
+    }
+
+    private SendMessage createNewRequestCommentaryMessage(Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.skipButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        List<Pair<String, String>> buttonsAttributesList =
+//                carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue(), chatId);
+//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+//        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+
+        log.debug("method: createNewRequestCommentaryMessage");
+        return sendMessage;
+    }
+
+    private void createNewRequestSetCommentary(long chatId, String commentary) {
+        log.debug("method createNewRequestSetCommentary");
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setCommentary(commentary);
         findPassengerStorageAccess.update(chatId, dto);
     }
 
