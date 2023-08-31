@@ -4,8 +4,6 @@ import by.ivam.fellowtravelerbot.DTO.CarDTO;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.servise.CarService;
-import by.ivam.fellowtravelerbot.servise.UserService;
 import by.ivam.fellowtravelerbot.storages.interfaces.AddCarStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -18,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // This class handle operations with Car
@@ -306,7 +305,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         Long chatId = incomeMessage.getChatId();
 
         if (getUsersCarsQuantity(chatId) == 2) {
-            editMessage.setText(messages.getDELETE_CAR_CHOOSE_MESSAGE() + prepareCarListToSend(chatId));
+            editMessage.setText(messages.getDELETE_CAR_CHOOSE_MESSAGE() + CarListToSring(chatId));
 
             int firstCarId = getUsersCarsList(chatId).get(0).getId();
             int secondCarId = getUsersCarsList(chatId).get(1).getId();
@@ -455,7 +454,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         if (getUsersCarsQuantity(chatId) == 2) {
             int firstCarId = getUsersCarsList(chatId).get(0).getId();
             int secondCarId = getUsersCarsList(chatId).get(1).getId();
-            editMessage.setText(prepareCarListToSend(chatId));
+            editMessage.setText(CarListToSring(chatId));
 
             List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
             buttonsAttributesList.add(buttons.firstChoiceButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_CHOOSE_CAR_CALLBACK.getValue() + firstCarId)); // Choose first car button
@@ -567,7 +566,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
     }
 
-    public String prepareCarListToSend(long chatId) {
+    public String CarListToSring(long chatId) {
         StringBuilder text = new StringBuilder();
         for (Car car : getUsersCarsList(chatId)) {
             int n = getUsersCarsList(chatId).indexOf(car) + 1;
@@ -582,6 +581,13 @@ public class CarHandler extends Handler implements HandlerInterface {
 
     public int getUsersCarsQuantity(long chatId) {
         return getUsersCarsList(chatId).size();
+    }
+// TODO переделать выбор автомобилей во всех местах с помощью этого метода
+    public List<Pair<String, String>> CarButtonsAttributesListCreator(String callbackData, long chatId) {
+        Map<Integer, String> carButtonsAttributes = getUsersCarsList(chatId)
+                .stream()
+                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getModel()));
+        return keyboards.buttonsAttributesListCreator(carButtonsAttributes, callbackData);
     }
 
     public void editMessageTextGeneralPreset(Message incomeMessage) {

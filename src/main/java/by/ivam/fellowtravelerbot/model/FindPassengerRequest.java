@@ -38,6 +38,7 @@ public class FindPassengerRequest {
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
+    private int seatsQuantity;
 
     private LocalDate departureDate;
     private LocalTime departureTime;

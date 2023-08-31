@@ -116,5 +116,8 @@ public class Messages {
     private final String CREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE = "Выберите день";
     private final String CREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE = "Напишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
     private final String CREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE = "Неверно указан формат даты.\n\nНапишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
+    private final String CREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE = "Выберите автомобиль:\n";
+    private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE = "Напишите количество пассажиров, которое вы готовы взять.\n Используйте цифру от 1 до 9";
+    private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE = "Неверно указан формат. Напишите количество пассажиров одной цифрой от 1 до 9";
 
 }

@@ -204,7 +204,7 @@ TODO разделить функциональные действия и отп�
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
-        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.prepareCarListToSend(chatId);
+        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.CarListToSring(chatId);
     }
 
     public void sendUserData(long chatId) {

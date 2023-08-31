@@ -32,10 +32,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     FindPassengerStorageAccess findPassengerStorageAccess;
     @Autowired
     AdminHandler adminHandler;
+    @Autowired
+    CarHandler carHandler;
+
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
-
+    // TODO добавить перед началом проверку на наличие  у юзера автомобиля
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
@@ -53,7 +56,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
+                    sendMessage = createNewRequestChooseCarMessage(incomeMessage);
+                }
+            }
+            case "CREATE_REQUEST_SEATS_STATUS" -> {
+                if (seatsQuantityIsValid(messageText)) {
+                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
                     sendMessage = nextStep(chatId);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
 
             }
@@ -123,6 +134,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 createNewRequestSetDate(chatId, day);
                 if (isToday(day)) editMessage = createNewRequestChooseTimeTodayMessage(incomeMessage);
                 else editMessage = createNewRequestChooseTimeTomorrowMessage(incomeMessage);
+            }
+            case "CREATE_REQUEST_CAR_CALLBACK" -> {
+                createNewRequestSetCar(chatId, trimId(callback));
+                editMessage = createNewRequestSeatsMessage(incomeMessage);
             }
 
         }
@@ -339,16 +354,52 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private void createNewRequestSetTime(long chatId, LocalTime time) {
-        log.debug("method createPickUpPassengerRequestProcessSetDirection");
-
+        log.debug("method createNewRequestSetTime");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureTime(time);
+        findPassengerStorageAccess.update(chatId, dto);
+    }
+
+    private SendMessage createNewRequestChooseCarMessage(Message incomeMessage) {
+//        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
+        Long chatId = incomeMessage.getChatId();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToSring(chatId));
+
+        List<Pair<String, String>> buttonsAttributesList =
+                carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue(), chatId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+
+        log.debug("method: createNewRequestChooseCarMessage");
+        return sendMessage;
+    }
+
+    private void createNewRequestSetCar(long chatId, int carId) {
+        log.debug("method createNewRequestSetCar");
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setCar(carService.findById(carId));
+        findPassengerStorageAccess.update(chatId, dto);
+    }
+
+    private EditMessageText createNewRequestSeatsMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SEATS_STATUS);
+        log.debug("method: createNewRequestSeatsMessage");
+
+        return editMessage;
+    }
+
+    private void createNewRequestSetSeatsQuantity(long chatId, int seatsQuantity) {
+        log.debug("method createNewRequestSetSeatsQuantity");
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setSeatsQuantity(seatsQuantity);
         findPassengerStorageAccess.update(chatId, dto);
     }
 
     private boolean isToday(String day) {
 //        TODO добавить проверку day на совпадение со значениями enum Day
-        boolean isToday = false;
-        if (day.equals(String.valueOf(Day.TODAY))) isToday = true;
+        boolean isToday = day.equals(String.valueOf(Day.TODAY));
         log.debug("method isToday = " + isToday);
         return isToday;
     }
@@ -381,9 +432,21 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return time;
     }
 
+    private boolean seatsQuantityIsValid(String s) {
+        return Character.isDigit(s.charAt(0)) && s.length() == 1 && Integer.parseInt(s) > 0;
+    }
+
     private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        return sendMessage;
+    }
+
+    private SendMessage invalidSeatsQuantityFormatMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         log.debug("method: createNewRequestInvalidTimeFormatMessage");
         return sendMessage;

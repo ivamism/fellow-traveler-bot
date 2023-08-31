@@ -22,6 +22,7 @@ public class FindPassengerRequestDTO {
     private Settlement destinationSettlement;
     private Location destinationLocation;
     private Car car;
+    private int seatsQuantity;
     private LocalDate departureDate;
     private LocalTime departureTime;
     private String commentary;
