@@ -154,5 +154,6 @@ public class Messages {
               Коментарий: %s
 
             Для продолжения работы с ботом выберите нужный пункт меню.""";
+    private final String FIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE = "Выберите, что вы хотите изменить";
 
 }
