@@ -28,13 +28,19 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
     @Override
     public void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
         storage.getFindPassengerRequestDTOStorage().put(chatId, findPassengerRequestDTO);
-        log.debug("add carDTO to storage " + findPassengerRequestDTO + " with userId " + chatId);
+        log.debug("add FindPassengerRequestDTO to storage " + findPassengerRequestDTO + " with userId " + chatId);
     }
 
     @Override
     public void update(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
         storage.getFindPassengerRequestDTOStorage().replace(chatId, findPassengerRequestDTO);
-        log.debug("update carDTO in storage " + findPassengerRequestDTO + " with userId " + chatId);
+        log.debug("update FindPassengerRequestDTO in storage " + findPassengerRequestDTO + " with userId " + chatId);
+    }
+
+    @Override
+    public void delete(long chatId) {
+        storage.getFindPassengerRequestDTOStorage().remove(chatId);
+        log.debug("delete FindPassengerRequestDTO from storage. chatId: " +   chatId);
     }
 
     @Override

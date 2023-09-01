@@ -4,10 +4,7 @@ import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.servise.CarService;
-import by.ivam.fellowtravelerbot.servise.LocationService;
-import by.ivam.fellowtravelerbot.servise.SettlementService;
-import by.ivam.fellowtravelerbot.servise.UserService;
+import by.ivam.fellowtravelerbot.servise.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -28,6 +25,10 @@ public class Handler {
     SettlementService settlementService;
     @Autowired
     LocationService locationService;
+
+    @Autowired
+    FindPassengerRequestService findPassengerRequestService;
+
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired

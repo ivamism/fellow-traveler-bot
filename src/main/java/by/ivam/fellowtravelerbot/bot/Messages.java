@@ -119,5 +119,40 @@ public class Messages {
     private final String CREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE = "Выберите автомобиль:\n";
     private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE = "Напишите количество пассажиров, которое вы готовы взять.\n Используйте цифру от 1 до 9";
     private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE = "Неверно указан формат. Напишите количество пассажиров одной цифрой от 1 до 9";
+    private final String CREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE = """
+            Проверьте правильность введенных данных\s
+
+              Имя пользователя: %s
+              Нас. пункт отправления: %s
+              Место отправления: %s
+              Нас. пункт назначения: %s
+              Место назначения: %s
+              Дата выезда: %s
+              Время выезда: %s
+              Автомобиль: %s
+              Гос. номер: %s
+              Количество мест: %d
+              Коментарий: %s
+
+            Для сохранения нажмите "Сохранить"
+            Для изменения нажмите "Редактировать"
+            Для отмены нажмите "Отменить\"""";
+
+    private final String CREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE = """
+            Ваш запрос на поиск попутчиков успешно сохранен!\s
+
+              Имя пользователя: %s
+              Нас. пункт отправления: %s
+              Место отправления: %s
+              Нас. пункт назначения: %s
+              Место назначения: %s
+              Дата выезда: %s
+              Время выезда: %s
+              Автомобиль: %s
+              Гос. номер: %s
+              Количество мест: %d
+              Коментарий: %s
+
+            Для продолжения работы с ботом выберите нужный пункт меню.""";
 
 }

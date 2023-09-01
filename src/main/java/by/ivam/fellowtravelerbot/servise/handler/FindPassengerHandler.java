@@ -1,11 +1,11 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
-import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Direction;
+import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
@@ -53,6 +53,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         switch (process) {
             case "CREATE_REQUEST_TIME_STATUS" -> {
                 LocalTime time = getTime(messageText);
+//                TODO добавить проверку на то, что указанное время не истекло
+
                 if (time.toNanoOfDay() == 100) {
                     sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
                 } else {
@@ -71,8 +73,11 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "CREATE_REQUEST_COMMENTARY_STATUS" -> {
                 createNewRequestSetCommentary(chatId, messageText);
                 if (messageText.length() <= 1000) sendMessage = nextStep(chatId);
-
+                sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+//                TODO добавитиь сообщение если коментарий слишком длинный
             }
+
+
         }
         sendBotMessage(sendMessage);
 
@@ -143,6 +148,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "CREATE_REQUEST_CAR_CALLBACK" -> {
                 createNewRequestSetCar(chatId, trimId(callback));
                 editMessage = createNewRequestSeatsMessage(incomeMessage);
+            }
+            case "CREATE_REQUEST_SKIP_COMMENT_CALLBACK" -> {
+                createNewRequestSetCommentary(chatId, "-");
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "SAVE_REQUEST_CALLBACK" -> {
+                FindPassengerRequest request = saveRequest(chatId);
+                editMessage = saveRequestSuccessMessage(incomeMessage, request);
             }
 
         }
@@ -411,20 +424,127 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.skipButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-//        List<Pair<String, String>> buttonsAttributesList =
-//                carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue(), chatId);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
 
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
         log.debug("method: createNewRequestCommentaryMessage");
         return sendMessage;
     }
 
     private void createNewRequestSetCommentary(long chatId, String commentary) {
         log.debug("method createNewRequestSetCommentary");
-        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setCommentary(commentary);
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setCommentary(firstLetterToUpperCase(commentary));
         findPassengerStorageAccess.update(chatId, dto);
+    }
+
+    private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(incomeMessage.getChatId());
+        String username = dto.getUser().getFirstName();
+        String departureSettlement = dto.getDepartureSettlement().getName();
+        String departureLocation = dto.getDepartureLocation().getName();
+        String destinationSettlement = dto.getDestinationSettlement().getName();
+        String destinationLocation = dto.getDestinationLocation().getName();
+        String date = dto.getDepartureDate().toString();
+        String time = dto.getDepartureTime().toString();
+        String car = dto.getCar().getModel();
+        String plates = dto.getCar().getPlateNumber();
+        int seats = dto.getSeatsQuantity();
+        String commentary = dto.getCommentary();
+        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
+                username,
+                departureSettlement,
+                departureLocation,
+                destinationSettlement,
+                destinationLocation,
+                date,
+                time,
+                car,
+                plates,
+                seats,
+                commentary);
+        editMessage.setText(messageText);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        return editMessage;
+    }
+
+    private SendMessage checkDataBeforeSaveMessage(Message incomeMessage) {
+        Long chatId = incomeMessage.getChatId();
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
+        sendMessage.setChatId(chatId);
+        String username = dto.getUser().getFirstName();
+        String departureSettlement = dto.getDepartureSettlement().getName();
+        String departureLocation = dto.getDepartureLocation().getName();
+        String destinationSettlement = dto.getDestinationSettlement().getName();
+        String destinationLocation = dto.getDestinationLocation().getName();
+        String date = dto.getDepartureDate().toString();
+        String time = dto.getDepartureTime().toString();
+        String car = dto.getCar().getModel();
+        String plates = dto.getCar().getPlateNumber();
+        int seats = dto.getSeatsQuantity();
+        String commentary = dto.getCommentary();
+        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
+                username,
+                departureSettlement,
+                departureLocation,
+                destinationSettlement,
+                destinationLocation,
+                date,
+                time,
+                car,
+                plates,
+                seats,
+                commentary);
+        sendMessage.setText(messageText);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        log.info("method checkDataBeforeSaveMessage");
+        return sendMessage;
+    }
+    private EditMessageText saveRequestSuccessMessage(Message incomeMessage,FindPassengerRequest request) {
+        editMessageTextGeneralPreset(incomeMessage);
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(incomeMessage.getChatId());
+        String username = request.getUser().getFirstName();
+        String departureSettlement = request.getDepartureSettlement().getName();
+        String departureLocation = request.getDepartureLocation().getName();
+        String destinationSettlement = request.getDestinationSettlement().getName();
+        String destinationLocation = request.getDestinationLocation().getName();
+        String date = request.getDepartureDate().toString();
+        String time = request.getDepartureTime().toString();
+        String car = request.getCar().getModel();
+        String plates = request.getCar().getPlateNumber();
+        int seats = request.getSeatsQuantity();
+        String commentary = request.getCommentary();
+        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE(),
+                username,
+                departureSettlement,
+                departureLocation,
+                destinationSettlement,
+                destinationLocation,
+                date,
+                time,
+                car,
+                plates,
+                seats,
+                commentary);
+        editMessage.setText(messageText);
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        log.info("method checkDataBeforeSaveMessage");
+        return editMessage;
+    }
+
+    private FindPassengerRequest saveRequest (long chatId){
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
+        findPassengerStorageAccess.delete(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
+        log.debug("method saveRequest");
+        return findPassengerRequestService.addNewRequest(dto);
     }
 
     private boolean isToday(String day) {
@@ -488,6 +608,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: nextStep");
 
         return sendMessage;
+    }
+    private EditMessageText nextStep(Message incomemessage) {
+        editMessageTextGeneralPreset(incomemessage);
+        editMessage.setText("nextStep");
+        log.debug("method: nextStep");
+
+        return editMessage;
     }
 
     private void editMessageTextGeneralPreset(Message incomeMessage) {

@@ -107,7 +107,7 @@ public class CarHandler extends Handler implements HandlerInterface {
             case "ADD_CAR_REQUEST_CALLBACK" -> startAddCarProcess(incomeMessage);
             case "ADD_CAR_START_CALLBACK" -> editMessage = requestModel(incomeMessage);
             case "ADD_CAR_SKIP_COMMENT_CALLBACK" -> {
-                setCommentary(chatId, "");
+                setCommentary(chatId, "-");
                 editMessage = checkDataBeforeSaveCarMessageSkipComment(incomeMessage);
             }
             case "ADD_CAR_SAVE_CAR_CALLBACK" -> {
@@ -271,7 +271,7 @@ public class CarHandler extends Handler implements HandlerInterface {
 
     private Car saveCar(Long chatId) {
         Car car = carService.addNewCar(addCarStorageAccess.findCarDTO(chatId), chatId);
-        log.debug("CarHandler method addNewCar: call  carService.addNewCar to save car " + car + " to DB");
+        log.debug("CarHandler method addNewRequest: call  carService.addNewRequest to save car " + car + " to DB");
         chatStatusStorageAccess.deleteChatStatus(chatId);
         addCarStorageAccess.deleteCarDTO(chatId);
         return car;
