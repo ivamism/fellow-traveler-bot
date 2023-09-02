@@ -53,10 +53,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         switch (process) {
             case "CREATE_REQUEST_TIME_STATUS" -> {
                 LocalTime time = getTime(messageText);
-//                TODO добавить проверку на то, что указанное время не истекло
-
                 if (time.toNanoOfDay() == 100) {
                     sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
+                } else if (isExpired(chatId, time)) {
+                    sendMessage = createNewRequestExpiredTimeMessage(chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
                     sendMessage = createNewRequestChooseCarMessage(incomeMessage);
@@ -507,9 +507,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.info("method checkDataBeforeSaveMessage");
         return sendMessage;
     }
-    private EditMessageText saveRequestSuccessMessage(Message incomeMessage,FindPassengerRequest request) {
+
+    private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
-        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(incomeMessage.getChatId());
         String username = request.getUser().getFirstName();
         String departureSettlement = request.getDepartureSettlement().getName();
         String departureLocation = request.getDepartureLocation().getName();
@@ -538,6 +538,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.info("method checkDataBeforeSaveMessage");
         return editMessage;
     }
+
     private EditMessageText startEditBeforeSaveRequestMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE());
@@ -553,7 +554,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    private FindPassengerRequest saveRequest (long chatId){
+    private FindPassengerRequest saveRequest(long chatId) {
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
         findPassengerStorageAccess.delete(chatId);
         chatStatusStorageAccess.deleteChatStatus(chatId);
@@ -566,6 +567,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         boolean isToday = day.equals(String.valueOf(Day.TODAY));
         log.debug("method isToday = " + isToday);
         return isToday;
+    }
+
+    private boolean isExpired(long chatId, LocalTime time) {
+        return findPassengerStorageAccess.getDTO(chatId).getDepartureDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
 
     private LocalTime getTime(String timeString) {
@@ -608,6 +613,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return sendMessage;
     }
 
+    private SendMessage createNewRequestExpiredTimeMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        return sendMessage;
+    }
+
     private SendMessage invalidSeatsQuantityFormatMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE());
@@ -623,6 +636,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
         return sendMessage;
     }
+
     private EditMessageText nextStep(Message incomemessage) {
         editMessageTextGeneralPreset(incomemessage);
         editMessage.setText("nextStep");
