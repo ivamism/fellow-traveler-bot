@@ -109,7 +109,7 @@ public class Messages {
 //    Creation new request
     private final String CREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
     private final String CREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
-    private final String CREATE_FIND_PASSENGER_REQUEST_SETTLEMENT_MESSAGE = "Выберите населенный пункт выезда";
+    private final String CREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE = "Выберите населенный пункт выезда";
     private final String CREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
     private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE = "Выберите населенный пункт назначения";
     private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE = "Выберите место назначения";

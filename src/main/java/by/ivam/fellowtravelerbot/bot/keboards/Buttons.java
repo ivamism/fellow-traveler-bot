@@ -43,6 +43,17 @@ public class Buttons {
     private final String FROM_MINSK_TEXT = "Из Минска";
     private final String TODAY_TEXT = "Сегодня";
     private final String TOMORROW_TEXT = "Завтра";
+    private final String SETTLEMENT_LOCATION_TEXT = "Нас.пункт/место";
+    private final String DATE_TIME_TEXT = "Дата/время";
+    private final String CAR_DETAILS_TEXT = "Данные автомобиля";
+    private final String DEPARTURE_SETTLEMENT_TEXT = "Нас. пункт выезда";
+    private final String DEPARTURE_LOCATION_TEXT = "Место выезда";
+    private final String DESTINATION_SETTLEMENT_TEXT = "Нас. пункт назначения";
+    private final String DESTINATION_LOCATION_TEXT = "Место назначения";
+    private final String DATE_TEXT = "Дата";
+    private final String TIME_TEXT = "Время";
+    private final String CAR_TEXT = "Автомобиль";
+    private final String SEATS_QUANTITY_TEXT = "Количество мест";
 
 
     //    Main menu buttons
@@ -160,11 +171,58 @@ public class Buttons {
     public Pair<String, String> anotherButtonCreate(String buttonCallback) {
         return Pair.of(ANOTHER_TEXT, buttonCallback);
     }
+
     public Pair<String, String> todayButtonCreate(String buttonCallback) {
         return Pair.of(TODAY_TEXT, buttonCallback);
     }
+
     public Pair<String, String> tomorrowButtonCreate(String buttonCallback) {
         return Pair.of(TOMORROW_TEXT, buttonCallback);
     }
+
+    public Pair<String, String> settlementLocationButtonCreate(String buttonCallback) {
+        return Pair.of(SETTLEMENT_LOCATION_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> departureSettlementButtonCreate(String buttonCallback) {
+        return Pair.of(DEPARTURE_SETTLEMENT_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> departureLocationButtonCreate(String buttonCallback) {
+        return Pair.of(DEPARTURE_LOCATION_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> destinationSettlementButtonCreate(String buttonCallback) {
+        return Pair.of(DESTINATION_SETTLEMENT_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> destinationLocationButtonCreate(String buttonCallback) {
+        return Pair.of(DESTINATION_LOCATION_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> dateTimeButtonCreate(String buttonCallback) {
+        return Pair.of(DATE_TIME_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> dateButtonCreate(String buttonCallback) {
+        return Pair.of(DATE_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> timeButtonCreate(String buttonCallback) {
+        return Pair.of(TIME_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> carDetailsButtonCreate(String buttonCallback) {
+        return Pair.of(CAR_DETAILS_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> carButtonCreate(String buttonCallback) {
+        return Pair.of(CAR_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> seatsQuantityButtonCreate(String buttonCallback) {
+        return Pair.of(SEATS_QUANTITY_TEXT, buttonCallback);
+    }
+
 
 }
