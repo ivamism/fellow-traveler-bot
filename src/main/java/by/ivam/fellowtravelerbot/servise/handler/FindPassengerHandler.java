@@ -173,11 +173,34 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 editMessage = EditBeforeSaveDepartureSettlementMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_DEP_SETTLEMENT" -> {
-                int settlementId = trimId(callback);
-                createNewRequestSetDepartureSettlement(chatId, settlementId);
-                editMessage = nextStep(incomeMessage);
+                createNewRequestSetDepartureSettlement(chatId, trimId(callback));
+                editMessage = EditBeforeSaveDepartureLocationMessage(incomeMessage);
             }
-
+            case "EDIT_BEFORE_SAVE_DEP_LOCATION" -> {
+                editMessage = EditBeforeSaveDepartureLocationMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_CHANGE_DEP_LOCATION" -> {
+                createNewRequestSetDepartureLocation(chatId, trimId(callback));
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_DEST_SETTLEMENT" -> {
+                editMessage = EditBeforeSaveDestinationSettlementMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_CHANGE_DEST_SETTLEMENT" -> {
+                createNewRequestSetDestinationSettlement(chatId, trimId(callback));
+                editMessage = EditBeforeSaveDestinationLocationMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_DEST_LOCATION" -> {
+                editMessage = EditBeforeSaveDestinationLocationMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_CHANGE_DEST_LOCATION" -> {
+                createNewRequestSetDestinationLocation(chatId, trimId(callback));
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_SWAP_DEP_DEST" -> {
+                swapDepartureDestination(chatId);
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
 
         }
         sendEditMessage(editMessage);
@@ -582,12 +605,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
         buttonsAttributesList.add(buttons.departureSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
-        buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit destination settlement button
-        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_LOCATION_CALLBACK.getValue())); // Edit departure location button
+        buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_LOCATION_CALLBACK.getValue())); // Edit destination settlement button
+        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit departure location button
         buttonsAttributesList.add(buttons.destinationLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_LOCATION_CALLBACK.getValue())); // Edit destination location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveSettlementLocationMessage");
 
@@ -596,13 +619,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText EditBeforeSaveDepartureSettlementMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
-//
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
-//        buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit destination settlement button
-//        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_LOCATION_CALLBACK.getValue())); // Edit departure location button
-//        buttonsAttributesList.add(buttons.destinationLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_LOCATION_CALLBACK.getValue())); // Edit destination location button
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
         String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
 
@@ -611,6 +627,49 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDepartureSettlementMessage");
+
+        return editMessage;
+    }
+
+    private EditMessageText EditBeforeSaveDepartureLocationMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
+        int settlementId = findPassengerStorageAccess.getDTO(incomeMessage.getChatId()).getDepartureSettlement().getId();
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.departureLocationButtonsAttributesListCreator(callbackData, settlementId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: EditBeforeSaveDepartureLocationMessage");
+
+        return editMessage;
+    }
+
+    private EditMessageText EditBeforeSaveDestinationSettlementMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
+
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementService.findAll());
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: EditBeforeSaveDestinationSettlementMessage");
+
+        return editMessage;
+    }
+
+    private EditMessageText EditBeforeSaveDestinationLocationMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE());
+        int settlementId = findPassengerStorageAccess.getDTO(incomeMessage.getChatId()).getDestinationSettlement().getId();
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.departureLocationButtonsAttributesListCreator(callbackData, settlementId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: EditBeforeSaveDestinationLocationMessage");
 
         return editMessage;
     }
@@ -645,6 +704,18 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: EditBeforeSaveCarDetailsMessage");
 
         return editMessage;
+    }
+
+    private void swapDepartureDestination(long chatId) {
+        log.debug("method: swapDepartureDestination");
+        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
+        Settlement settlement = dto.getDepartureSettlement();
+        Location location = dto.getDepartureLocation();
+        dto.setDepartureSettlement(dto.getDestinationSettlement());
+        dto.setDepartureLocation(dto.getDestinationLocation());
+        dto.setDestinationSettlement(settlement);
+        dto.setDestinationLocation(location);
+        findPassengerStorageAccess.update(chatId, dto);
     }
 
     private FindPassengerRequest saveRequest(long chatId) {
@@ -695,7 +766,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private boolean seatsQuantityIsValid(String s) {
-        return Character.isDigit(s.charAt(0)) && s.length() == 1 && Integer.parseInt(s) > 0;
+        return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 || Integer.parseInt(s) < 9);
     }
 
     private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {
