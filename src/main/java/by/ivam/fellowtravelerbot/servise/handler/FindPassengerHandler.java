@@ -87,6 +87,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     sendMessage = checkDataBeforeSaveMessage(incomeMessage);
                 }
             }
+            case "EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS" -> {
+                if (seatsQuantityIsValid(messageText)) {
+                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
+                    sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
+                }
+            }
 
         }
         sendBotMessage(sendMessage);
@@ -225,6 +233,19 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             }
             case "EDIT_BEFORE_SAVE_TIME_CALLBACK" -> {
                 editMessage = editBeforeSaveTimeMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_CAR_CALLBACK" -> {
+                editMessage = editBeforeSaveChooseCarMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_CHANGE_CAR" -> {
+                createNewRequestSetCar(chatId, trimId(callback));
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK" -> {
+                editMessage = editBeforeSaveSeatsMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK" -> {
+                editMessage = editBeforeSaveCommentaryMessage(incomeMessage);
             }
 
         }
@@ -706,11 +727,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-
         buttonsAttributesList.add(buttons.dateButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DATE_CALLBACK)); // Edit date button
         buttonsAttributesList.add(buttons.timeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_TIME_CALLBACK)); // Edit time button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDateTimeMessage");
 
@@ -781,6 +800,41 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS);
         log.debug("method: editBeforeSaveTimeMessage");
 
+        return editMessage;
+    }
+
+    private EditMessageText editBeforeSaveChooseCarMessage(Message incomeMessage) {
+//        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
+        Long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToSring(chatId));
+
+        List<Pair<String, String>> buttonsAttributesList =
+                carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_CAR_CALLBACK.getValue(), chatId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+
+        log.debug("method: editBeforeSaveChooseCarMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editBeforeSaveSeatsMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS);
+        log.debug("method: editBeforeSaveSeatsMessage");
+
+        return editMessage;
+    }
+
+    private EditMessageText editBeforeSaveCommentaryMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        log.debug("method: editBeforeSaveCommentaryMessage");
         return editMessage;
     }
 
@@ -892,6 +946,5 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
     }
-
 
 }
