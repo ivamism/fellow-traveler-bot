@@ -76,7 +76,17 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 sendMessage = checkDataBeforeSaveMessage(incomeMessage);
 //                TODO добавитиь сообщение если коментарий слишком длинный
             }
-
+            case "EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS" -> {
+                LocalTime time = getTime(messageText);
+                if (time.toNanoOfDay() == 100) {
+                    sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
+                } else if (isExpired(chatId, time)) {
+                    sendMessage = createNewRequestExpiredTimeMessage(chatId);
+                } else {
+                    createNewRequestSetTime(chatId, time);
+                    sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                }
+            }
 
         }
         sendBotMessage(sendMessage);
@@ -209,9 +219,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 String day = trimSecondSubstring(callback);
                 createNewRequestSetDate(chatId, day);
                 if (isToday(day) && isExpired(chatId)) {
-                    expiredTimeMessage(incomeMessage);
-                    editMessage = editBeforeSaveTimeMessage(incomeMessage);
+                    expiredTimeMessage(chatId);
+                    editBeforeSaveTimeSendMessage(chatId);
                 } else editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_TIME_CALLBACK" -> {
+                editMessage = editBeforeSaveTimeMessage(incomeMessage);
             }
 
         }
@@ -746,6 +759,17 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
+    private void editBeforeSaveTimeSendMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+
+        chatStatusStorageAccess.addChatStatus(chatId, Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS);
+        log.debug("method: editBeforeSaveTimeMessage");
+        sendBotMessage(sendMessage);
+//        return editMessage;
+    }
+
     private EditMessageText editBeforeSaveTimeMessage(Message incomeMessage) {
 //        TODO добавить  кнопки с промежутками времени.
 //        переделать в один метод, который в зависимости от даты выводит разную клавиатуру
@@ -754,11 +778,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
 
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_CALLBACK);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS);
         log.debug("method: editBeforeSaveTimeMessage");
 
         return editMessage;
     }
+
 
     private FindPassengerRequest saveRequest(long chatId) {
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
@@ -831,11 +856,11 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return sendMessage;
     }
 
-    private void expiredTimeMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE2());
-        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
-        sendEditMessage(editMessage);
+    private void expiredTimeMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE2());
+        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        sendBotMessage(sendMessage);
         log.debug("method: expiredTimeMessage");
     }
 
