@@ -204,7 +204,7 @@ TODO разделить функциональные действия и отп�
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
-        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.CarListToSring(chatId);
+        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.CarListToString(chatId);
     }
 
     public void sendUserData(long chatId) {
@@ -216,10 +216,12 @@ TODO разделить функциональные действия и отп�
             buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
             buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
             buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
+            buttonsAttributesList.add(buttons.myRidesButtonCreate()); // Rides menu button
             buttonsAttributesList.add(buttons.deleteButtonCreate()); // Delete User button
         } else {
             buttonsAttributesList.add(buttons.changeNameButtonCreate()); // Change User's name button
             buttonsAttributesList.add(buttons.changeResidenceButtonCreate()); // Change User's residence settlement button
+            buttonsAttributesList.add(buttons.myRidesButtonCreate()); // Rides menu button
             if (carHandler.getUsersCarsQuantity(chatId) < 2)
                 buttonsAttributesList.add(buttons.addCarButtonCreate()); // Add a car button
             buttonsAttributesList.add(buttons.editCarButtonCreate()); // Edit User's cars button
@@ -294,7 +296,16 @@ TODO разделить функциональные действия и отп�
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
+    public EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
 
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        return editMessage;
+    }
     public EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
 

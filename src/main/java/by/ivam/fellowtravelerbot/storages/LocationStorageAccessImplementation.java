@@ -12,13 +12,13 @@ import java.util.Optional;
 @Component
 @Data
 @Log4j
-public class DepartureLocationStorageAccessImplementation implements DepartureLocationStorageAccess {
+public class LocationStorageAccessImplementation implements DepartureLocationStorageAccess {
     @Autowired
     Storages storage;
 
     @Override
     public void addLocation(long chatId, LocationDTO locationDTO) {
-        storage.departureLocationDTOStorage.put(chatId, locationDTO);
+        storage.locationDTOStorage.put(chatId, locationDTO);
         log.debug("put location " + locationDTO + ", chatId: " + chatId + " to storage");
     }
 
@@ -34,13 +34,13 @@ public class DepartureLocationStorageAccessImplementation implements DepartureLo
 
     @Override
     public void deleteLocation(long chatId) {
-        storage.departureLocationDTOStorage.remove(chatId);
+        storage.locationDTOStorage.remove(chatId);
         log.debug("remove locationDTO from storage");
     }
 
     @Override
     public LocationDTO findDTO(long chatId) {
-        LocationDTO locationDTO = Optional.ofNullable(storage.departureLocationDTOStorage.get(chatId)).orElseThrow();
+        LocationDTO locationDTO = Optional.ofNullable(storage.locationDTOStorage.get(chatId)).orElseThrow();
         log.debug("get locationDTO from storage " + locationDTO);
         return locationDTO;
     }

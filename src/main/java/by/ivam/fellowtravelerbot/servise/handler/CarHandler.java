@@ -305,7 +305,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         Long chatId = incomeMessage.getChatId();
 
         if (getUsersCarsQuantity(chatId) == 2) {
-            editMessage.setText(messages.getDELETE_CAR_CHOOSE_MESSAGE() + CarListToSring(chatId));
+            editMessage.setText(messages.getDELETE_CAR_CHOOSE_MESSAGE() + CarListToString(chatId));
 
             int firstCarId = getUsersCarsList(chatId).get(0).getId();
             int secondCarId = getUsersCarsList(chatId).get(1).getId();
@@ -454,7 +454,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         if (getUsersCarsQuantity(chatId) == 2) {
             int firstCarId = getUsersCarsList(chatId).get(0).getId();
             int secondCarId = getUsersCarsList(chatId).get(1).getId();
-            editMessage.setText(CarListToSring(chatId));
+            editMessage.setText(CarListToString(chatId));
 
             List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
             buttonsAttributesList.add(buttons.firstChoiceButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_CHOOSE_CAR_CALLBACK.getValue() + firstCarId)); // Choose first car button
@@ -566,7 +566,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
     }
 
-    public String CarListToSring(long chatId) {
+    public String CarListToString(long chatId) {
         StringBuilder text = new StringBuilder();
         for (Car car : getUsersCarsList(chatId)) {
             int n = getUsersCarsList(chatId).indexOf(car) + 1;

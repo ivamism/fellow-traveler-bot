@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -39,9 +40,8 @@ public class FindPassengerRequest {
     @JoinColumn(name = "car_id")
     private Car car;
     private int seatsQuantity;
-
-    private LocalDate departureDate;
-    private LocalTime departureTime;
+    private LocalDateTime departureAt;
+    private LocalDateTime createdAt;
 
     @Column(length = 1000)
     private String commentary;

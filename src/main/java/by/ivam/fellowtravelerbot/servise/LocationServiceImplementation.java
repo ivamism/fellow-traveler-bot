@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.DTO.LocationDTO;
 import by.ivam.fellowtravelerbot.model.Location;
-import by.ivam.fellowtravelerbot.repository.DepartureLocationRepository;
+import by.ivam.fellowtravelerbot.repository.LocationRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class LocationServiceImplementation implements LocationService {
 
     @Autowired
-    DepartureLocationRepository departureLocationRepository;
+    LocationRepository departureLocationRepository;
 
     @Override
     public Location findById(int id) {

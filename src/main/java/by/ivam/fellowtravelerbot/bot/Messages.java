@@ -156,6 +156,23 @@ public class Messages {
               Коментарий: %s
 
             Для продолжения работы с ботом выберите нужный пункт меню.""";
+
+    private final String CREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1 = "Ваш запрос на поиск попутчиков успешно сохранен!\s";
+    private final String FIND_PASSENGER_REQUEST_TO_STRING_MESSAGE = """
+            \n\n
+                          Имя пользователя: %s
+                          Нас. пункт отправления: %s
+                          Место отправления: %s
+                          Нас. пункт назначения: %s
+                          Место назначения: %s
+                          Дата выезда: %s
+                          Время выезда: %s
+                          Автомобиль: %s
+                          Гос. номер: %s
+                          Количество мест: %d
+                          Коментарий: %s
+                          Создан: %s\n\n""";
+
     private final String FIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE = "Выберите, что вы хотите изменить";
 
 }

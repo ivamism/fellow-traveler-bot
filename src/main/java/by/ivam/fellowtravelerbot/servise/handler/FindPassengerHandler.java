@@ -19,8 +19,10 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -432,8 +434,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method createNewRequestSetDate");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
         LocalDate rideDate = LocalDate.now();
-        if (isToday(day)) dto.setDepartureDate(rideDate);
-        else dto.setDepartureDate(rideDate.plusDays(1));
+        if (isToday(day)) {
+            dto.setDepartureDate(rideDate);
+
+        } else {
+            dto.setDepartureDate(rideDate.plusDays(1));
+
+        }
         findPassengerStorageAccess.update(chatId, dto);
     }
 
@@ -465,6 +472,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private void createNewRequestSetTime(long chatId, LocalTime time) {
         log.debug("method createNewRequestSetTime");
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId).setDepartureTime(time);
+
         findPassengerStorageAccess.update(chatId, dto);
     }
 
@@ -472,7 +480,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 //        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
         Long chatId = incomeMessage.getChatId();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToSring(chatId));
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToString(chatId));
 
         List<Pair<String, String>> buttonsAttributesList =
                 carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue(), chatId);
@@ -602,30 +610,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
-        String username = request.getUser().getFirstName();
-        String departureSettlement = request.getDepartureSettlement().getName();
-        String departureLocation = request.getDepartureLocation().getName();
-        String destinationSettlement = request.getDestinationSettlement().getName();
-        String destinationLocation = request.getDestinationLocation().getName();
-        String date = request.getDepartureDate().toString();
-        String time = request.getDepartureTime().toString();
-        String car = request.getCar().getModel();
-        String plates = request.getCar().getPlateNumber();
-        int seats = request.getSeatsQuantity();
-        String commentary = request.getCommentary();
-        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE(),
-                username,
-                departureSettlement,
-                departureLocation,
-                destinationSettlement,
-                destinationLocation,
-                date,
-                time,
-                car,
-                plates,
-                seats,
-                commentary);
-        editMessage.setText(messageText);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1()+requestToString(request)+messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         log.debug("method saveRequestSuccessMessage");
         return editMessage;
@@ -807,7 +792,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 //        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
         Long chatId = incomeMessage.getChatId();
         editMessage.setChatId(chatId);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToSring(chatId));
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToString(chatId));
 
         List<Pair<String, String>> buttonsAttributesList =
                 carHandler.CarButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_CAR_CALLBACK.getValue(), chatId);
@@ -847,6 +832,28 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return findPassengerRequestService.addNewRequest(dto);
     }
 
+    private List<FindPassengerRequest> getUserActiveFindPassengerRequests(long chatId) {
+
+        return findPassengerRequestService.usersActivRequestList(chatId);
+    }
+
+    private String requestToString(FindPassengerRequest request) {
+        String messageText = String.format(messages.getFIND_PASSENGER_REQUEST_TO_STRING_MESSAGE(),
+                request.getUser().getFirstName(),
+                request.getDepartureSettlement().getName(),
+                request.getDepartureLocation().getName(),
+                request.getDestinationSettlement().getName(),
+                request.getDestinationLocation().getName(),
+                request.getDepartureAt().toLocalDate().toString(),
+                request.getDepartureAt().toLocalTime().toString(),
+                request.getCar().getModel(),
+                request.getCar().getPlateNumber(),
+                request.getSeatsQuantity(),
+                request.getCommentary(),
+                request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
+        return messageText;
+    }
+
     private boolean isToday(String day) {
 //        TODO добавить проверку day на совпадение со значениями enum Day
         boolean isToday = day.equals(String.valueOf(Day.TODAY));
@@ -883,6 +890,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
         try {
             time = LocalTime.parse(timeString, formatter);
+
         } catch (Exception e) {
             log.error(e.getMessage());
         }

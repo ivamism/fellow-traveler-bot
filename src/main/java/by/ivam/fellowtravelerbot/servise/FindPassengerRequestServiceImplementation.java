@@ -7,6 +7,9 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -29,12 +32,13 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setDepartureLocation(dto.getDepartureLocation())
                 .setDestinationSettlement(dto.getDestinationSettlement())
                 .setDestinationLocation(dto.getDestinationLocation())
-                .setDepartureDate(dto.getDepartureDate())
-                .setDepartureTime(dto.getDepartureTime())
+                .setDepartureAt(LocalDateTime.of(dto.getDepartureDate(),dto.getDepartureTime()))
                 .setCar(dto.getCar())
                 .setSeatsQuantity(dto.getSeatsQuantity())
                 .setCommentary(dto.getCommentary())
-                .setActive(true);
+                .setActive(true)
+                .setCreatedAt(LocalDateTime.now());
+
         log.info("method addNewRequest. Saved new request: " + request);
         return repository.save(request);
     }
@@ -51,7 +55,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public List<FindPassengerRequest> usersActivRequestList(long chatId) {
-        return null;
+        return repository.findByUser_ChatIdAndIsActiveTrue(chatId);
     }
 
     @Override

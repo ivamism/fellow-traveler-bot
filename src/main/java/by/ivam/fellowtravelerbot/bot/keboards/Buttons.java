@@ -55,6 +55,10 @@ public class Buttons {
     private final String CAR_TEXT = "Автомобиль";
     private final String SEATS_QUANTITY_TEXT = "Количество мест";
     private final String SWAP_DEPARTURE_DESTINATION_TEXT = "Поменять выезд и назначение";
+    private final String MY_RIDES_MENU_TEXT = "Мои поездки";
+    private final String AS_DRIVER_TEXT = "Как водитель";
+    private final String AS_PASSENGER_TEXT = "Как пассажир";
+    private final String EDIT_LAST_TEXT = "Редактировать последнее";
 
 
     //    Main menu buttons
@@ -228,6 +232,8 @@ public class Buttons {
     public Pair<String, String> swapDepartureDestinationButtonCreate(String buttonCallback) {
         return Pair.of(SWAP_DEPARTURE_DESTINATION_TEXT, buttonCallback);
     }
-
+    public Pair<String, String> myRidesButtonCreate() {
+        return Pair.of(MY_RIDES_MENU_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
+    }
 
 }
