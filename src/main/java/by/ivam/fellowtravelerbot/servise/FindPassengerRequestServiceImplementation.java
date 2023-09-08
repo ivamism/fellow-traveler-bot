@@ -7,9 +7,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -21,6 +19,11 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Override
     public FindPassengerRequest findById(int id) {
         return null;
+    }
+
+    @Override
+    public FindPassengerRequest findLastUserRequest(long chatId) {
+        return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
     }
 
     @Override
@@ -54,12 +57,12 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public List<FindPassengerRequest> usersActivRequestList(long chatId) {
-        return repository.findByUser_ChatIdAndIsActiveTrue(chatId);
+    public List<FindPassengerRequest> usersActiveRequestList(long chatId) {
+        return repository.findByUser_ChatIdAndIsActiveTrueOrderByDepartureAtAsc(chatId);
     }
 
     @Override
-    public void deleteCarById(int id) {
+    public void deleteRequestById(int id) {
 
     }
 

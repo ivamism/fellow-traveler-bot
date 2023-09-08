@@ -280,7 +280,7 @@ public class CarHandler extends Handler implements HandlerInterface {
     private EditMessageText saveCarMessage(Message incomeMessage, Car car) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
-        String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE() + prepareCarToSend(car) + messages.getFURTHER_ACTION_MESSAGE();
+        String messageText = messages.getADD_CAR_SAVE_SUCCESS_PREFIX_MESSAGE() + carToString(car) + messages.getFURTHER_ACTION_MESSAGE();
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
@@ -327,7 +327,7 @@ public class CarHandler extends Handler implements HandlerInterface {
 
     public String deleteCar(int carId) {
         Car car = carService.findById(carId);
-        String carToSend = prepareCarToSend(car);
+        String carToSend = carToString(car);
 
         log.debug("CarHandler: method deleteCar: call CarService to delete car by Id" + car);
         carService.deleteCarById(car.getId());
@@ -470,7 +470,7 @@ public class CarHandler extends Handler implements HandlerInterface {
 
     private EditMessageText editCarMessage(Message incomeMessage, int carId) {
         Car car = carService.findById(carId);
-        String carToSend = prepareCarToSend(car);
+        String carToSend = carToString(car);
         editMessageTextGeneralPreset(incomeMessage);
 
         editMessage.setText(String.format(messages.getEDIT_CAR_CHOSEN_PREFIX_MESSAGE(), carToSend) + messages.getEDIT_CAR_START_MESSAGE());
@@ -555,14 +555,14 @@ public class CarHandler extends Handler implements HandlerInterface {
 
     public SendMessage editionCarSuccessMessage(long chatId, Car car) {
         sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getEDIT_CAR_SUCCESS_PREFIX_MESSAGE() + prepareCarToSend(car) + messages.getFURTHER_ACTION_MESSAGE());
+        sendMessage.setText(messages.getEDIT_CAR_SUCCESS_PREFIX_MESSAGE() + carToString(car) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return sendMessage;
     }
 
 //    handling User's Cars
 
-    private String prepareCarToSend(Car car) {
+    private String carToString(Car car) {
         return String.format(messages.getSHOW_CAR_MESSAGE(), car.getModel(), car.getColor(), car.getPlateNumber(), car.getCommentary());
     }
 
@@ -570,7 +570,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         StringBuilder text = new StringBuilder();
         for (Car car : getUsersCarsList(chatId)) {
             int n = getUsersCarsList(chatId).indexOf(car) + 1;
-            text.append(n).append(prepareCarToSend(car)).append("\n");
+            text.append(n).append(carToString(car)).append("\n");
         }
         return text.toString();
     }

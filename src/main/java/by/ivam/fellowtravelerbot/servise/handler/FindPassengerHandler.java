@@ -4,10 +4,7 @@ import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.model.Direction;
-import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
-import by.ivam.fellowtravelerbot.model.Location;
-import by.ivam.fellowtravelerbot.model.Settlement;
+import by.ivam.fellowtravelerbot.model.*;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -19,7 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -40,9 +36,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+/*
+     TODO
+      добавить перед началом проверку на наличие  у юзера автомобиля
+      ограничить возможное количество активных запросов и добавить соответсствующую проверку
+  */
+   @Override
 
-    // TODO добавить перед началом проверку на наличие  у юзера автомобиля
-    @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
         String messageText = incomeMessage.getText();
@@ -537,31 +537,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(incomeMessage.getChatId());
-        String username = dto.getUser().getFirstName();
-        String departureSettlement = dto.getDepartureSettlement().getName();
-        String departureLocation = dto.getDepartureLocation().getName();
-        String destinationSettlement = dto.getDestinationSettlement().getName();
-        String destinationLocation = dto.getDestinationLocation().getName();
-        String date = dto.getDepartureDate().toString();
-        String time = dto.getDepartureTime().toString();
-        String car = dto.getCar().getModel();
-        String plates = dto.getCar().getPlateNumber();
-        int seats = dto.getSeatsQuantity();
-        String commentary = dto.getCommentary();
-        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
-                username,
-                departureSettlement,
-                departureLocation,
-                destinationSettlement,
-                destinationLocation,
-                date,
-                time,
-                car,
-                plates,
-                seats,
-                commentary);
-        editMessage.setText(messageText);
+        editMessage.setText(dtoToString(findPassengerStorageAccess.getDTO(incomeMessage.getChatId())));
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
         buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
@@ -573,32 +549,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private SendMessage checkDataBeforeSaveMessage(Message incomeMessage) {
         Long chatId = incomeMessage.getChatId();
-        FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
         sendMessage.setChatId(chatId);
-        String username = dto.getUser().getFirstName();
-        String departureSettlement = dto.getDepartureSettlement().getName();
-        String departureLocation = dto.getDepartureLocation().getName();
-        String destinationSettlement = dto.getDestinationSettlement().getName();
-        String destinationLocation = dto.getDestinationLocation().getName();
-        String date = dto.getDepartureDate().toString();
-        String time = dto.getDepartureTime().toString();
-        String car = dto.getCar().getModel();
-        String plates = dto.getCar().getPlateNumber();
-        int seats = dto.getSeatsQuantity();
-        String commentary = dto.getCommentary();
-        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
-                username,
-                departureSettlement,
-                departureLocation,
-                destinationSettlement,
-                destinationLocation,
-                date,
-                time,
-                car,
-                plates,
-                seats,
-                commentary);
-        sendMessage.setText(messageText);
+        sendMessage.setText(dtoToString(findPassengerStorageAccess.getDTO(chatId)));
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
         buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
@@ -626,7 +578,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.carDetailsButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_DETAILS_CALLBACK.getValue())); // Change car or seats quantity button
         buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: startEditBeforeSaveRequestMessage");
 
@@ -834,7 +785,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private List<FindPassengerRequest> getUserActiveFindPassengerRequests(long chatId) {
 
-        return findPassengerRequestService.usersActivRequestList(chatId);
+        return findPassengerRequestService.usersActiveRequestList(chatId);
+    }
+    public  String requestListToString (long chatId) {
+        StringBuilder text = new StringBuilder();
+        for (FindPassengerRequest request : getUserActiveFindPassengerRequests(chatId)) {
+            int n = getUserActiveFindPassengerRequests(chatId).indexOf(request) + 1;
+            text.append(n).append(requestToString(request)).append("\n");
+        }
+        return text.toString();
     }
 
     private String requestToString(FindPassengerRequest request) {
@@ -851,6 +810,22 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 request.getSeatsQuantity(),
                 request.getCommentary(),
                 request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
+        return messageText;
+    }
+
+    private String dtoToString (FindPassengerRequestDTO dto){
+              String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
+                dto.getUser().getFirstName(),
+                dto.getDepartureSettlement().getName(),
+                dto.getDepartureLocation().getName(),
+                dto.getDestinationSettlement().getName(),
+                dto.getDestinationLocation().getName(),
+                dto.getDepartureDate().toString(),
+                dto.getDepartureTime().toString(),
+                dto.getCar().getModel(),
+                dto.getCar().getPlateNumber(),
+                dto.getSeatsQuantity(),
+                dto.getCommentary());
         return messageText;
     }
 

@@ -8,14 +8,15 @@ import java.util.List;
 public interface FindPassengerRequestService {
 
     FindPassengerRequest findById(int id);
+    FindPassengerRequest findLastUserRequest (long chatId);
 
     FindPassengerRequest addNewRequest(FindPassengerRequestDTO dto);
     FindPassengerRequest updateRequest(FindPassengerRequest request);
 
     List<FindPassengerRequest> usersRequestList(long chatId);
-    List<FindPassengerRequest> usersActivRequestList(long chatId);
+    List<FindPassengerRequest> usersActiveRequestList(long chatId);
 
-    void deleteCarById(int id);
+    void deleteRequestById(int id);
 
     void deleteAllUsersCars(List<Integer> carIdList);
 }

@@ -23,6 +23,7 @@ public class FindPassengerRequestDTO {
     private Location destinationLocation;
     private LocalDate departureDate;
     private LocalTime departureTime;
+    private LocalDateTime departureAt;
     private Car car;
     private int seatsQuantity;
     private String commentary;
