@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -24,6 +25,8 @@ public class FindRideRequest {
     private Settlement settlement;
     private LocalDate departureDate;
     private LocalTime departureTime;
+
     private String commentary;
     boolean isActive;
+    private LocalDateTime createdAt;
 }

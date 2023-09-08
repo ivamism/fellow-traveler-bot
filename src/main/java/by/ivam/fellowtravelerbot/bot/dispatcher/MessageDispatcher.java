@@ -69,7 +69,7 @@ public class MessageDispatcher extends Dispatcher {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
                     log.debug("got request to get User's stored data");
-                    userHandler.sendUserData(chatId);
+                    userHandler.userDataToString(chatId);
                 }
             }
             case "/registration" -> {

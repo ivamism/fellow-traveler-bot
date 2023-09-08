@@ -35,6 +35,10 @@ public class UserHandler extends Handler implements HandlerInterface {
     AdminHandler adminHandler;
     @Autowired
     CarHandler carHandler;
+    @Autowired
+    FindPassengerHandler findPassengerHandler;
+    @Autowired
+    FindRideHandler findRideHandler;
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
 
@@ -92,6 +96,8 @@ TODO разделить функциональные действия и отп�
                 deleteUser(chatId);
                 editMessage = deleteUserSuccessMessage(incomeMessage);
             }
+            case "MY_RIDES_MENU" -> editMessage = showUserActiveRequestsListMessage(incomeMessage);
+
         }
         sendEditMessage(editMessage);
     }
@@ -204,10 +210,15 @@ TODO разделить функциональные действия и отп�
 
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
-        return String.format(messages.getUSER_DATA(), user.getChatId(), user.getFirstName(), user.getUserName(), user.getResidence().getName()) + carHandler.CarListToString(chatId);
+        return String.format(messages.getUSER_DATA(),
+                user.getChatId(),
+                user.getFirstName(),
+                user.getUserName(),
+                user.getResidence().getName())
+                + carHandler.CarListToString(chatId);
     }
 
-    public void sendUserData(long chatId) {
+    public void userDataToString(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(getUserData(chatId));
 
@@ -296,16 +307,18 @@ TODO разделить функциональные действия и отп�
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
+
     public EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
+        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId())+findPassengerHandler.requestToString(findPassengerHandler.getLastRequest(incomeMessage.getChatId())));
 
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+//        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
+//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+//        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
+
     public EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
 

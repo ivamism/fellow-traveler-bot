@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Log4j
@@ -19,31 +18,33 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public FindPassengerRequest findById(int id) {
-        return null;
+        return repository.findById(id).get();
     }
 
     @Override
-    public Optional <FindPassengerRequest> findLastUserRequest(long chatId) {
-        return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
+    public FindPassengerRequest findLastUserRequest(long chatId) {
+        log.info("method findLastUserRequest");
+        FindPassengerRequest request = repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId).orElseThrow();
+        return request;
     }
 
     @Override
     public FindPassengerRequest addNewRequest(FindPassengerRequestDTO dto) {
-                FindPassengerRequest request = new FindPassengerRequest();
+        FindPassengerRequest request = new FindPassengerRequest();
         request.setUser(dto.getUser())
                 .setDepartureSettlement(dto.getDepartureSettlement())
                 .setDirection(dto.getDirection())
                 .setDepartureLocation(dto.getDepartureLocation())
                 .setDestinationSettlement(dto.getDestinationSettlement())
                 .setDestinationLocation(dto.getDestinationLocation())
-                .setDepartureAt(LocalDateTime.of(dto.getDepartureDate(),dto.getDepartureTime()))
+                .setDepartureAt(LocalDateTime.of(dto.getDepartureDate(), dto.getDepartureTime()))
                 .setCar(dto.getCar())
                 .setSeatsQuantity(dto.getSeatsQuantity())
                 .setCommentary(dto.getCommentary())
                 .setActive(true)
                 .setCreatedAt(LocalDateTime.now())
-                .setCanceled(false);
-//                .setCanceledAt(LocalDateTime.of(0,0,0,0,0));
+                .setCanceled(false)
+                .setCanceledAt(LocalDateTime.of(1, 1, 1, 1, 1));
 
         log.info("method addNewRequest. Saved new request: " + request);
         return repository.save(request);
@@ -65,7 +66,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public void canselRequestById(int id) {
+    public void cancelRequestById(int id) {
 
     }
 

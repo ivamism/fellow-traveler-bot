@@ -157,10 +157,8 @@ public class Messages {
 
             Для продолжения работы с ботом выберите нужный пункт меню.""";
 
-    private final String CREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1 = "Ваш запрос на поиск попутчиков успешно сохранен! ";
+    private final String CREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1 = "Ваш запрос на поиск попутчиков успешно сохранен!\n\n";
     private final String FIND_PASSENGER_REQUEST_TO_STRING_MESSAGE = """
-                                
-                                    
             Имя пользователя: %s
             Нас. пункт отправления: %s
             Место отправления: %s

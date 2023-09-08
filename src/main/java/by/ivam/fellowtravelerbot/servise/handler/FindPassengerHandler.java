@@ -783,20 +783,23 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return findPassengerRequestService.addNewRequest(dto);
     }
 
-    private List<FindPassengerRequest> getUserActiveFindPassengerRequests(long chatId) {
+    public FindPassengerRequest getLastRequest (long chatId){
+        return findPassengerRequestService.findLastUserRequest(chatId);
+    }
 
+    private List<FindPassengerRequest> getUserActiveFindPassengerRequests(long chatId) {
         return findPassengerRequestService.usersActiveRequestList(chatId);
     }
     public  String requestListToString (long chatId) {
         StringBuilder text = new StringBuilder();
         for (FindPassengerRequest request : getUserActiveFindPassengerRequests(chatId)) {
             int n = getUserActiveFindPassengerRequests(chatId).indexOf(request) + 1;
-            text.append(n).append(requestToString(request)).append("\n");
+            text.append(n).append(". ").append(requestToString(request)).append("\n");
         }
         return text.toString();
     }
 
-    private String requestToString(FindPassengerRequest request) {
+    public String requestToString(FindPassengerRequest request) {
         String messageText = String.format(messages.getFIND_PASSENGER_REQUEST_TO_STRING_MESSAGE(),
                 request.getUser().getFirstName(),
                 request.getDepartureSettlement().getName(),
@@ -811,12 +814,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 request.getCommentary(),
                 request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
         return messageText;
-        /*
-        LocalDateTime dateTime = LocalDateTime.of(2014, Month.APRIL, 8, 12, 30);
-DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-String str = dateTime.format(formatter);
-request.getCreatedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
-         */
     }
 
     private String dtoToString (FindPassengerRequestDTO dto){
