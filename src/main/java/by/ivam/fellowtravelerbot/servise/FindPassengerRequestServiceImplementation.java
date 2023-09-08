@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j
@@ -22,7 +23,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public FindPassengerRequest findLastUserRequest(long chatId) {
+    public Optional <FindPassengerRequest> findLastUserRequest(long chatId) {
         return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
     }
 
@@ -40,7 +41,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setSeatsQuantity(dto.getSeatsQuantity())
                 .setCommentary(dto.getCommentary())
                 .setActive(true)
-                .setCreatedAt(LocalDateTime.now());
+                .setCreatedAt(LocalDateTime.now())
+                .setCanceled(false);
+//                .setCanceledAt(LocalDateTime.of(0,0,0,0,0));
 
         log.info("method addNewRequest. Saved new request: " + request);
         return repository.save(request);
@@ -62,12 +65,12 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public void deleteRequestById(int id) {
+    public void canselRequestById(int id) {
 
     }
 
     @Override
-    public void deleteAllUsersCars(List<Integer> carIdList) {
+    public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
 
     }
 }

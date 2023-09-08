@@ -803,7 +803,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 request.getDepartureLocation().getName(),
                 request.getDestinationSettlement().getName(),
                 request.getDestinationLocation().getName(),
-                request.getDepartureAt().toLocalDate().toString(),
+                request.getDepartureAt().toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                 request.getDepartureAt().toLocalTime().toString(),
                 request.getCar().getModel(),
                 request.getCar().getPlateNumber(),
@@ -811,6 +811,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 request.getCommentary(),
                 request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
         return messageText;
+        /*
+        LocalDateTime dateTime = LocalDateTime.of(2014, Month.APRIL, 8, 12, 30);
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+String str = dateTime.format(formatter);
+request.getCreatedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+         */
     }
 
     private String dtoToString (FindPassengerRequestDTO dto){
@@ -820,7 +826,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 dto.getDepartureLocation().getName(),
                 dto.getDestinationSettlement().getName(),
                 dto.getDestinationLocation().getName(),
-                dto.getDepartureDate().toString(),
+                dto.getDepartureDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 dto.getDepartureTime().toString(),
                 dto.getCar().getModel(),
                 dto.getCar().getPlateNumber(),
