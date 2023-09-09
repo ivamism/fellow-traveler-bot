@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j
@@ -27,6 +28,13 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         FindPassengerRequest request = repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId).orElseThrow();
         return request;
     }
+
+    @Override
+    public Optional<FindPassengerRequest> findLastUserRequestOptional(long chatId) {
+        log.info("method findLastUserRequestOptional");
+        return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
+    }
+
 
     @Override
     public FindPassengerRequest addNewRequest(FindPassengerRequestDTO dto) {
@@ -62,6 +70,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public List<FindPassengerRequest> usersActiveRequestList(long chatId) {
+        log.info("method usersActiveRequestList");
         return repository.findByUser_ChatIdAndIsActiveTrueOrderByDepartureAtAsc(chatId);
     }
 

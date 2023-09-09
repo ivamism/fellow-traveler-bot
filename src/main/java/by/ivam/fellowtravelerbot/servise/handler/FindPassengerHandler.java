@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 // This class handle operations with search passengers
 @Service
@@ -36,12 +37,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
-/*
-     TODO
-      добавить перед началом проверку на наличие  у юзера автомобиля
-      ограничить возможное количество активных запросов и добавить соответсствующую проверку
-  */
-   @Override
+
+    /*
+         TODO
+          добавить перед началом проверку на наличие  у юзера автомобиля
+          ограничить возможное количество активных запросов и добавить соответсствующую проверку
+      */
+    @Override
 
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
         log.debug("method handleReceivedMessage");
@@ -562,7 +564,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1()+requestToString(request)+messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         log.debug("method saveRequestSuccessMessage");
         return editMessage;
@@ -783,20 +785,30 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return findPassengerRequestService.addNewRequest(dto);
     }
 
-    public FindPassengerRequest getLastRequest (long chatId){
+    public FindPassengerRequest getLastRequest(long chatId) {
         return findPassengerRequestService.findLastUserRequest(chatId);
+    }
+
+    public Optional<FindPassengerRequest> getLastRequestOptional(long chatId) {
+        return findPassengerRequestService.findLastUserRequestOptional(chatId);
     }
 
     private List<FindPassengerRequest> getUserActiveFindPassengerRequests(long chatId) {
         return findPassengerRequestService.usersActiveRequestList(chatId);
     }
-    public  String requestListToString (long chatId) {
-        StringBuilder text = new StringBuilder();
-        for (FindPassengerRequest request : getUserActiveFindPassengerRequests(chatId)) {
-            int n = getUserActiveFindPassengerRequests(chatId).indexOf(request) + 1;
-            text.append(n).append(". ").append(requestToString(request)).append("\n");
+
+    public String requestListToString(long chatId) {
+        List<FindPassengerRequest> requests = getUserActiveFindPassengerRequests(chatId);
+        if (requests.isEmpty()) {
+            return messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE();
+        } else {
+            StringBuilder text = new StringBuilder();
+            for (FindPassengerRequest request : requests) {
+                int n = requests.indexOf(request) + 1;
+                text.append(n).append(". ").append(requestToString(request)).append("\n");
+            }
+            return text.toString();
         }
-        return text.toString();
     }
 
     public String requestToString(FindPassengerRequest request) {
@@ -816,8 +828,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return messageText;
     }
 
-    private String dtoToString (FindPassengerRequestDTO dto){
-              String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
+    public String requestToString(Optional<FindPassengerRequest> optional) {
+        String messageText;
+        if (optional.isPresent()) {
+            messageText = requestToString(optional.get());
+        } else messageText = messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE();
+        return messageText;
+    }
+
+    private String dtoToString(FindPassengerRequestDTO dto) {
+        String messageText = String.format(messages.getCREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
                 dto.getUser().getFirstName(),
                 dto.getDepartureSettlement().getName(),
                 dto.getDepartureLocation().getName(),
@@ -877,7 +897,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private boolean seatsQuantityIsValid(String s) {
-        return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 9);
+        return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 5);
     }
 
     private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {

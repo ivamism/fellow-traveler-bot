@@ -9,12 +9,17 @@ import java.util.Optional;
 public interface FindPassengerRequestService {
 
     FindPassengerRequest findById(int id);
-    FindPassengerRequest findLastUserRequest (long chatId);
+
+    FindPassengerRequest findLastUserRequest(long chatId);
+
+    Optional<FindPassengerRequest> findLastUserRequestOptional(long chatId);
 
     FindPassengerRequest addNewRequest(FindPassengerRequestDTO dto);
+
     FindPassengerRequest updateRequest(FindPassengerRequest request);
 
     List<FindPassengerRequest> usersRequestList(long chatId);
+
     List<FindPassengerRequest> usersActiveRequestList(long chatId);
 
     void cancelRequestById(int id);

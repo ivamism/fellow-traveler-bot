@@ -309,10 +309,11 @@ TODO разделить функциональные действия и отп�
     }
 
     public EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
+//        TODO после реализации FindRideHandler добавить проверку какой из реквестов последний и редактирование последнего
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId())+findPassengerHandler.requestToString(findPassengerHandler.getLastRequest(incomeMessage.getChatId())));
+        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId()));
 
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
 //        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
 //        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
 //        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));

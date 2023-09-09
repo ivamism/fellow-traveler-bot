@@ -119,7 +119,7 @@ public class Messages {
     private final String CREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE = "Вы указали истекшее время";
     private final String CREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE2 = "У вас сохранено истекшее время. Внесите соответствующие изменения";
     private final String CREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE = "Выберите автомобиль:\n";
-    private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE = "Напишите количество пассажиров, которое вы готовы взять.\n Используйте цифру от 1 до 8";
+    private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE = "Напишите количество пассажиров, которое вы готовы взять.\n Используйте цифру от 1 до 4";
     private final String CREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE = "Неверно указан формат. Напишите количество пассажиров одной цифрой от 1 до 9";
     private final String CREATE_FIND_PASSENGER_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE = """
             Проверьте правильность введенных данных\s
@@ -175,5 +175,7 @@ public class Messages {
                         """;
 
     private final String FIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE = "Выберите, что вы хотите изменить";
+    private final String FIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск пассажиров";
+    private final String FIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск попуток";
 
 }
