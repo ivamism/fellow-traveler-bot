@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j
@@ -23,6 +24,11 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     @Override
     public FindRideRequest findLastUserRequest(long chatId) {
         return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId).orElseThrow();
+    }
+
+    @Override
+    public Optional<FindRideRequest> findLastUserRequestOptional(long chatId) {
+        return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
     }
 
     @Override

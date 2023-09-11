@@ -251,6 +251,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK" -> {
                 editMessage = editBeforeSaveCommentaryMessage(incomeMessage);
             }
+            case "EDIT_LAST_REQUEST" -> {
+                editMessage = startEditRequestMessage(incomeMessage);
+            }
+            case "CANCEL_LAST_REQUEST" -> {
+                editMessage = nextStep(incomeMessage);
+            }
+            case "NO_ACTIVE_REQUEST" -> {
+                editMessage = noActiveRequestsMessage(incomeMessage);
+            }
+
 
         }
         sendEditMessage(editMessage);
@@ -572,7 +582,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText startEditBeforeSaveRequestMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
@@ -588,7 +598,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText editBeforeSaveSettlementLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
         buttonsAttributesList.add(buttons.departureSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
@@ -662,7 +672,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText editBeforeSaveDateTimeMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.dateButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DATE_CALLBACK)); // Edit date button
@@ -676,7 +686,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText editBeforeSaveCarDetailsMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_EDIT_BEFORE_SAVE_START_MESSAGE());
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.carButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_CALLBACK)); // Change car button
@@ -775,7 +785,20 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: editBeforeSaveCommentaryMessage");
         return editMessage;
     }
+    private EditMessageText startEditRequestMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
 
+        editMessage.setText(requestToString(getLastRequestOptional(incomeMessage.getChatId())) + messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DATE_TAME_CALLBACK.getValue())); // Edit date or time button
+        buttonsAttributesList.add(buttons.carDetailsButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_DETAILS_CALLBACK.getValue())); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: startEditRequestMessage");
+        return editMessage;
+    }
 
     private FindPassengerRequest saveRequest(long chatId) {
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
@@ -784,6 +807,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method saveRequest");
         return findPassengerRequestService.addNewRequest(dto);
     }
+
+
 
     public FindPassengerRequest getLastRequest(long chatId) {
         return findPassengerRequestService.findLastUserRequest(chatId);
@@ -932,9 +957,19 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return sendMessage;
     }
 
+    private EditMessageText noActiveRequestsMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+
+        editMessage.setText(messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE());
+        log.info("noActiveRequestsMessage");
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        return editMessage;
+    }
+
     private SendMessage nextStep(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText("nextStep");
+        sendMessage.setReplyMarkup(null);
         log.debug("method: nextStep");
 
         return sendMessage;
@@ -943,6 +978,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private EditMessageText nextStep(Message incomemessage) {
         editMessageTextGeneralPreset(incomemessage);
         editMessage.setText("nextStep");
+        editMessage.setReplyMarkup(null);
         log.debug("method: nextStep");
 
         return editMessage;

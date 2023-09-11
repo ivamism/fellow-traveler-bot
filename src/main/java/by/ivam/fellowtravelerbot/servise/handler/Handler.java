@@ -28,7 +28,8 @@ public class Handler {
 
     @Autowired
     FindPassengerRequestService findPassengerRequestService;
-
+    @Autowired
+    FindRideRequestService findRideRequestService;
     @Autowired
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired

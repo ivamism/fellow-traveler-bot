@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +98,23 @@ TODO разделить функциональные действия и отп�
                 editMessage = deleteUserSuccessMessage(incomeMessage);
             }
             case "MY_RIDES_MENU" -> editMessage = showUserActiveRequestsListMessage(incomeMessage);
+//            case "EDIT_LAST_REQUEST", "CANCEL_LAST_REQUEST" -> {
+//                if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() && findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
+//                    LocalDateTime findPassengerRequestCreatedAt = findPassengerRequestService.findLastUserRequest(chatId).getCreatedAt();
+//                    LocalDateTime findRideRequestCreatedAt = findRideRequestService.findLastUserRequest(chatId).getCreatedAt();
+//                    if (findPassengerRequestCreatedAt.isAfter(findRideRequestCreatedAt)) {
+//                        findPassengerHandler.handleReceivedCallback(process, incomeMessage);
+//                    } else {
+//                        findRideHandler.handleReceivedCallback(process, incomeMessage);
+//                    }
+//                } else if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent()) {
+//                    findPassengerHandler.handleReceivedCallback(process, incomeMessage);
+//
+//                } else if (findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
+//                    findRideHandler.handleReceivedCallback(process, incomeMessage);
+//
+//                } else editMessage = noActiveRequestsMessage(incomeMessage);
+//            }
 
         }
         sendEditMessage(editMessage);
@@ -206,6 +224,7 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
+
 //    Edit User's data
 
     private String getUserData(long chatId) {
@@ -256,13 +275,13 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    public void saveEditedUserFirstName(long chatId, String firstName) {
+    private void saveEditedUserFirstName(long chatId, String firstName) {
         String oldFirstName = userService.findUserById(chatId).getFirstName();
         log.debug("User handler. Method saveEditedUserFirstName - call update User's first name from " + oldFirstName + " to " + firstName);
         userService.updateUserFirstName(chatId, firstName);
     }
 
-    public SendMessage editUserFirstNameSuccessMessage(long chatId) {
+    private SendMessage editUserFirstNameSuccessMessage(long chatId) {
         String firstName = userService.findUserById(chatId).getFirstName();
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getEDIT_USER_FIRSTNAME_SUCCESS_MESSAGE(), firstName) + messages.getFURTHER_ACTION_MESSAGE());
@@ -270,7 +289,7 @@ TODO разделить функциональные действия и отп�
         return sendMessage;
     }
 
-    public EditMessageText editUserResidenceRequestMessage(Message incomeMessage) {
+    private EditMessageText editUserResidenceRequestMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getADD_LOCATION_CHOOSE_SETTLEMENT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList =
@@ -282,13 +301,13 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    public User editUserSetResidence(long chatId, String callbackData) {
+    private User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
         user.setResidence(settlementService.findById(trimId(callbackData)));
         return userService.updateUser(user);
     }
 
-    public EditMessageText editUserResidenceSuccessMessage(Message incomeMessage, User user) {
+    private EditMessageText editUserResidenceSuccessMessage(Message incomeMessage, User user) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(String.format(messages.getEDIT_USER_RESIDENCE_SUCCESS_MESSAGE(), user.getResidence().getName()) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
@@ -297,7 +316,7 @@ TODO разделить функциональные действия и отп�
 
 //    Delete User
 
-    public EditMessageText deleteUserStartProcessMessage(Message incomeMessage) {
+    private EditMessageText deleteUserStartProcessMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getDELETE_USER_START_MESSAGE());
 
@@ -308,19 +327,8 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    public EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
-//        TODO после реализации FindRideHandler добавить проверку какой из реквестов последний и редактирование последнего
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId()));
 
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.deleteButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CONFIRM_USER_DELETION)); // Delete User button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-        return editMessage;
-    }
-
-    public EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
+    private EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
 
         editMessage.setText(messages.getDELETE_USER_DONE_MESSAGE());
@@ -328,7 +336,25 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    public void deleteUser(long chatId) {
+    private EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        Long chatId = incomeMessage.getChatId();
+        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId()));
+
+        if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() | findRideRequestService.findLastUserRequestOptional(chatId).isPresent())   {
+            List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+            buttonsAttributesList.add(buttons.editLastButtonCreate(UserOperation.EDIT_LAST_REQUEST.getValue())); // Edit last request button
+            buttonsAttributesList.add(buttons.editButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_REQUEST)); // Edit some request button
+            buttonsAttributesList.add(buttons.cancelLastButtonCreate(UserOperation.CANCEL_LAST_REQUEST.getValue())); // Cansel last request button
+            buttonsAttributesList.add(buttons.cancelRequestButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.CANCEL_REQUEST)); // Cansel last request button
+            buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+            editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        } else editMessage.setReplyMarkup(null);
+        return editMessage;
+    }
+
+
+    private void deleteUser(long chatId) {
         User user = userService.findUserById(chatId);
         log.info("start deletion of User " + user + " and his cars");
         carHandler.deleteAllCars(chatId);
@@ -353,7 +379,7 @@ TODO разделить функциональные действия и отп�
         log.debug("method userDTOCreator with edited firstname");
     }
 
-    public void editMessageTextGeneralPreset(Message incomeMessage) {
+    private void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());
     }

@@ -56,9 +56,12 @@ public class Buttons {
     private final String SEATS_QUANTITY_TEXT = "Количество мест";
     private final String SWAP_DEPARTURE_DESTINATION_TEXT = "Поменять выезд и назначение";
     private final String MY_RIDES_MENU_TEXT = "Мои поездки";
-    private final String AS_DRIVER_TEXT = "Как водитель";
-    private final String AS_PASSENGER_TEXT = "Как пассажир";
+    //    TODO переименовать 2 следующих константы
+    private final String AS_DRIVER_TEXT = "Поиск попутки";
+    private final String AS_PASSENGER_TEXT = "Поиск пассажира";
     private final String EDIT_LAST_TEXT = "Редактировать последнее";
+    private final String CANCEL_LAST_TEXT = "Отменить последнее";
+    private final String CANCEL_REQUEST_TEXT = "Отменить запрос";
 
 
     //    Main menu buttons
@@ -93,8 +96,20 @@ public class Buttons {
         return Pair.of(EDIT_BUTTON_TEXT, buttonCallback);
     }
 
+    public Pair<String, String> editLastButtonCreate(String buttonCallback) {
+        return Pair.of(EDIT_LAST_TEXT, buttonCallback);
+    }
+
     public Pair<String, String> cancelButtonCreate(String buttonCallback) {
         return Pair.of(CANCEL_BUTTON_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> cancelLastButtonCreate(String buttonCallback) {
+        return Pair.of(CANCEL_LAST_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> cancelRequestButtonCreate(String buttonCallback) {
+        return Pair.of(CANCEL_REQUEST_TEXT, buttonCallback);
     }
 
     public Pair<String, String> cancelButtonCreate() {
@@ -232,8 +247,17 @@ public class Buttons {
     public Pair<String, String> swapDepartureDestinationButtonCreate(String buttonCallback) {
         return Pair.of(SWAP_DEPARTURE_DESTINATION_TEXT, buttonCallback);
     }
+
     public Pair<String, String> myRidesButtonCreate() {
         return Pair.of(MY_RIDES_MENU_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
+    }
+
+    public Pair<String, String> myRidesRequestButtonCreate() {
+        return Pair.of(AS_PASSENGER_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
+    }
+
+    public Pair<String, String> myPassengerRequestButtonCreate() {
+        return Pair.of(AS_DRIVER_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
     }
 
 }
