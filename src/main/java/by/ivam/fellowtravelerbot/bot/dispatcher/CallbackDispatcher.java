@@ -27,10 +27,10 @@ public class CallbackDispatcher extends Dispatcher {
         String callbackData = callbackQuery.getData();
         Long chatId = incomeMessage.getChatId();
         log.info("Get callbackData: " + callbackData);
-        if (callbackData.contains("-")){
+        if (callbackData.contains("-")) {
             String handler = getHandler(callbackData);
             String callback = getProcess(callbackData);
-            log.info("Get callBack: " + callbackData +", Handler: " + handler);
+            log.info("Get callBack: " + callbackData + ", Handler: " + handler);
             switch (handler) {
                 case "START" -> startHandler.handleReceivedCallback(callback, incomeMessage);
                 case "ADMIN" -> adminHandler.handleReceivedCallback(callback, incomeMessage);
@@ -39,23 +39,26 @@ public class CallbackDispatcher extends Dispatcher {
                 case "FIND_RIDE" -> findRideHandler.handleReceivedCallback(callback, incomeMessage);
                 case "FIND_PAS" -> findPassengerHandler.handleReceivedCallback(callback, incomeMessage);
             }
-        }
-        else {
-            switch (callbackData){
+        } else {
+            String callback = "";
+            String finalCallback = callback;
+            String finalCallback1 = callback;
+            switch (callbackData) {
                 case "EDIT_LAST_REQUEST", "CANCEL_LAST_REQUEST" -> {
+                    if (callbackData.equals("EDIT_LAST_REQUEST")) callback = "EDIT_REQUEST_START:";
+                    else callback = "CANCEL_REQUEST:";
                     if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() && findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
                         LocalDateTime findPassengerRequestCreatedAt = findPassengerRequestService.findLastUserRequest(chatId).getCreatedAt();
                         LocalDateTime findRideRequestCreatedAt = findRideRequestService.findLastUserRequest(chatId).getCreatedAt();
-                        if (findPassengerRequestCreatedAt.isAfter(findRideRequestCreatedAt)) {
-                            findPassengerHandler.handleReceivedCallback(callbackData, incomeMessage);
-                        } else {
-                            findRideHandler.handleReceivedCallback(callbackData, incomeMessage);
-                        }
+                        if (findPassengerRequestCreatedAt.isAfter(findRideRequestCreatedAt))
+                            findPassengerHandler.handleReceivedCallback(callback + findPassengerRequestService.findLastUserRequest(chatId).getId(), incomeMessage);
+                        else
+                            findRideHandler.handleReceivedCallback(callback + findRideRequestService.findLastUserRequest(chatId).getId(), incomeMessage);
                     } else if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent()) {
-                        findPassengerHandler.handleReceivedCallback(callbackData, incomeMessage);
+                        findPassengerHandler.handleReceivedCallback(callback + findPassengerRequestService.findLastUserRequest(chatId).getId(), incomeMessage);
 
                     } else if (findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
-                        findRideHandler.handleReceivedCallback(callbackData, incomeMessage);
+                        findRideHandler.handleReceivedCallback(callback + findRideRequestService.findLastUserRequest(chatId).getId(), incomeMessage);
 
                     } else findPassengerHandler.handleReceivedCallback("NO_ACTIVE_REQUEST", incomeMessage);
                 }
