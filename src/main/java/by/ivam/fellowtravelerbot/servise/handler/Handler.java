@@ -46,6 +46,12 @@ public class Handler {
     public int trimId(String s) {
         return Integer.parseInt(s.split(":")[1]);
     }
+    public int trimSecondId(String s){
+        String[] strings = s.split(":");
+        if (strings.length>2) {
+            return Integer.parseInt(s.split(":")[2]);
+        } else return -1;
+    }
 
     public String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);

@@ -41,8 +41,6 @@ public class CallbackDispatcher extends Dispatcher {
             }
         } else {
             String callback = "";
-            String finalCallback = callback;
-            String finalCallback1 = callback;
             switch (callbackData) {
                 case "EDIT_LAST_REQUEST", "CANCEL_LAST_REQUEST" -> {
                     if (callbackData.equals("EDIT_LAST_REQUEST")) callback = "EDIT_REQUEST_START:";
@@ -64,6 +62,5 @@ public class CallbackDispatcher extends Dispatcher {
                 }
             }
         }
-
     }
 }

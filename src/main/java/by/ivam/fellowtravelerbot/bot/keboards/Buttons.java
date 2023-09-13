@@ -4,10 +4,7 @@ This class contains Strings of buttons names and callback-queries which used in 
 and methods od creation of buttons attributes pairs (name and callback data)
  */
 
-import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
-import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.bot.enums.Operation;
-import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
+import by.ivam.fellowtravelerbot.bot.enums.*;
 import lombok.Getter;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -252,12 +249,12 @@ public class Buttons {
         return Pair.of(MY_RIDES_MENU_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
     }
 
-    public Pair<String, String> myRidesRequestButtonCreate() {
-        return Pair.of(AS_PASSENGER_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
+    public Pair<String, String> myRidesRequestButtonCreate(String buttonCallback) {
+        return Pair.of(AS_PASSENGER_TEXT, buttonCallback);
     }
 
-    public Pair<String, String> myPassengerRequestButtonCreate() {
-        return Pair.of(AS_DRIVER_TEXT, Handlers.USER.getHandlerPrefix() + UserOperation.MY_RIDES_MENU);
+    public Pair<String, String> myPassengerRequestButtonCreate(String buttonCallback) {
+        return Pair.of(AS_DRIVER_TEXT, buttonCallback);
     }
 
 }

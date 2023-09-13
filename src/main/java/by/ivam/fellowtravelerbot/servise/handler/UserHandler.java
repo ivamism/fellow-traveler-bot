@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
+import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
@@ -98,23 +99,11 @@ TODO разделить функциональные действия и отп�
                 editMessage = deleteUserSuccessMessage(incomeMessage);
             }
             case "MY_RIDES_MENU" -> editMessage = showUserActiveRequestsListMessage(incomeMessage);
-//            case "EDIT_LAST_REQUEST", "CANCEL_LAST_REQUEST" -> {
-//                if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() && findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
-//                    LocalDateTime findPassengerRequestCreatedAt = findPassengerRequestService.findLastUserRequest(chatId).getCreatedAt();
-//                    LocalDateTime findRideRequestCreatedAt = findRideRequestService.findLastUserRequest(chatId).getCreatedAt();
-//                    if (findPassengerRequestCreatedAt.isAfter(findRideRequestCreatedAt)) {
-//                        findPassengerHandler.handleReceivedCallback(process, incomeMessage);
-//                    } else {
-//                        findRideHandler.handleReceivedCallback(process, incomeMessage);
-//                    }
-//                } else if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent()) {
-//                    findPassengerHandler.handleReceivedCallback(process, incomeMessage);
-//
-//                } else if (findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
-//                    findRideHandler.handleReceivedCallback(process, incomeMessage);
-//
-//                } else editMessage = noActiveRequestsMessage(incomeMessage);
-//            }
+            case "EDIT_REQUEST" -> {
+                String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
+                String rideCallback = "TODO callback";
+                editMessage = chooseTypeOfRequestMessage(incomeMessage, passCallback, rideCallback);
+            }
 
         }
         sendEditMessage(editMessage);
@@ -341,7 +330,7 @@ TODO разделить функциональные действия и отп�
         Long chatId = incomeMessage.getChatId();
         editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId()));
 
-        if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() | findRideRequestService.findLastUserRequestOptional(chatId).isPresent())   {
+        if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() | findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
             List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
             buttonsAttributesList.add(buttons.editLastButtonCreate(UserOperation.EDIT_LAST_REQUEST.getValue())); // Edit last request button
             buttonsAttributesList.add(buttons.editButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_REQUEST)); // Edit some request button
@@ -350,6 +339,17 @@ TODO разделить функциональные действия и отп�
             buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
             editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         } else editMessage.setReplyMarkup(null);
+        return editMessage;
+    }
+
+    private EditMessageText chooseTypeOfRequestMessage(Message incomeMessage, String passCallback, String rideCallback) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCHOOSE_TYPE_OF_REQUEST_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.myPassengerRequestButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + passCallback)); // Passenger request button
+        buttonsAttributesList.add(buttons.myRidesRequestButtonCreate("TODO callback")); // Ride request button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
 

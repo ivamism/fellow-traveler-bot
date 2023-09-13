@@ -1,9 +1,8 @@
 package by.ivam.fellowtravelerbot.DTO;
 
-import by.ivam.fellowtravelerbot.model.Direction;
+import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.model.User;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
