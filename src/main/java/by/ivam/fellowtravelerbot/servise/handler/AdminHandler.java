@@ -183,13 +183,13 @@ public class AdminHandler extends Handler implements HandlerInterface {
         Map<Integer, String> settlementAttributes = getSettlementsList()
                 .stream()
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
-        return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
+        return buttons.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
     public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData, List<Settlement> settlementList) {
         Map<Integer, String> settlementAttributes = settlementList
                 .stream()
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
-        return keyboards.buttonsAttributesListCreator(settlementAttributes, callbackData);
+        return buttons.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
 
 
@@ -197,6 +197,6 @@ public class AdminHandler extends Handler implements HandlerInterface {
         Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
                 .stream()
                 .collect(Collectors.toMap(location -> location.getId(), location -> location.getName()));
-        return keyboards.buttonsAttributesListCreator(locationAttributes, callbackData);
+        return buttons.buttonsAttributesListCreator(locationAttributes, callbackData);
     }
 }

@@ -9,6 +9,10 @@ import lombok.Getter;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Getter
 @Component
 public class Buttons {
@@ -255,6 +259,13 @@ public class Buttons {
 
     public Pair<String, String> myPassengerRequestButtonCreate(String buttonCallback) {
         return Pair.of(AS_DRIVER_TEXT, buttonCallback);
+    }
+    public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
+
+        return attributesType.entrySet()
+                .stream()
+                .map(entry -> Pair.of(entry.getValue(), callbackData + entry.getKey()))
+                .collect(Collectors.toList());
     }
 
 }

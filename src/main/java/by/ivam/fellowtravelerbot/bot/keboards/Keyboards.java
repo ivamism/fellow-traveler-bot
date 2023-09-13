@@ -3,7 +3,6 @@ package by.ivam.fellowtravelerbot.bot.keboards;
 Main menu and inline keyboards
  */
 
-import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Data
@@ -26,7 +23,7 @@ public class Keyboards {
     @Autowired
     Buttons buttons;
 
-// Main Admin menu
+    // Main Admin menu
     public ReplyKeyboardMarkup mainAdminMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -50,7 +47,8 @@ public class Keyboards {
 
         return mainKeyboard;
     }
-// Main menu
+
+    // Main menu
     public ReplyKeyboardMarkup mainMenu() {
         ReplyKeyboardMarkup mainKeyboard = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -70,7 +68,7 @@ public class Keyboards {
         return mainKeyboard;
     }
 
-   public InlineKeyboardMarkup oneButtonsInlineKeyboard(Pair<String, String> buttonsAttributes) {
+    public InlineKeyboardMarkup oneButtonsInlineKeyboard(Pair<String, String> buttonsAttributes) {
 
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -155,22 +153,6 @@ public class Keyboards {
         inLineKeyboard.setKeyboard(rows);
         return inLineKeyboard;
     }
-
-      public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
-
-          return attributesType.entrySet()
-                  .stream()
-                  .map(entry -> Pair.of(entry.getValue(), callbackData + entry.getKey()))
-                  .collect(Collectors.toList());
-    }
-
-    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(List<Settlement> settlements, String callbackData) {
-        return settlements
-                .stream()
-                .map(settlement -> Pair.of(settlement.getName(), callbackData + settlement.getId()))
-                .collect(Collectors.toList());
-    }
-
-
 }
+
 

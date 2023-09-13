@@ -583,12 +583,13 @@ public class CarHandler extends Handler implements HandlerInterface {
         return getUsersCarsList(chatId).size();
     }
 // TODO переделать выбор автомобилей во всех местах с помощью этого метода
-    public List<Pair<String, String>> CarButtonsAttributesListCreator(String callbackData, long chatId) {
+    public List<Pair<String, String>> carButtonsAttributesListCreator(String callbackData, long chatId) {
         Map<Integer, String> carButtonsAttributes = getUsersCarsList(chatId)
                 .stream()
-                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getModel()));
-        return keyboards.buttonsAttributesListCreator(carButtonsAttributes, callbackData);
+                .collect(Collectors.toMap(car -> car.getId(), car -> car.getModel()));
+        return buttons.buttonsAttributesListCreator(carButtonsAttributes, callbackData);
     }
+
 
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
