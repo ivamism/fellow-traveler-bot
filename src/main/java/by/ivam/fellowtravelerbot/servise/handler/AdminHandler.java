@@ -175,28 +175,37 @@ public class AdminHandler extends Handler implements HandlerInterface {
         return settlementService.findAll();
     }
 
-    private List<Location> getDepartureLocationListBySettlement(int settlementId) {
+    private List<Location> getLocationListBySettlement(int settlementId) {
         return locationService.findAllBySettlement(settlementId);
     }
 
-    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData) {
-        Map<Integer, String> settlementAttributes = getSettlementsList()
+    public Map<Integer, String> createSettlementsMap(List<Settlement> settlementList) {
+        return settlementList
                 .stream()
                 .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
-        return buttons.buttonsAttributesListCreator(settlementAttributes, callbackData);
-    }
-    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData, List<Settlement> settlementList) {
-        Map<Integer, String> settlementAttributes = settlementList
-                .stream()
-                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
-        return buttons.buttonsAttributesListCreator(settlementAttributes, callbackData);
     }
 
-
-    public List<Pair<String, String>> departureLocationButtonsAttributesListCreator(String callbackData, int settlementId) {
-        Map<Integer, String> locationAttributes = getDepartureLocationListBySettlement(settlementId)
+    public Map<Integer, String> createLocationsMap(int settlementId) {
+        return getLocationListBySettlement(settlementId)
                 .stream()
                 .collect(Collectors.toMap(location -> location.getId(), location -> location.getName()));
-        return buttons.buttonsAttributesListCreator(locationAttributes, callbackData);
+    }
+
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData) {
+        return buttons.buttonsAttributesListCreator(createSettlementsMap(getSettlementsList()), callbackData);
+    }
+
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData, List<Settlement> settlementList) {
+        return buttons.buttonsAttributesListCreator(createSettlementsMap(settlementList), callbackData);
+    }
+    public List<Pair<String, String>> settlementsButtonsAttributesListCreator(String callbackData, List<Settlement> settlementList, int requestId) {
+        return buttons.buttonsAttributesListCreator(createSettlementsMap(settlementList), callbackData, requestId);
+    }
+
+    public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int settlementId) {
+        return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData);
+    }
+    public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int settlementId, int requestId) {
+        return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData, requestId);
     }
 }

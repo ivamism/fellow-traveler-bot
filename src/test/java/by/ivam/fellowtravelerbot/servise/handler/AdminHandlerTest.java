@@ -16,7 +16,7 @@ class AdminHandlerTest {
 
     @Test
     void departureLocationButtonsAttributesListCreator() {
-        List<Pair<String, String>> data = handler.departureLocationButtonsAttributesListCreator("data", 2);
+        List<Pair<String, String>> data = handler.locationButtonsAttributesListCreator("data", 2);
         assertNotNull(data);
     }
 }

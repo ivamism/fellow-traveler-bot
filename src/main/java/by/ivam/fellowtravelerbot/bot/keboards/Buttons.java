@@ -261,10 +261,15 @@ public class Buttons {
         return Pair.of(AS_DRIVER_TEXT, buttonCallback);
     }
     public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
-
         return attributesType.entrySet()
                 .stream()
                 .map(entry -> Pair.of(entry.getValue(), callbackData + entry.getKey()))
+                .collect(Collectors.toList());
+    }
+    public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData, int requestId) {
+        return attributesType.entrySet()
+                .stream()
+                .map(entry -> Pair.of(entry.getValue(), String.format(callbackData, requestId,  entry.getKey()) ))
                 .collect(Collectors.toList());
     }
 

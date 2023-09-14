@@ -60,7 +60,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public FindPassengerRequest updateRequest(FindPassengerRequest request) {
-        return null;
+        return repository.save(request);
     }
 
     @Override
