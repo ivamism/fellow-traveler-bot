@@ -254,11 +254,11 @@ public class Buttons {
     }
 
     public Pair<String, String> myRidesRequestButtonCreate(String buttonCallback) {
-        return Pair.of(AS_PASSENGER_TEXT, buttonCallback);
+        return Pair.of(AS_DRIVER_TEXT, buttonCallback);
     }
 
     public Pair<String, String> myPassengerRequestButtonCreate(String buttonCallback) {
-        return Pair.of(AS_DRIVER_TEXT, buttonCallback);
+        return Pair.of(AS_PASSENGER_TEXT, buttonCallback);
     }
     public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
         return attributesType.entrySet()

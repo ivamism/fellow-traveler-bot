@@ -186,7 +186,8 @@ public class AdminHandler extends Handler implements HandlerInterface {
     }
 
     public Map<Integer, String> createLocationsMap(int settlementId) {
-        return getLocationListBySettlement(settlementId)
+        List<Location> locationListBySettlement = getLocationListBySettlement(settlementId);
+        return locationListBySettlement
                 .stream()
                 .collect(Collectors.toMap(location -> location.getId(), location -> location.getName()));
     }
@@ -205,7 +206,7 @@ public class AdminHandler extends Handler implements HandlerInterface {
     public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int settlementId) {
         return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData);
     }
-    public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int settlementId, int requestId) {
+    public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int requestId, int settlementId) {
         return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData, requestId);
     }
 }
