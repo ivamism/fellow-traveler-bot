@@ -4,6 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum Day {
-    TODAY,
-    TOMORROW
+    TODAY("TODAY"),
+    TOMORROW("TOMORROW");
+    private final String value;
+    Day(String value) {
+        this.value = value;
+    }
 }
