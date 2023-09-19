@@ -61,6 +61,8 @@ public enum FindPassengerOperation {
     EDIT_DATE_CALLBACK("EDIT_DATE:"),
     EDIT_CHANGE_DATE_CALLBACK("EDIT_CHANGE_DATE:%s:%d"),
     EDIT_TIME_CALLBACK("EDIT_TIME:"),
+    EDIT_CHANGE_TIME_STATUS("EDIT_CHANGE_TIME"),
+
     ;
 
     private final String value;
