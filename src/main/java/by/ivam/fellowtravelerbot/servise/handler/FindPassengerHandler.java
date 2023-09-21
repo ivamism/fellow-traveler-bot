@@ -245,14 +245,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_BEFORE_SAVE_TIME" -> {
                 editMessage = editBeforeSaveTimeMessage(incomeMessage);
             }
-            case "EDIT_BEFORE_SAVE_CAR_CALLBACK" -> {
+            case "EDIT_BEFORE_SAVE_CAR" -> {
                 editMessage = editBeforeSaveChooseCarMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_CAR" -> {
                 createNewRequestSetCar(chatId, trimId(callback));
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
-            case "EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK" -> {
+            case "EDIT_BEFORE_SAVE_SEATS_QUANTITY" -> {
                 editMessage = editBeforeSaveSeatsMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK" -> {
@@ -325,9 +325,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_TIME" -> {
                 editMessage = editTimeMessage(incomeMessage, trimId(callback));
             }
-            case "EDIT_CHANGE_TIME" -> {
-//                FindPassengerRequest request = setEditedDestinationLocation(trimId(callback), trimSecondId(callback));
-//                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
+            case "EDIT_CAR_DETAILS" -> {
+                editMessage = editCarDetailsMessage(incomeMessage, trimId(callback));
             }
 
 
@@ -536,10 +535,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 //        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToString(chatId));
-        List<Pair<String, String>> buttonsAttributesList =
-                carHandler.carButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue(), chatId);
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        String callback = FindPassengerOperation.CREATE_REQUEST_CAR_CALLBACK.getValue();
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(createCarChoiceButtonsAttributesList(callback, chatId)));
         log.debug("method: createNewRequestChooseCarMessage");
         return sendMessage;
     }
@@ -720,17 +717,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editBeforeSaveCarDetailsMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
-
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.carButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_CALLBACK)); // Change car button
-        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK)); // Edit seats quantity button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        String carCallback = FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_CALLBACK.getValue();
+        String seatsCallback = FindPassengerOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue();
+        editMessage = createCarDetailsMessage(incomeMessage, carCallback, seatsCallback);
         log.debug("method: EditBeforeSaveCarDetailsMessage");
-
         return editMessage;
     }
 
@@ -773,19 +763,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editBeforeSaveChooseCarMessage(Message incomeMessage) {
-//        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
-        Long chatId = incomeMessage.getChatId();
-        editMessage.setChatId(chatId);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToString(chatId));
-
-        List<Pair<String, String>> buttonsAttributesList =
-                carHandler.carButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_CAR_CALLBACK.getValue(), chatId);
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-
+        String callback = FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_CAR_CALLBACK.getValue();
+        editMessage = createChooseCarMessage(incomeMessage, callback);
         log.debug("method: editBeforeSaveChooseCarMessage");
         return editMessage;
     }
+
 
     private EditMessageText editBeforeSaveSeatsMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -995,6 +978,23 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return findPassengerRequestService.updateRequest(request);
     }
 
+    private EditMessageText editCarDetailsMessage(Message incomeMessage, int requestId) {
+        String carCallback = FindPassengerOperation.EDIT_CAR_CALLBACK.getValue() + requestId;
+        String seatsCallback = FindPassengerOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId;
+        editMessage = createCarDetailsMessage(incomeMessage, carCallback, seatsCallback);
+        log.debug("method: editCarDetailsMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editChooseCarMessage(Message incomeMessage, int requestId) {
+//       TODO создать в кархэндлере перегруженный метод принимающий и айди пользователя и фйди запроса
+//        TODO Рассмотреть нужен ли отдельный метод создающий это сообщение
+
+        String callback = FindPassengerOperation.EDIT_CAR_CALLBACK.getValue();
+        editMessage = createChooseCarMessage(incomeMessage, callback);
+        log.debug("method: editChooseCarMessage");
+        return editMessage;
+    }
 
     private EditMessageText editRequestSuccessEditMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -1040,17 +1040,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendBotMessage(sendMessage);
     }
 
-    private EditMessageText createTimeEditMessage(Message incomeMessage, String chatStatus) {
-//        TODO добавить  кнопки с промежутками времени если выезд сегодня.
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
-        log.debug("method: createTimeEditMessage");
-
-        return editMessage;
-    }
-
     private EditMessageText createTimeMessage(Message incomeMessage, String chatStatus) {
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
         editMessageTextGeneralPreset(incomeMessage);
@@ -1058,6 +1047,28 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createTimeMessage");
+        return editMessage;
+    }
+
+    private EditMessageText createChooseCarMessage(Message incomeMessage, String callback) {
+//        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
+        editMessageTextGeneralPreset(incomeMessage);
+        Long chatId = incomeMessage.getChatId();
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_CHOSE_CAR_MESSAGE() + carHandler.CarListToString(chatId));
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(createCarChoiceButtonsAttributesList(callback, chatId)));
+        log.debug("method: createChooseCarMessage");
+        return editMessage;
+    }
+
+    private EditMessageText createCarDetailsMessage(Message incomeMessage, String carCallback, String seatsCallback) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.carButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + carCallback)); // Change car button
+        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + seatsCallback)); // Edit seats quantity button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createCarDetailsMessage");
         return editMessage;
     }
 
@@ -1102,6 +1113,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + depLocationCallback + requestId)); // Edit destination settlement button
         buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + destSettlementCallback + requestId)); // Edit departure location button
         buttonsAttributesList.add(buttons.destinationLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + destLocationCallback + requestId)); // Edit destination location button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
+    }
+
+    private List<Pair<String, String>> createCarChoiceButtonsAttributesList(String callback, long chatId) {
+        List<Pair<String, String>> buttonsAttributesList =
+                carHandler.carButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + callback, chatId);
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
