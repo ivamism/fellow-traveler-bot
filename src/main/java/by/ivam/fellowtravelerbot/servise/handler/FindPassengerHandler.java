@@ -109,6 +109,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     sendMessage = editRequestSuccessSendMessage(chatId, request);
                 }
             }
+            case "EDIT_CHANGE_SEATS_QUANTITY" -> {
+                if (seatsQuantityIsValid(messageText)) {
+                    FindPassengerRequest request = setEditedSeatsQuantity(trimId(chatStatus), Integer.parseInt(messageText));
+                    sendMessage = editRequestSuccessSendMessage(chatId, request);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
+                }
+            }
         }
         sendBotMessage(sendMessage);
 
@@ -327,6 +335,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             }
             case "EDIT_CAR_DETAILS" -> {
                 editMessage = editCarDetailsMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_CAR" -> {
+                editMessage = editChooseCarMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_CHANGE_CAR" -> {
+                FindPassengerRequest request = setEditedCar(trimId(callback), trimSecondId(callback));
+                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
+            }
+            case "EDIT_SEATS_QUANTITY" -> {
+                editMessage = editSeatsMessage(incomeMessage, trimId(callback));
             }
 
 
@@ -548,13 +566,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText createNewRequestSeatsMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
-        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SEATS_STATUS);
+        String chatStatus = FindPassengerOperation.CREATE_REQUEST_SEATS_STATUS.getValue();
+        editMessage = createSeatsMessage(incomeMessage, chatStatus);
         log.debug("method: createNewRequestSeatsMessage");
-
         return editMessage;
     }
 
@@ -771,13 +785,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
 
     private EditMessageText editBeforeSaveSeatsMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
-        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
-
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS);
+        String chatStatus = FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS.getValue();
+        editMessage = createSeatsMessage(incomeMessage, chatStatus);
         log.debug("method: editBeforeSaveSeatsMessage");
-
         return editMessage;
     }
 
@@ -987,13 +997,31 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editChooseCarMessage(Message incomeMessage, int requestId) {
-//       TODO создать в кархэндлере перегруженный метод принимающий и айди пользователя и фйди запроса
-//        TODO Рассмотреть нужен ли отдельный метод создающий это сообщение
-
-        String callback = FindPassengerOperation.EDIT_CAR_CALLBACK.getValue();
+        String callback = String.format(FindPassengerOperation.EDIT_CHANGE_CAR_CALLBACK.getValue(), requestId);
         editMessage = createChooseCarMessage(incomeMessage, callback);
         log.debug("method: editChooseCarMessage");
         return editMessage;
+    }
+
+    private FindPassengerRequest setEditedCar(int requestId, int carId) {
+        log.debug("method: setEditedCar");
+        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+        request.setCar(carService.findById(carId));
+        return findPassengerRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editSeatsMessage(Message incomeMessage, int requestId) {
+        String chatStatus = FindPassengerOperation.EDIT_CHANGE_SEATS_QUANTITY_STATUS.getValue() + requestId;
+        editMessage = createSeatsMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveSeatsMessage");
+        return editMessage;
+    }
+
+    private FindPassengerRequest setEditedSeatsQuantity(int requestId, int quantity) {
+        log.debug("method: setEditedSeatsQuantity");
+        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+        request.setSeatsQuantity(quantity);
+        return findPassengerRequestService.updateRequest(request);
     }
 
     private EditMessageText editRequestSuccessEditMessage(Message incomeMessage, FindPassengerRequest request) {
@@ -1069,6 +1097,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createCarDetailsMessage");
+        return editMessage;
+    }
+
+    private EditMessageText createSeatsMessage(Message incomeMessage, String chatStatus) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
+        log.debug("method: createSeatsMessage");
         return editMessage;
     }
 
