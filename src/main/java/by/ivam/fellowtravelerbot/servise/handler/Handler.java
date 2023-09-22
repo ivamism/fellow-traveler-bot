@@ -61,21 +61,26 @@ public class Handler {
     }
 
     public int trimId(String s) {
-        String subS = "-1";
+        int id = -1;
         try {
-            subS = s.split(":")[1];
+          String  subS = s.split(":")[1];
+           id= Integer.parseInt(subS);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return Integer.parseInt(subS);
+        return id;
     }
 
     public int trimSecondId(String s) {
         String[] strings = new String[0];
         int id = -1;
-        if (!s.isEmpty()) strings = s.split(":");
-        if (strings.length > 2) {
-            return Integer.parseInt(s.split(":")[2]);
+        try {
+            strings = s.split(":");
+            if (strings.length > 2) {
+                id = Integer.parseInt(strings[2]);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return id;
     }

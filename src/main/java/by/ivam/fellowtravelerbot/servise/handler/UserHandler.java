@@ -100,9 +100,9 @@ TODO разделить функциональные действия и отп�
             }
             case "MY_RIDES_MENU" -> editMessage = showUserActiveRequestsListMessage(incomeMessage);
             case "EDIT_REQUEST" -> {
-                String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
-                String rideCallback = "TODO callback";
-                editMessage = chooseTypeOfRequestMessage(incomeMessage, passCallback, rideCallback);
+                editMessage = chooseRequestToEdit(incomeMessage);
+            }case "CANCEL_REQUEST" -> {
+                editMessage = chooseRequestToCancel(incomeMessage);
             }
 
         }
@@ -350,9 +350,24 @@ TODO разделить функциональные действия и отп�
         buttonsAttributesList.add(buttons.myRidesRequestButtonCreate("TODO callback")); // Ride request button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+        log.debug("method chooseTypeOfRequestMessage");
         return editMessage;
     }
 
+    private EditMessageText chooseRequestToEdit(Message incomeMessage){
+        String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
+        String rideCallback = "TODO callback";
+        editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
+        log.debug("method chooseRequestToEdit");
+        return editMessage;
+    }
+    private EditMessageText chooseRequestToCancel(Message incomeMessage){
+        String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
+        String rideCallback = "TODO callback";
+        editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
+        log.debug("method chooseRequestToCancel");
+        return editMessage;
+    }
 
     private void deleteUser(long chatId) {
         User user = userService.findUserById(chatId);

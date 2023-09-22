@@ -78,8 +78,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             }
             case "CREATE_REQUEST_COMMENTARY_STATUS" -> {
                 createNewRequestSetCommentary(chatId, messageText);
-                if (messageText.length() <= 1000) sendMessage = nextStep(chatId);
-                sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
+                else sendMessage = checkDataBeforeSaveMessage(incomeMessage);
 //                TODO добавитиь сообщение если коментарий слишком длинный
             }
             case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
@@ -116,6 +116,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
+            }
+            case "EDIT_CHANGE_COMMENTARY" -> {
+                FindPassengerRequest request = setEditedCommentary(trimId(chatStatus), messageText);
+                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
+                else sendMessage = sendMessage = editRequestSuccessSendMessage(chatId, request);
+//                TODO добавитиь сообщение если коментарий слишком длинный
             }
         }
         sendBotMessage(sendMessage);
@@ -272,8 +278,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_REQUEST_START" -> {
                 editMessage = startEditRequestMessage(incomeMessage, trimId(callback));
             }
-            case "CANCEL_LAST_REQUEST" -> {
-                editMessage = nextStep(incomeMessage);
+            case "CANCEL_REQUEST" -> {
+                FindPassengerRequest request = cancelRequest(trimId(callback));
+                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
             }
             case "NO_ACTIVE_REQUEST" -> {
                 editMessage = noActiveRequestsMessage(incomeMessage);
@@ -346,7 +353,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_SEATS_QUANTITY" -> {
                 editMessage = editSeatsMessage(incomeMessage, trimId(callback));
             }
-
+            case "EDIT_COMMENTARY" -> {
+                editMessage = editCommentaryMessage(incomeMessage, trimId(callback));
+            }
 
         }
         sendEditMessage(editMessage);
@@ -530,7 +539,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
         } else {
             dto.setDepartureDate(rideDate.plusDays(1));
-
         }
         findPassengerStorageAccess.update(chatId, dto);
     }
@@ -792,10 +800,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editBeforeSaveCommentaryMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
-        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        String chatStatus = FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS.getValue();
+        createCommentaryMessage(incomeMessage, chatStatus);
         log.debug("method: editBeforeSaveCommentaryMessage");
         return editMessage;
     }
@@ -817,7 +823,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
         buttonsAttributesList.add(buttons.dateTimeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
         buttonsAttributesList.add(buttons.carDetailsButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CAR_DETAILS_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_COMMENTARY_CALLBACK + requestId)); // Edit commentary button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: startEditRequestMessage");
@@ -1024,10 +1030,25 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return findPassengerRequestService.updateRequest(request);
     }
 
+    private EditMessageText editCommentaryMessage(Message incomeMessage, int requestId) {
+        String chatStatus = FindPassengerOperation.EDIT_CHANGE_COMMENTARY_STATUS.getValue() + requestId;
+        createCommentaryMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveCommentaryMessage");
+        return editMessage;
+    }
+
+    private FindPassengerRequest setEditedCommentary(int requestId, String commentary) {
+        log.debug("method: setEditedSeatsQuantity");
+        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+        request.setCommentary(commentary);
+        return findPassengerRequestService.updateRequest(request);
+    }
+
     private EditMessageText editRequestSuccessEditMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.deleteChatStatus(incomeMessage.getChatId());
         return editMessage;
     }
 
@@ -1035,7 +1056,18 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.deleteChatStatus(chatId);
         return sendMessage;
+    }
+/*
+TODO на основе метода выбора запроса для редактирования создать метод выбора запроса принимающий колбэк.
+ Потом метод для редактирования переделать с вызовом метода выбора и создать подобный метод для выбора на отмену
+ */
+    private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        return editMessage;
     }
 
     private FindPassengerRequest saveRequest(long chatId) {
@@ -1044,6 +1076,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("method saveRequest");
         return findPassengerRequestService.addNewRequest(dto);
+    }
+    private FindPassengerRequest cancelRequest(int requestId) {
+        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+        request.setActive(false)
+                .setCanceled(true)
+                .setCanceledAt(LocalDateTime.now());
+        log.debug("method cancelRequest");
+        return findPassengerRequestService.updateRequest(request);
     }
 
     private EditMessageText createDateTimeMessage(Message incomeMessage, String callbackDate, String callbackTime) {
@@ -1106,6 +1146,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
         log.debug("method: createSeatsMessage");
+        return editMessage;
+    }
+
+    private EditMessageText createCommentaryMessage(Message incomeMessage, String chatStatus) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
+        log.debug("method: createCommentaryMessage");
         return editMessage;
     }
 

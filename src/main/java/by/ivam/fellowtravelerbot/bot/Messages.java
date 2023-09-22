@@ -180,5 +180,7 @@ public class Messages {
     private final String FIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск попуток.";
     private final String CHOOSE_TYPE_OF_REQUEST_MESSAGE = "Выберите тип запроса.";
     private final String CHOOSE_REQUEST_TO_EDIT_MESSAGE = "Выберите запрос, который вы хотите изменить.\n\n";
+    private final String CHOOSE_REQUEST_TO_CANCEL_MESSAGE = "Выберите запрос, который вы хотите отменить.\n\n";
+    private final String FIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE = "Ваш запрос на поиск попутчиков отменен.\n\n";
 
 }
