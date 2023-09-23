@@ -138,7 +138,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         }
         switch (process) {
             case "CREATE_FIND_PASSENGER_REQUEST_CALLBACK" -> {
-                if (isRequestQuantityLimit(chatId)) editMessage = nextStep(incomeMessage);
+                if (isRequestQuantityLimit(chatId)) editMessage = createNecessityToCancelMessage(incomeMessage);
                  else {
                     createFindPassengerRequestDTO(chatId);
                     editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
@@ -1074,6 +1074,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;
     }
+    private EditMessageText createNecessityToCancelMessage(Message incomeMessage){
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix()+FindPassengerOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createNecessityToCancelMessage");
+        return editMessage;
+    }
 
     private FindPassengerRequest saveRequest(long chatId) {
         FindPassengerRequestDTO dto = findPassengerStorageAccess.getDTO(chatId);
@@ -1391,7 +1401,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 5);
     }
     private boolean isRequestQuantityLimit (long chatId){
-        return getUserActiveFindPassengerRequestsList(chatId).size()>3;
+        return getUserActiveFindPassengerRequestsList(chatId).size()>2;
     }
 
     private void editMessageTextGeneralPreset(Message incomeMessage) {
