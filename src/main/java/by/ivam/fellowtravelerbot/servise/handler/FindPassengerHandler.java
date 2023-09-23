@@ -138,8 +138,11 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         }
         switch (process) {
             case "CREATE_FIND_PASSENGER_REQUEST_CALLBACK" -> {
-                createFindPassengerRequestDTO(chatId);
-                editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
+                if (isRequestQuantityLimit(chatId)) editMessage = nextStep(incomeMessage);
+                 else {
+                    createFindPassengerRequestDTO(chatId);
+                    editMessage = createNewRequestChoseDirectionMessage(incomeMessage);
+                }
             }
             case "CREATE_REQUEST_DIRECTION" -> {
                 String direction = trimSecondSubstring(callback);
@@ -278,10 +281,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_REQUEST_START" -> {
                 editMessage = startEditRequestMessage(incomeMessage, trimId(callback));
             }
-            case "CANCEL_REQUEST" -> {
-                FindPassengerRequest request = cancelRequest(trimId(callback));
-                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
-            }
             case "NO_ACTIVE_REQUEST" -> {
                 editMessage = noActiveRequestsMessage(incomeMessage);
             }
@@ -356,7 +355,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             case "EDIT_COMMENTARY" -> {
                 editMessage = editCommentaryMessage(incomeMessage, trimId(callback));
             }
-
+            case "CHOOSE_REQUEST_TO_CANCEL_CALLBACK" -> {
+                editMessage = chooseRequestToCancelMessage(incomeMessage);
+            }
+            case "CANCEL_REQUEST" -> {
+                FindPassengerRequest request = cancelRequest(trimId(callback));
+                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
+            }
         }
         sendEditMessage(editMessage);
     }
@@ -384,16 +389,12 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE());
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-
         buttonsAttributesList.add(buttons.towardMinskButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
         buttonsAttributesList.add(buttons.fromMinskButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-
         log.debug("method: createNewRequestChoseDirectionMessage");
-
         return editMessage;
     }
 
@@ -807,10 +808,9 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText chooseRequestToEditMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE() + requestListToString(incomeMessage.getChatId()));
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_REQUEST_START_CALLBACK.getValue();
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callbackData, incomeMessage.getChatId())));
+        String message = messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE();
+        String callback = FindPassengerOperation.EDIT_REQUEST_START_CALLBACK.getValue();
+        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
         log.debug("method: chooseRequestToEditMessage");
         return editMessage;
     }
@@ -1059,10 +1059,15 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         chatStatusStorageAccess.deleteChatStatus(chatId);
         return sendMessage;
     }
-/*
-TODO на основе метода выбора запроса для редактирования создать метод выбора запроса принимающий колбэк.
- Потом метод для редактирования переделать с вызовом метода выбора и создать подобный метод для выбора на отмену
- */
+
+    private EditMessageText chooseRequestToCancelMessage(Message incomeMessage) {
+        String message = messages.getCHOOSE_REQUEST_TO_CANCEL_MESSAGE();
+        String callback = FindPassengerOperation.CANCEL_REQUEST_CALLBACK.getValue();
+        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
+        log.debug("method: chooseRequestToEditMessage");
+        return editMessage;
+    }
+
     private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
@@ -1077,6 +1082,7 @@ TODO на основе метода выбора запроса для реда�
         log.debug("method saveRequest");
         return findPassengerRequestService.addNewRequest(dto);
     }
+
     private FindPassengerRequest cancelRequest(int requestId) {
         FindPassengerRequest request = findPassengerRequestService.findById(requestId);
         request.setActive(false)
@@ -1158,6 +1164,15 @@ TODO на основе метода выбора запроса для реда�
         return editMessage;
     }
 
+    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
+        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + callback;
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callbackData, incomeMessage.getChatId())));
+        log.debug("method: createChoiceRequestMessage");
+        return editMessage;
+    }
+
     private SendMessage handleReceivedIncorrectTime(LocalTime time, long chatId) {
         if (time.toNanoOfDay() == 100) {
             sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
@@ -1210,6 +1225,45 @@ TODO на основе метода выбора запроса для реда�
         return buttonsAttributesList;
     }
 
+    private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        return sendMessage;
+    }
+
+    private SendMessage createNewRequestExpiredTimeMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        return sendMessage;
+    }
+
+    private void expiredTimeMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE2());
+        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        sendBotMessage(sendMessage);
+        log.debug("method: expiredTimeMessage");
+    }
+
+    private SendMessage invalidSeatsQuantityFormatMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+        log.debug("method: createNewRequestInvalidTimeFormatMessage");
+        return sendMessage;
+    }
+
+    private EditMessageText noActiveRequestsMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE());
+        log.info("noActiveRequestsMessage");
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        return editMessage;
+    }
 
     public List<Pair<String, String>> requestButtonsAttributesListCreator(String callbackData, long chatId) {
         List<FindPassengerRequest> requestList = getUserActiveFindPassengerRequestsList(chatId);
@@ -1304,7 +1358,6 @@ TODO на основе метода выбора запроса для реда�
         return findPassengerRequestService.findById(requestId).getDepartureAt().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
 
-
     private LocalTime getTime(String timeString) {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
 
@@ -1337,49 +1390,16 @@ TODO на основе метода выбора запроса для реда�
     private boolean seatsQuantityIsValid(String s) {
         return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 5);
     }
-
-    private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        log.debug("method: createNewRequestInvalidTimeFormatMessage");
-        return sendMessage;
+    private boolean isRequestQuantityLimit (long chatId){
+        return getUserActiveFindPassengerRequestsList(chatId).size()>3;
     }
 
-    private SendMessage createNewRequestExpiredTimeMessage(long chatId) {
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        log.debug("method: createNewRequestInvalidTimeFormatMessage");
-        return sendMessage;
+    private void editMessageTextGeneralPreset(Message incomeMessage) {
+        editMessage.setChatId(incomeMessage.getChatId());
+        editMessage.setMessageId(incomeMessage.getMessageId());
     }
-
-    private void expiredTimeMessage(long chatId) {
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE2());
-        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
-        sendBotMessage(sendMessage);
-        log.debug("method: expiredTimeMessage");
-    }
-
-    private SendMessage invalidSeatsQuantityFormatMessage(long chatId) {
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_QUANTITY_INVALID_FORMAT_MESSAGE());
-        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        log.debug("method: createNewRequestInvalidTimeFormatMessage");
-        return sendMessage;
-    }
-
-    private EditMessageText noActiveRequestsMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-
-        editMessage.setText(messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE());
-        log.info("noActiveRequestsMessage");
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        return editMessage;
-    }
-
     private SendMessage nextStep(long chatId) {
+//        TODO удалить метод по окончании реализации всего функционала
         sendMessage.setChatId(chatId);
         sendMessage.setText("nextStep");
         sendMessage.setReplyMarkup(null);
@@ -1389,6 +1409,7 @@ TODO на основе метода выбора запроса для реда�
     }
 
     private EditMessageText nextStep(Message incomemessage) {
+        //        TODO удалить метод по окончании реализации всего функционала
         editMessageTextGeneralPreset(incomemessage);
         editMessage.setText("nextStep");
         editMessage.setReplyMarkup(null);
@@ -1396,10 +1417,4 @@ TODO на основе метода выбора запроса для реда�
 
         return editMessage;
     }
-
-    private void editMessageTextGeneralPreset(Message incomeMessage) {
-        editMessage.setChatId(incomeMessage.getChatId());
-        editMessage.setMessageId(incomeMessage.getMessageId());
-    }
-
 }
