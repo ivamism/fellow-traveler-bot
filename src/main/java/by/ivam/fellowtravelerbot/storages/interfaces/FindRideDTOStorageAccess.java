@@ -5,8 +5,8 @@ import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public interface FindRideStorageAccess {
-    void addHitchRideDTO(long chatId, FindRideRequestDTO findRideRequestDTO);
+public interface FindRideDTOStorageAccess {
+    void addFindRideDTO(long chatId, FindRideRequestDTO findRideRequestDTO);
 
     void setSettlement(long chatId, int id);
 

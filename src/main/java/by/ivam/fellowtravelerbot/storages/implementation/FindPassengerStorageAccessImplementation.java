@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Component
@@ -27,7 +26,7 @@ public class FindPassengerStorageAccessImplementation implements FindPassengerSt
     }
 
     @Override
-    public void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
+    public void addFindPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO) {
         storage.getFindPassengerRequestDTOStorage().put(chatId, findPassengerRequestDTO);
         log.debug("add FindPassengerRequestDTO to storage " + findPassengerRequestDTO + " with userId " + chatId);
     }

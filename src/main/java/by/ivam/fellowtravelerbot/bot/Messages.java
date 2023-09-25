@@ -108,12 +108,12 @@ public class Messages {
     //    FindPassengerRequest
 //    Creation new request
     private final String CREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутчика?";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE = "Выберите населенный пункт выезда";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE = "Выберите населенный пункт назначения";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE = "Выберите место назначения";
-    private final String CREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE = "Выберите день";
+    private final String CREATE_REQUEST_DIRECTION_MESSAGE = "Выберите направление поездки";
+    private final String CREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE = "Выберите населенный пункт выезда";
+    private final String CREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE = "Выберите место выезда";
+    private final String CREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE = "Выберите населенный пункт назначения";
+    private final String CREATE_REQUEST_DESTINATION_LOCATION_MESSAGE = "Выберите место назначения";
+    private final String CREATE_REQUEST_DATE_MESSAGE = "Выберите день";
     private final String CREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE = "Напишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
     private final String CREATE_FIND_PASSENGER_REQUEST_INVALID_TIME_FORMAT_MESSAGE = "Неверно указан формат времени.\n\nНапишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
     private final String CREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE = "Вы указали истекшее время.\n\nНапишите время в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
@@ -186,4 +186,8 @@ public class Messages {
             "Прежде чем сформировать новый, необходимо отменить один из существующих.\n" +
             "Хотите продолжить?";
 
+
+    //    FindRideRequest
+//    Creation new request
+    private final String CREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутку?";
 }

@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 public interface FindPassengerStorageAccess {
 FindPassengerRequestDTO getDTO (long chatId);
-    void addPickUpPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
+    void addFindPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
     void update (long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
     void delete (long chatId);
     void setDirection (long chatId, String direction);

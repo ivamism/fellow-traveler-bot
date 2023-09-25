@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 @Data
 @Log4j
 public class FindPassengerHandler extends Handler implements HandlerInterface {
+    private  final String handlerPrefix = Handlers.FIND_PASSENGER.getHandlerPrefix();
+
     @Autowired
     FindPassengerStorageAccess findPassengerStorageAccess;
     @Autowired
@@ -42,15 +44,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
-    /*
-         TODO
-          добавить перед началом проверку на наличие  у юзера автомобиля
-          ограничить возможное количество активных запросов и добавить соответсствующую проверку
-      */
     @Override
-
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-        log.debug("method handleReceivedMessage");
         String messageText = incomeMessage.getText();
         Long chatId = incomeMessage.getChatId();
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
@@ -125,7 +120,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
             }
         }
         sendBotMessage(sendMessage);
-
     }
 
     @Override
@@ -151,7 +145,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     int settlementId = settlementService.findByName("Минск").getId();
                     createNewRequestSetDepartureSettlement(chatId, settlementId);
                     editMessage = createNewRequestChooseDepartureLocationMessage(incomeMessage, settlementId);
-
                 } else if ((direction.equals(String.valueOf(Direction.TOWARDS_MINSK)))) {
                     editMessage = createNewRequestChooseResidenceAsDepartureMessage(incomeMessage);
                 }
@@ -170,7 +163,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                     int settlementId = settlementService.findByName("Минск").getId();
                     createNewRequestSetDestinationSettlement(chatId, settlementId);
                     editMessage = createNewRequestChooseDestinationLocationMessage(incomeMessage, settlementId);
-
                 } else if ((findPassengerStorageAccess.getDTO(chatId).getDirection().equals(String.valueOf(Direction.FROM_MINSK)))) {
                     editMessage = createNewRequestChooseResidenceAsDestinationMessage(incomeMessage);
                 }
@@ -369,12 +361,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     public void startCreateNewRequest(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE());
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_CALLBACK)); // Add car button
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_FIND_PASSENGER_REQUEST_CALLBACK)); // Add car button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-
         log.debug("method: startCreateNewRequest");
         sendBotMessage(sendMessage);
     }
@@ -382,16 +372,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private void createFindPassengerRequestDTO(long chatId) {
         FindPassengerRequestDTO findPassengerRequestDTO = new FindPassengerRequestDTO();
         findPassengerRequestDTO.setUser(userService.findUserById(chatId));
-        findPassengerStorageAccess.addPickUpPassengerDTO(chatId, findPassengerRequestDTO);
+        findPassengerStorageAccess.addFindPassengerDTO(chatId, findPassengerRequestDTO);
         log.debug("method: createFindPassengerRequestDTO - create DTO " + findPassengerRequestDTO + " and save it in storage");
     }
 
     private EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DIRECTION_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.towardMinskButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
-        buttonsAttributesList.add(buttons.fromMinskButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
+        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
+        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChoseDirectionMessage");
@@ -406,32 +396,27 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
-        buttonsAttributesList.add(buttons.anotherButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
+        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + FindPassengerOperation.CREATE_REQUEST_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
+        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseResidenceAsDepartureMessage");
-
         return editMessage;
     }
 
     private EditMessageText createNewRequestChooseAnotherSettlementAsDepartureMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SETTLEMENT_CALLBACK.getValue();
-
+        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
+        String callbackData = handlerPrefix + FindPassengerOperation.CREATE_REQUEST_SETTLEMENT_CALLBACK.getValue();
         String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
         List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementList);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-
         log.debug("method: createNewRequestChooseAnotherSettlementAsDepartureMessage");
         return editMessage;
     }
@@ -446,14 +431,13 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DEP_LOCATION_CALLBACK.getValue();
+        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE());
+        String callbackData = handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DEP_LOCATION_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseDepartureLocationMessage");
-
         return editMessage;
     }
 
@@ -473,46 +457,41 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText createNewRequestChooseResidenceAsDestinationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
         Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
-        buttonsAttributesList.add(buttons.anotherButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
+        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
+        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseResidenceAsDestinationMessage");
-
         return editMessage;
     }
 
     private EditMessageText createNewRequestChooseAnotherSettlementAsDestinationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
-
+        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
+        String callbackData = handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
         String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
         List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementList);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-
         log.debug("method: createNewRequestChooseAnotherSettlementAsDestinationMessage");
         return editMessage;
     }
 
     private EditMessageText createNewRequestChooseDestinationLocationMessage(Message incomeMessage, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
+        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE());
+        String callbackData =
+                handlerPrefix + FindPassengerOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseDestinationLocationMessage");
-
         return editMessage;
     }
 
@@ -546,7 +525,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText createNewRequestTimeMessage(Message incomeMessage) {
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
-        String chatStatus = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_TIME_STATUS.getValue();
+        String chatStatus = handlerPrefix + FindPassengerOperation.CREATE_REQUEST_TIME_STATUS.getValue();
         editMessage = createTimeMessage(incomeMessage, chatStatus);
         log.debug("method: createNewRequestTimeMessage");
         return editMessage;
@@ -591,13 +570,11 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         Long chatId = incomeMessage.getChatId();
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.skipButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
+        buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + FindPassengerOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), handlerPrefix + FindPassengerOperation.CREATE_REQUEST_COMMENTARY_STATUS);
         log.debug("method: createNewRequestCommentaryMessage");
         return sendMessage;
     }
@@ -612,8 +589,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(dtoToString(findPassengerStorageAccess.getDTO(incomeMessage.getChatId())));
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method checkDataBeforeSaveMessageSkipComment");
@@ -625,8 +602,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendMessage.setChatId(chatId);
         sendMessage.setText(dtoToString(findPassengerStorageAccess.getDTO(chatId)));
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.saveButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + FindPassengerOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method checkDataBeforeSaveMessage");
@@ -644,16 +621,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private EditMessageText startEditBeforeSaveRequestMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
-
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
-        buttonsAttributesList.add(buttons.dateTimeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
-        buttonsAttributesList.add(buttons.carDetailsButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_DETAILS_CALLBACK.getValue())); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
+        buttonsAttributesList.add(buttons.carDetailsButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CAR_DETAILS_CALLBACK.getValue())); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: startEditBeforeSaveRequestMessage");
-
         return editMessage;
     }
 
@@ -661,73 +636,67 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
-        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
-        buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_LOCATION_CALLBACK.getValue())); // Edit destination settlement button
-        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit departure location button
-        buttonsAttributesList.add(buttons.destinationLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_LOCATION_CALLBACK.getValue())); // Edit destination location button
+        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
+        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
+        buttonsAttributesList.add(buttons.departureLocationButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_DEPARTURE_LOCATION_CALLBACK.getValue())); // Edit destination settlement button
+        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit departure location button
+        buttonsAttributesList.add(buttons.destinationLocationButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_DESTINATION_LOCATION_CALLBACK.getValue())); // Edit destination location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveSettlementLocationMessage");
-
         return editMessage;
     }
 
     private EditMessageText editBeforeSaveDepartureSettlementMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
-
+        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
+        String callbackData = handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementService.findAll());
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDepartureSettlementMessage");
-
         return editMessage;
     }
 
     private EditMessageText editBeforeSaveDepartureLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE());
         int settlementId = findPassengerStorageAccess.getDTO(incomeMessage.getChatId()).getDepartureSettlement().getId();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
+        String callbackData = handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDepartureLocationMessage");
-
         return editMessage;
     }
 
     private EditMessageText editBeforeSaveDestinationSettlementMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
-
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
-
+        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
+        String callbackData =
+                handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementService.findAll());
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDestinationSettlementMessage");
-
         return editMessage;
     }
 
     private EditMessageText editBeforeSaveDestinationLocationMessage(Message incomeMessage) {
 
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE());
         int settlementId = findPassengerStorageAccess.getDTO(incomeMessage.getChatId()).getDestinationSettlement().getId();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
+        String callbackData =
+                handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
         buttonsAttributesList.add(buttons.cancelButtonCreate());
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveDestinationLocationMessage");
-
         return editMessage;
     }
 
@@ -779,7 +748,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editBeforeSaveTimeMessage(Message incomeMessage) {
-        String chatStatus = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
+        String chatStatus = handlerPrefix + FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
         editMessage = createTimeMessage(incomeMessage, chatStatus);
         log.debug("method: editBeforeSaveTimeMessage");
         return editMessage;
@@ -791,7 +760,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         log.debug("method: editBeforeSaveChooseCarMessage");
         return editMessage;
     }
-
 
     private EditMessageText editBeforeSaveSeatsMessage(Message incomeMessage) {
         String chatStatus = FindPassengerOperation.EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS.getValue();
@@ -820,10 +788,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
         editMessage.setText(requestToString(getLastRequestOptional(incomeMessage.getChatId())) + messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
-        buttonsAttributesList.add(buttons.dateTimeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
-        buttonsAttributesList.add(buttons.carDetailsButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CAR_DETAILS_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
+        buttonsAttributesList.add(buttons.carDetailsButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_CAR_DETAILS_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + FindPassengerOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: startEditRequestMessage");
@@ -839,7 +807,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
                 FindPassengerOperation.EDIT_DESTINATION_SETTLEMENT_CALLBACK.getValue(),
                 FindPassengerOperation.EDIT_DEPARTURE_LOCATION_CALLBACK.getValue(),
                 requestId);
-
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: EditBeforeSaveSettlementLocationMessage");
 
@@ -860,14 +827,16 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     //                TODO продумать изменения направления
     private EditMessageText editDepartureSettlementMessage(Message incomeMessage, int requestId) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
+        String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
+        String callbackData =
+                handlerPrefix + FindPassengerOperation.EDIT_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
         return editSettlementMessage(incomeMessage, messageText, callbackData, requestId);
     }
 
     private EditMessageText editDestinationSettlementMessage(Message incomeMessage, int requestId) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
+        String messageText = messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
+        String callbackData =
+                handlerPrefix + FindPassengerOperation.EDIT_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
         return editSettlementMessage(incomeMessage, messageText, callbackData, requestId);
     }
 
@@ -899,14 +868,14 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     }
 
     private EditMessageText editDepartureLocationMessage(Message incomeMessage, int requestId) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_DEPARTURE_LOCATION_MESSAGE();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
+        String messageText = messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE();
+        String callbackData = handlerPrefix + FindPassengerOperation.EDIT_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
         return editLocationMessage(incomeMessage, messageText, callbackData, requestId);
     }
 
     private EditMessageText editDestinationLocationMessage(Message incomeMessage, int requestId) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_DESTINATION_LOCATION_MESSAGE();
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
+        String messageText = messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE();
+        String callbackData = handlerPrefix + FindPassengerOperation.EDIT_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
         return editLocationMessage(incomeMessage, messageText, callbackData, requestId);
     }
 
@@ -973,7 +942,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText editTimeMessage(Message incomeMessage, int requestId) {
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
-        String chatStatus = Handlers.FIND_PASSENGER.getHandlerPrefix() + FindPassengerOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
+        String chatStatus = handlerPrefix + FindPassengerOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
         editMessage = createTimeMessage(incomeMessage, chatStatus);
         log.debug("method: editTimeMessage");
         return editMessage;
@@ -1078,7 +1047,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.yesButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix()+FindPassengerOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix+FindPassengerOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
@@ -1106,8 +1075,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.dateButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + callbackDate)); // Edit date button
-        buttonsAttributesList.add(buttons.timeButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + callbackTime)); // Edit time button
+        buttonsAttributesList.add(buttons.dateButtonCreate(handlerPrefix + callbackDate)); // Edit date button
+        buttonsAttributesList.add(buttons.timeButtonCreate(handlerPrefix + callbackTime)); // Edit time button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createDateTimeMessage");
@@ -1118,8 +1087,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
+        chatStatusStorageAccess.addChatStatus(chatId, handlerPrefix + chatStatus);
         log.debug("method: createTimeSendMessage");
         sendBotMessage(sendMessage);
     }
@@ -1148,8 +1116,8 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.carButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + carCallback)); // Change car button
-        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + seatsCallback)); // Edit seats quantity button
+        buttonsAttributesList.add(buttons.carButtonCreate(handlerPrefix + carCallback)); // Change car button
+        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(handlerPrefix + seatsCallback)); // Edit seats quantity button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createCarDetailsMessage");
@@ -1160,7 +1128,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
         editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), handlerPrefix + chatStatus);
         log.debug("method: createSeatsMessage");
         return editMessage;
     }
@@ -1169,7 +1137,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.FIND_PASSENGER.getHandlerPrefix() + chatStatus);
+        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), handlerPrefix + chatStatus);
         log.debug("method: createCommentaryMessage");
         return editMessage;
     }
@@ -1177,7 +1145,7 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
     private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
-        String callbackData = Handlers.FIND_PASSENGER.getHandlerPrefix() + callback;
+        String callbackData = handlerPrefix + callback;
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callbackData, incomeMessage.getChatId())));
         log.debug("method: createChoiceRequestMessage");
         return editMessage;
@@ -1191,7 +1159,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         }
         return sendMessage;
     }
-
 
     public FindPassengerRequest getLastRequest(long chatId) {
         return findPassengerRequestService.findLastUserRequest(chatId);
@@ -1207,10 +1174,10 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private EditMessageText createChooseDateMessage(Message incomeMessage, String todayCallback, String tomorrowCallback) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_DATE_MESSAGE());
+        editMessage.setText(messages.getCREATE_REQUEST_DATE_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.todayButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + todayCallback)); // Today button
-        buttonsAttributesList.add(buttons.tomorrowButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + tomorrowCallback)); // Tomorrow button
+        buttonsAttributesList.add(buttons.todayButtonCreate(handlerPrefix + todayCallback)); // Today button
+        buttonsAttributesList.add(buttons.tomorrowButtonCreate(handlerPrefix + tomorrowCallback)); // Tomorrow button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createChooseDateMessage");
@@ -1219,18 +1186,18 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
 
     private List<Pair<String, String>> createEditRequestButtonsAttributesList(String swapCallback, String depSettlementCallback, String depLocationCallback, String destSettlementCallback, String destLocationCallback, int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + swapCallback + requestId)); // Swap departure and destination button
-        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + depSettlementCallback + requestId)); // Edit departure settlement button
-        buttonsAttributesList.add(buttons.departureLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + depLocationCallback + requestId)); // Edit destination settlement button
-        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + destSettlementCallback + requestId)); // Edit departure location button
-        buttonsAttributesList.add(buttons.destinationLocationButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + destLocationCallback + requestId)); // Edit destination location button
+        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + swapCallback + requestId)); // Swap departure and destination button
+        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + depSettlementCallback + requestId)); // Edit departure settlement button
+        buttonsAttributesList.add(buttons.departureLocationButtonCreate(handlerPrefix + depLocationCallback + requestId)); // Edit destination settlement button
+        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix + destSettlementCallback + requestId)); // Edit departure location button
+        buttonsAttributesList.add(buttons.destinationLocationButtonCreate(handlerPrefix + destLocationCallback + requestId)); // Edit destination location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
 
     private List<Pair<String, String>> createCarChoiceButtonsAttributesList(String callback, long chatId) {
         List<Pair<String, String>> buttonsAttributesList =
-                carHandler.carButtonsAttributesListCreator(Handlers.FIND_PASSENGER.getHandlerPrefix() + callback, chatId);
+                carHandler.carButtonsAttributesListCreator(handlerPrefix + callback, chatId);
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -1414,7 +1381,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         sendMessage.setText("nextStep");
         sendMessage.setReplyMarkup(null);
         log.debug("method: nextStep");
-
         return sendMessage;
     }
 
@@ -1424,7 +1390,6 @@ public class FindPassengerHandler extends Handler implements HandlerInterface {
         editMessage.setText("nextStep");
         editMessage.setReplyMarkup(null);
         log.debug("method: nextStep");
-
         return editMessage;
     }
 }

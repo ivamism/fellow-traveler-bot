@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 
 @Data
 @Accessors(chain = true)
@@ -19,14 +17,21 @@ public class FindRideRequest {
     @ManyToOne
     @JoinColumn(name = "user_chat_id")
     private User user;
+    private int passengersQuantity;
     private String direction;
     @ManyToOne
-    @JoinColumn(name = "settlement_id")
-    private Settlement settlement;
+    @JoinColumn(name = "departure_settlement_id")
+    private Settlement departureSettlement;
+    @ManyToOne
+    @JoinColumn(name = "destination_settlement_id")
+    private Settlement destinationSettlement;
     private LocalDate departureDate;
     private LocalTime departureTime;
-
+    private Duration departureDuring;
     private String commentary;
-    boolean isActive;
+    private boolean isActive;
     private LocalDateTime createdAt;
+    private boolean isCanceled;
+    private LocalDateTime canceledAt;
+
 }

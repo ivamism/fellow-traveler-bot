@@ -88,6 +88,7 @@ public class MessageDispatcher extends Dispatcher {
                 if (startHandler.checkRegistration(chatId)) {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
+                    findRideHandler.startCreateNewRequest(chatId);
                     log.debug("got request to find a car");
                 }
             }

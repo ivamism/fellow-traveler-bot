@@ -48,7 +48,9 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     @Override
     public List<FindRideRequest> usersActiveRequestList(long chatId) {
-        return null;
+        log.info("method usersActiveRequestList");
+
+        return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
     }
 
     @Override
