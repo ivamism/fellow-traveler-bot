@@ -3,10 +3,10 @@ package by.ivam.fellowtravelerbot.bot.enums;
 import lombok.Getter;
 
 @Getter
-public enum FindPassengerOperation {
-    CREATE_FIND_PASSENGER_REQUEST_CALLBACK("CREATE_FIND_PASSENGER_REQUEST_CALLBACK"),
+public enum requestOperation {
+    CREATE_REQUEST_CALLBACK("CREATE_REQUEST"),
     CREATE_REQUEST_DIRECTION_CALLBACK("CREATE_REQUEST_DIRECTION:"),
-    CREATE_REQUEST_SETTLEMENT_CALLBACK("CREATE_REQ_DEP_SETTLEMENT:"),
+    CREATE_REQUEST_RESIDENCE_SETTLEMENT_DEPARTURE_CALLBACK("CREATE_REQ_DEP_SETTLEMENT:"),
     CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK("CREATE_REQ_ANOTHER_SETTLEMENT"),
     CREATE_REQUEST_DEP_LOCATION_CALLBACK("CREATE_REQUEST_DEP_LOCATION:"),
     CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK("CREATE_REQ_DEST_SETTLEMENT:"),
@@ -73,7 +73,7 @@ public enum FindPassengerOperation {
 
     private final String value;
 
-    FindPassengerOperation(String value) {
+    requestOperation(String value) {
         this.value = value;
     }
 }

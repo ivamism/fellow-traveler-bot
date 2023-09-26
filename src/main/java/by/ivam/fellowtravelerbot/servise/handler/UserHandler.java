@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
-import by.ivam.fellowtravelerbot.bot.enums.FindPassengerOperation;
+import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -355,14 +354,14 @@ TODO разделить функциональные действия и отп�
     }
 
     private EditMessageText chooseRequestToEdit(Message incomeMessage){
-        String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
+        String passCallback = requestOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
         String rideCallback = "TODO callback";
         editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
         log.debug("method chooseRequestToEdit");
         return editMessage;
     }
     private EditMessageText chooseRequestToCancel(Message incomeMessage){
-        String passCallback = FindPassengerOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
+        String passCallback = requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
         String rideCallback = "TODO callback";
         editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
         log.debug("method chooseRequestToCancel");

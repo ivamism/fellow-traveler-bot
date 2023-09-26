@@ -8,10 +8,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface FindPassengerStorageAccess {
-FindPassengerRequestDTO getDTO (long chatId);
+    FindPassengerRequestDTO getDTO(long chatId);
+
     void addFindPassengerDTO(long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
-    void update (long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
-    void delete (long chatId);
+
+    void update(long chatId, FindPassengerRequestDTO findPassengerRequestDTO);
+
+    void delete(long chatId);
     void setDirection (long chatId, String direction);
 
     void setDepartureSettlement(long chatId, Settlement settlement);
