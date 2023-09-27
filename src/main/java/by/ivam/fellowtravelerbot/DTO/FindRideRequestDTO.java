@@ -15,12 +15,12 @@ import java.time.LocalTime;
 public class FindRideRequestDTO {
 
     private User user;
-    private int passengersQuantity;
     private String direction;
     private Settlement departureSettlement;
-    private Settlement desstinationSettlement;
+    private Settlement destinationSettlement;
     private LocalDate departureDate;
     private LocalTime departureTime;
     private Duration departureDuring;
+    private int passengersQuantity;
     private String commentary;
 }
