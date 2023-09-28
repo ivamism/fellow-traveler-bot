@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
+import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ import java.util.List;
 @Service
 @Data
 @Log4j
-public class FindRideHandler extends Handler implements HandlerInterface {
+public class FindRideHandler extends RequestHandler implements HandlerInterface {
     @Autowired
     private final FindRideDTOStorageAccess storageAccess;
     @Autowired
@@ -97,6 +99,11 @@ public class FindRideHandler extends Handler implements HandlerInterface {
                     editMessage = nextStep(incomeMessage);
 //                            createNewRequestChooseDestinationLocationMessage(incomeMessage, settlementId);
                 }
+            }
+            case "CREATE_REQUEST_DATE" -> {
+                String day = trimSecondSubstring(callback);
+//                setDtoDate(chatId, day);
+//                editMessage = createNewRequestTimeMessage(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
@@ -189,8 +196,26 @@ public class FindRideHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
+    private EditMessageText createNewRequestChooseDateMessage(Message incomeMessage) {
+        String todayCallback = requestOperation.CREATE_REQUEST_DATE_CALLBACK.getValue() + Day.TODAY;
+        String tomorrowCallback = requestOperation.CREATE_REQUEST_DATE_CALLBACK.getValue() + Day.TOMORROW;
+//        editMessage = createChooseDateMessage(incomeMessage, todayCallback, tomorrowCallback);
+        log.debug("method: createNewRequestChooseDateMessage");
+        return editMessage;
+    }
 
+    private void setDtoDate(long chatId, String day) {
+        log.debug("method createNewRequestSetDate");
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        LocalDate rideDate = LocalDate.now();
+        if (isToday(day)) {
+            dto.setDepartureDate(rideDate);
 
+        } else {
+            dto.setDepartureDate(rideDate.plusDays(1));
+        }
+        storageAccess.update(chatId, dto);
+    }
 
 
     private EditMessageText createNecessityToCancelMessage(Message incomeMessage) {
@@ -204,28 +229,28 @@ public class FindRideHandler extends Handler implements HandlerInterface {
         return editMessage;
     }
 
-    private EditMessageText createChooseResidenceMessage(Message incomeMessage, String messageText, String callback) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messageText);
-        Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + callback + settlement.getId()));
-        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + callback + String.valueOf(-1)));
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createChooseResidenceMessage");
-        return editMessage;
-    }
-    private EditMessageText createChooseAnotherSettlementMessage(Message incomeMessage, List<Settlement> settlementList, String messageText, String callback) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messageText);
-        List<Pair<String, String>> buttonsAttributesList =
-                adminHandler.settlementsButtonsAttributesListCreator(callback, settlementList);
-        buttonsAttributesList.add(buttons.cancelButtonCreate());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createChooseAnotherSettlementAsMessage");
-        return editMessage;
-    }
+//    private EditMessageText createChooseResidenceMessage(Message incomeMessage, String messageText, String callback) {
+//        editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setText(messageText);
+//        Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
+//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+//        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + callback + settlement.getId()));
+//        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + callback + String.valueOf(-1)));
+//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+//        log.debug("method: createChooseResidenceMessage");
+//        return editMessage;
+//    }
+//    private EditMessageText createChooseAnotherSettlementMessage(Message incomeMessage, List<Settlement> settlementList, String messageText, String callback) {
+//        editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setText(messageText);
+//        List<Pair<String, String>> buttonsAttributesList =
+//                adminHandler.settlementsButtonsAttributesListCreator(callback, settlementList);
+//        buttonsAttributesList.add(buttons.cancelButtonCreate());
+//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+//        log.debug("method: createChooseAnotherSettlementAsMessage");
+//        return editMessage;
+//    }
 
     private boolean isRequestQuantityLimit(long chatId) {
         return getUserActiveRequestsList(chatId).size() > 2;
@@ -240,23 +265,6 @@ public class FindRideHandler extends Handler implements HandlerInterface {
         editMessage.setMessageId(incomeMessage.getMessageId());
     }
 
-    private SendMessage nextStep(long chatId) {
-//        TODO удалить метод по окончании реализации всего функционала
-        sendMessage.setChatId(chatId);
-        sendMessage.setText("nextStep");
-        sendMessage.setReplyMarkup(null);
-        log.debug("method: nextStep");
-        return sendMessage;
-    }
-
-    private EditMessageText nextStep(Message incomemessage) {
-        //        TODO удалить метод по окончании реализации всего функционала
-        editMessageTextGeneralPreset(incomemessage);
-        editMessage.setText("nextStep");
-        editMessage.setReplyMarkup(null);
-        log.debug("method: nextStep");
-        return editMessage;
-    }
 
 }
 

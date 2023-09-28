@@ -2,6 +2,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
+import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.servise.*;
@@ -84,6 +85,7 @@ public class Handler {
         }
         return id;
     }
+
 
     public String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
