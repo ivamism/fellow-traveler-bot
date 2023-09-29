@@ -1,7 +1,8 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
+import by.ivam.fellowtravelerbot.bot.enums.Direction;
+import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.extern.log4j.Log4j;
@@ -14,12 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Log4j
 public class RequestHandler extends Handler {
@@ -31,27 +28,38 @@ public class RequestHandler extends Handler {
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
 
+    protected SendMessage createNewRequest(long chatId, String messageText, String handlerPrefix) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messageText);
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Start create button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createNewRequest");
+        return sendMessage;
+    }
 
+    protected EditMessageText createChoseDirectionMessage(Message incomeMessage, String handlerPrefix) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
+        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createNewRequestChoseDirectionMessage");
+        return editMessage;
+    }
 
-    protected EditMessageText createNecessityToCancelMessage(Message incomeMessage, String callback) {
+    protected EditMessageText createNecessityToCancelMessage(Message incomeMessage, String handlerPrefix) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.yesButtonCreate(callback)); // Edit date button
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
         return editMessage;
-    }
-
-
-    protected FindPassengerRequest cancelRequest(int requestId) {
-        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
-        request.setActive(false)
-                .setCanceled(true)
-                .setCanceledAt(LocalDateTime.now());
-        log.debug("method cancelRequest");
-        return findPassengerRequestService.updateRequest(request);
     }
 
     protected EditMessageText createChooseResidenceMessage(Message incomeMessage, String messageText, String callback) {
@@ -89,6 +97,18 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
+    protected EditMessageText createChooseDateMessage(Message incomeMessage, String todayCallback, String tomorrowCallback) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getCREATE_REQUEST_DATE_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.todayButtonCreate(todayCallback)); // Today button
+        buttonsAttributesList.add(buttons.tomorrowButtonCreate(tomorrowCallback)); // Tomorrow button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createChooseDateMessage");
+        return editMessage;
+    }
+
     protected EditMessageText createDateTimeMessage(Message incomeMessage, String callbackDate, String callbackTime) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
@@ -119,7 +139,6 @@ public class RequestHandler extends Handler {
         log.debug("method: createTimeMessage");
         return editMessage;
     }
-
 
 
     protected EditMessageText createCarDetailsMessage(Message incomeMessage, String carCallback, String seatsCallback) {
@@ -153,7 +172,6 @@ public class RequestHandler extends Handler {
     }
 
 
-
     protected SendMessage handleReceivedIncorrectTime(LocalTime time, long chatId) {
         if (time.toNanoOfDay() == 100) {
             sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
@@ -161,20 +179,6 @@ public class RequestHandler extends Handler {
             sendMessage = createNewRequestExpiredTimeMessage(chatId);
         }
         return sendMessage;
-    }
-
-
-
-    protected EditMessageText createChooseDateMessage(Message incomeMessage, String todayCallback, String tomorrowCallback) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_REQUEST_DATE_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.todayButtonCreate(todayCallback)); // Today button
-        buttonsAttributesList.add(buttons.tomorrowButtonCreate(tomorrowCallback)); // Tomorrow button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createChooseDateMessage");
-        return editMessage;
     }
 
     private SendMessage createNewRequestInvalidTimeFormatMessage(long chatId) {
@@ -263,9 +267,11 @@ public class RequestHandler extends Handler {
 //    }
 
     protected void editMessageTextGeneralPreset(Message incomeMessage) {
-        editMessage.setChatId(incomeMessage.getChatId());
+        long chatId =incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
     }
+
     protected SendMessage nextStep(long chatId) {
 //        TODO удалить метод по окончании реализации всего функционала
         sendMessage.setChatId(chatId);

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -18,6 +19,7 @@ public class FindRideRequestDTO {
     private String direction;
     private Settlement departureSettlement;
     private Settlement destinationSettlement;
+    private LocalDateTime departureAt;
     private LocalDate departureDate;
     private LocalTime departureTime;
     private Duration departureDuring;
