@@ -69,7 +69,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 createNewRequestSetCommentary(chatId, messageText);
                 if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
                 else sendMessage = checkDataBeforeSaveMessage(incomeMessage);
-//                TODO добавитиь сообщение если коментарий слишком длинный
+//                TODO добавить сообщение если комментарий слишком длинный
             }
             case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
                 LocalTime time = getTime(messageText);
@@ -109,8 +109,8 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             case "EDIT_CHANGE_COMMENTARY" -> {
                 FindPassengerRequest request = setEditedCommentary(trimId(chatStatus), messageText);
                 if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
-                else sendMessage = sendMessage = editRequestSuccessSendMessage(chatId, request);
-//                TODO добавитиь сообщение если коментарий слишком длинный
+                else sendMessage =  editRequestSuccessSendMessage(chatId, request);
+//                TODO добавить сообщение если комментарий слишком длинный
             }
         }
         sendBotMessage(sendMessage);
@@ -171,12 +171,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                     setDtoDestinationSettlement(chatId, settlementId);
                     editMessage = createNewRequestChooseDestinationLocationMessage(incomeMessage, settlementId);
                 }
-//                setDtoDestinationSettlement(chatId, settlementId);
-//                editMessage = createNewRequestChooseDestinationLocationMessage(incomeMessage, settlementId);
             }
-//            case "CREATE_REQ_ANOTHER_DEST_SETTLEMENT" -> {
-//                editMessage = createNewRequestChooseAnotherSettlementAsDestinationMessage(incomeMessage);
-//            }
             case "CREATE_REQUEST_DEST_LOCATION" -> {
                 createNewRequestSetDestinationLocation(chatId, trimId(callback));
                 editMessage = createNewRequestChooseDateMessage(incomeMessage);
@@ -290,24 +285,28 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             }
             case "EDIT_CHANGE_DEP_SETTLEMENT" -> {
                 setEditedDepartureSettlement(trimId(callback), trimSecondId(callback));
-                editMessage = editDepartureLocationMessage(incomeMessage, trimId(callback));
+                editMessage = editDepartureLocationMessage(incomeMessage, trimId(callback), trimSecondId(callback));
             }
             case "EDIT_DEST_SETTLEMENT" -> {
                 editMessage = editDestinationSettlementMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DEST_SETTLEMENT" -> {
                 setEditedDestinationSettlement(trimId(callback), trimSecondId(callback));
-                editMessage = editDestinationLocationMessage(incomeMessage, trimId(callback));
+                editMessage = editDestinationLocationMessage(incomeMessage, trimId(callback), trimSecondId(callback));
             }
             case "EDIT_DEP_LOCATION" -> {
-                editMessage = editDepartureLocationMessage(incomeMessage, trimId(callback));
+                int requestId = trimId(callback);
+                int settlementId = findPassengerRequestService.findById(requestId).getDepartureSettlement().getId();
+                editMessage = editDepartureLocationMessage(incomeMessage, trimId(callback), settlementId);
             }
             case "EDIT_CHANGE_DEP_LOCATION" -> {
                 FindPassengerRequest request = setEditedDepartureLocation(trimId(callback), trimSecondId(callback));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DEST_LOCATION" -> {
-                editMessage = editDestinationLocationMessage(incomeMessage, trimId(callback));
+                int requestId = trimId(callback);
+                int settlementId = findPassengerRequestService.findById(requestId).getDestinationSettlement().getId();
+                editMessage = editDestinationLocationMessage(incomeMessage, requestId, settlementId);
             }
             case "EDIT_CHANGE_DEST_LOCATION" -> {
                 FindPassengerRequest request = setEditedDestinationLocation(trimId(callback), trimSecondId(callback));
@@ -320,7 +319,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = editDateMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DATE" -> {
-                String day = trimSecondSubstring(callback);
+//                String day = trimSecondSubstring(callback);
                 int requestId = trimSecondId(callback);
                 FindPassengerRequest request = editSetDate(trimSecondId(callback), trimSecondSubstring(callback));
                 if (isExpired(requestId)) {
@@ -362,14 +361,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     public void startCreateNewRequest(long chatId) {
         String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE();
-
         sendMessage = createNewRequest(chatId, messageText, handlerPrefix);
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_START_PROCESS_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.yesButtonCreate()); // Add car button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: startCreateNewRequest");
         sendBotMessage(sendMessage);
     }
@@ -383,13 +375,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessage = createChoseDirectionMessage(incomeMessage, handlerPrefix);
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
-//        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChoseDirectionMessage");
         return editMessage;
     }
@@ -401,35 +386,20 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
         String callback = handlerPrefix + requestOperation.CREATE_REQUEST_SETTLEMENT_DEPARTURE_CALLBACK.getValue();
-//        Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
         editMessage = createChooseResidenceMessage(incomeMessage, messageText, callback);
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + requestOperation.CREATE_REQUEST_RESIDENCE_SETTLEMENT_DEPARTURE_CALLBACK.getValue() + settlement.getId()));
-//        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseResidenceAsDepartureMessage");
         return editMessage;
     }
 
     private EditMessageText createNewRequestChooseAnotherSettlementAsDepartureMessage(Message incomeMessage) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE());
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
         String callback = handlerPrefix + requestOperation.CREATE_REQUEST_SETTLEMENT_DEPARTURE_CALLBACK.getValue();
         String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
-
 //        TODO вынести settlementList в createChooseAnotherSettlementMessage?
         List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
         editMessage = createChooseAnotherSettlementMessage(incomeMessage, settlementList, messageText, callback);
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.settlementsButtonsAttributesListCreator(callback, settlementList);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate());
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseAnotherSettlementAsDepartureMessage");
         return editMessage;
     }
@@ -439,20 +409,12 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         Settlement settlement = settlementService.findById(settlementId);
         FindPassengerRequestDTO dto = storageAccess.getDTO(chatId).setDepartureSettlement(settlement);
         storageAccess.update(chatId, dto);
-//        findPassengerStorageAccess.setDepartureSettlement(chatId, settlementService.findByName(settlementName));
     }
 
     private EditMessageText createNewRequestChooseDepartureLocationMessage(Message incomeMessage, int settlementId) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE());
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE();
         String callback = handlerPrefix + requestOperation.CREATE_REQUEST_DEP_LOCATION_CALLBACK.getValue();
         editMessage = createChooseLocationMessage(incomeMessage, settlementId, messageText, callback);
-
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.locationButtonsAttributesListCreator(callback, settlementId);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate());
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseDepartureLocationMessage");
         return editMessage;
     }
@@ -476,15 +438,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         String messageText = messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
         String callback = requestOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue();
         editMessage = createChooseResidenceMessage(incomeMessage, messageText, callback);
-
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
-//        Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + requestOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue() + settlement.getId()));
-//        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_ANOTHER_SETTLEMENT_CALLBACK.getValue()));
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseResidenceAsDestinationMessage");
         return editMessage;
     }
@@ -497,15 +450,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         //        TODO вынести settlementList в createChooseAnotherSettlementMessage?
         List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
         editMessage = createChooseAnotherSettlementMessage(incomeMessage, settlementList, messageText, callback);
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE());
-//        String callbackData = handlerPrefix + requestOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
-//        String residenceName = userService.findUserById(incomeMessage.getChatId()).getResidence().getName();
-//        List<Settlement> settlementList = settlementService.findAllExcept(residenceName, "Минск");
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementList);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate());
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseAnotherSettlementAsDestinationMessage");
         return editMessage;
     }
@@ -516,15 +460,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE();
         String callback = handlerPrefix + requestOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
         editMessage = createChooseLocationMessage(incomeMessage, settlementId, messageText, callback);
-
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE());
-//        String callbackData =
-//                handlerPrefix + requestOperation.CREATE_REQUEST_DESTINATION_LOCATION_CALLBACK.getValue();
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate());
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChooseDestinationLocationMessage");
         return editMessage;
     }
@@ -847,11 +782,10 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 requestOperation.EDIT_DEPARTURE_SETTLEMENT_CALLBACK.getValue(),
                 requestOperation.EDIT_DEPARTURE_LOCATION_CALLBACK.getValue(),
                 requestOperation.EDIT_DESTINATION_SETTLEMENT_CALLBACK.getValue(),
-                requestOperation.EDIT_DEPARTURE_LOCATION_CALLBACK.getValue(),
+                requestOperation.EDIT_DESTINATION_LOCATION_CALLBACK.getValue(),
                 requestId);
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-        log.debug("method: EditBeforeSaveSettlementLocationMessage");
-
+        log.debug("method: editSettlementLocationMessage");
         return editMessage;
     }
 
@@ -896,29 +830,18 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return findPassengerRequestService.updateRequest(request);
     }
 
-    private EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int requestId) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messageText);
-        int settlementId = findPassengerRequestService.findById(requestId).getDestinationSettlement().getId();
-        List<Pair<String, String>> buttonsAttributesList =
-                adminHandler.locationButtonsAttributesListCreator(callbackData, requestId, settlementId);
-        buttonsAttributesList.add(buttons.cancelButtonCreate());
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-        log.debug("method: editLocationMessage");
-
-        return editMessage;
-    }
-
-    private EditMessageText editDepartureLocationMessage(Message incomeMessage, int requestId) {
+    private EditMessageText editDepartureLocationMessage(Message incomeMessage, int requestId, int settlementId) {
+        log.debug("method: editDepartureLocationMessage");
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_LOCATION_MESSAGE();
-        String callbackData = handlerPrefix + requestOperation.EDIT_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue();
-        return editLocationMessage(incomeMessage, messageText, callbackData, requestId);
+        String callback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DEPARTURE_LOCATION_CALLBACK.getValue(), requestId);
+        return editLocationMessage(incomeMessage, messageText, callback, settlementId);
     }
 
-    private EditMessageText editDestinationLocationMessage(Message incomeMessage, int requestId) {
+    private EditMessageText editDestinationLocationMessage(Message incomeMessage, int requestId, int settlementId) {
+        log.debug("method: editDestinationLocationMessage");
         String messageText = messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE();
-        String callbackData = handlerPrefix + requestOperation.EDIT_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue();
-        return editLocationMessage(incomeMessage, messageText, callbackData, requestId);
+        String callback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DESTINATION_LOCATION_CALLBACK.getValue(), requestId);
+        return editLocationMessage(incomeMessage, messageText, callback, settlementId);
     }
 
     private FindPassengerRequest setEditedDepartureLocation(int requestId, int locationId) {
@@ -1104,14 +1027,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
-//        String callback = handlerPrefix + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
         return editMessage;
     }

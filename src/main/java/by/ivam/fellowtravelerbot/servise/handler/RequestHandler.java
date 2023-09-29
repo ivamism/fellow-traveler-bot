@@ -140,7 +140,6 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
-
     protected EditMessageText createCarDetailsMessage(Message incomeMessage, String carCallback, String seatsCallback) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
@@ -170,7 +169,16 @@ public class RequestHandler extends Handler {
         log.debug("method: createCommentaryMessage");
         return editMessage;
     }
-
+    protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messageText);
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.locationButtonsAttributesListCreator(callbackData, settlementId);
+        buttonsAttributesList.add(buttons.cancelButtonCreate());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: editLocationMessage");
+        return editMessage;
+    }
 
     protected SendMessage handleReceivedIncorrectTime(LocalTime time, long chatId) {
         if (time.toNanoOfDay() == 100) {
@@ -261,10 +269,6 @@ public class RequestHandler extends Handler {
     protected boolean seatsQuantityIsValid(String s) {
         return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 5);
     }
-
-//    protected boolean isRequestQuantityLimit(long chatId) {
-//        return getUserActiveFindPassengerRequestsList(chatId).size() > 2;
-//    }
 
     protected void editMessageTextGeneralPreset(Message incomeMessage) {
         long chatId =incomeMessage.getChatId();

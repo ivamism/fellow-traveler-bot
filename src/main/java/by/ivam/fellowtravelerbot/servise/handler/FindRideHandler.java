@@ -5,22 +5,20 @@ import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
-import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
+import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -87,7 +85,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 } else {
                     setDTODepartureSettlement(chatId, settlementId);
                     editMessage = createNewRequestChooseDateMessage(incomeMessage);
-//                            nextStep(incomeMessage);
                 }
             }
             case "CREATE_REQ_DEST_SETTLEMENT" -> {
@@ -111,18 +108,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     public void startCreateNewRequest(long chatId) {
         String messageText = messages.getCREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE();
-//        String callback = handlerPrefix + requestOperation.CREATE_REQUEST_CALLBACK.getValue();
         sendMessage = createNewRequest(chatId, messageText, handlerPrefix);
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(messages.getCREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Create new request button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: startCreateNewRequest");
         sendBotMessage(sendMessage);
     }
-
 
     private void createRequestDTO(long chatId) {
         FindPassengerRequestDTO dto = new FindPassengerRequestDTO();
@@ -134,14 +123,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private EditMessageText createNewRequestChoseDirectionMessage(Message incomeMessage) {
         editMessage = createChoseDirectionMessage(incomeMessage, handlerPrefix);
-
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
-//        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChoseDirectionMessage");
         return editMessage;
     }
@@ -214,52 +195,19 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     private void setDtoDate(long chatId, String day) {
         log.debug("method createNewRequestSetDate");
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
-//        LocalDate rideDate = LocalDate.now();
         if (isToday(day)) {
-//            dto.setDepartureDate(rideDate);
-            dto.setDepartureAt(LocalDateTime.now());
+            dto.setDepartureAt(LocalDate.now().atTime(0,0));
         } else {
-//            dto.setDepartureDate(rideDate.plusDays(1));
-            dto.setDepartureAt(LocalDateTime.now().plusDays(1));
+            dto.setDepartureAt(LocalDate.now().atTime(0,0).plusDays(1));
         }
         storageAccess.update(chatId, dto);
     }
 
-
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
         return editMessage;
     }
-
-//    private EditMessageText createChooseResidenceMessage(Message incomeMessage, String messageText, String callback) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messageText);
-//        Settlement settlement = userService.findUserById(incomeMessage.getChatId()).getResidence();
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.buttonCreate(settlement.getName(), handlerPrefix + callback + settlement.getId()));
-//        buttonsAttributesList.add(buttons.anotherButtonCreate(handlerPrefix + callback + String.valueOf(-1)));
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
-//        log.debug("method: createChooseResidenceMessage");
-//        return editMessage;
-//    }
-//    private EditMessageText createChooseAnotherSettlementMessage(Message incomeMessage, List<Settlement> settlementList, String messageText, String callback) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messageText);
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.settlementsButtonsAttributesListCreator(callback, settlementList);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate());
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-//        log.debug("method: createChooseAnotherSettlementAsMessage");
-//        return editMessage;
-//    }
 
     private boolean isRequestQuantityLimit(long chatId) {
         return getUserActiveRequestsList(chatId).size() > 2;
@@ -268,11 +216,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     private List<FindRideRequest> getUserActiveRequestsList(long chatId) {
         return findRideRequestService.usersActiveRequestList(chatId);
     }
-
-//    public void editMessageTextGeneralPreset(Message incomeMessage) {
-//        editMessage.setChatId(incomeMessage.getChatId());
-//        editMessage.setMessageId(incomeMessage.getMessageId());
-//    }
 
 
 }
