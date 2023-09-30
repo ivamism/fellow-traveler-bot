@@ -130,10 +130,10 @@ public class RequestHandler extends Handler {
         sendBotMessage(sendMessage);
     }
 
-    protected EditMessageText createTimeMessage(Message incomeMessage, String chatStatus) {
+    protected EditMessageText createTimeMessage(Message incomeMessage, String messageText, String chatStatus) {
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
+        editMessage.setText(messageText);
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createTimeMessage");

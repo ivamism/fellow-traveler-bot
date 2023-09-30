@@ -494,8 +494,9 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private EditMessageText createNewRequestTimeMessage(Message incomeMessage) {
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
         String chatStatus = handlerPrefix + requestOperation.CREATE_REQUEST_TIME_STATUS.getValue();
-        editMessage = createTimeMessage(incomeMessage, chatStatus);
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
         log.debug("method: createNewRequestTimeMessage");
         return editMessage;
     }
@@ -717,8 +718,9 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText editBeforeSaveTimeMessage(Message incomeMessage) {
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
         String chatStatus = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
-        editMessage = createTimeMessage(incomeMessage, chatStatus);
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
         log.debug("method: editBeforeSaveTimeMessage");
         return editMessage;
     }
@@ -906,9 +908,10 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText editTimeMessage(Message incomeMessage, int requestId) {
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
         String chatStatus = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
-        editMessage = createTimeMessage(incomeMessage, chatStatus);
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
         log.debug("method: editTimeMessage");
         return editMessage;
     }

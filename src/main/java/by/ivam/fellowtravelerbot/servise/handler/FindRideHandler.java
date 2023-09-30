@@ -19,6 +19,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -45,7 +47,24 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             process = trimProcess(chatStatus);
         }
         switch (process) {
-
+            case "CREATE_REQUEST_TIME_STATUS" -> {
+                LocalTime time = getTime(messageText);
+                if (time.toNanoOfDay() == 100 || isExpired(chatId, time)) {
+                    sendMessage = handleReceivedIncorrectTime(time, chatId);
+                } else {
+                    setDtoTime(chatId, time);
+                    sendMessage = nextStep(chatId);
+//                    createNewRequestChooseCarMessage(chatId);
+                }
+            }
+            case "CREATE_REQUEST_SEATS_STATUS" -> {
+                if (seatsQuantityIsValid(messageText)) {
+//                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
+//                    sendMessage = createNewRequestCommentaryMessage(incomeMessage);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
+                }
+            }
         }
         sendBotMessage(sendMessage);
     }
@@ -99,8 +118,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             case "CREATE_REQUEST_DATE" -> {
                 String day = trimSecondSubstring(callback);
                 setDtoDate(chatId, day);
-                editMessage = nextStep(incomeMessage);
-//                        createNewRequestTimeMessage(incomeMessage);
+                editMessage = createNewRequestTimeMessage(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
@@ -127,19 +145,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return editMessage;
     }
 
-    private void setDTODirection(long chatId, String direction) {
-        log.debug("method createNewRequestSetDirection");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDirection(direction);
-        storageAccess.update(chatId, dto);
-    }
-
-    private void setDTODepartureSettlement(long chatId, int settlementId) {
-        log.debug("method setDTODepartureSettlement");
-        Settlement settlement = settlementService.findById(settlementId);
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDepartureSettlement(settlement);
-        storageAccess.update(chatId, dto);
-    }
-
     private EditMessageText createNewRequestChooseResidenceAsDepartureMessage(Message incomeMessage) {
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
         String callback = handlerPrefix + requestOperation.CREATE_REQUEST_SETTLEMENT_DEPARTURE_CALLBACK.getValue();
@@ -156,13 +161,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         editMessage = createChooseAnotherSettlementMessage(incomeMessage, settlementList, messageText, callback);
         log.debug("method: createNewRequestChooseAnotherSettlementAsDepartureMessage");
         return editMessage;
-    }
-
-    private void setDtoDestinationSettlement(long chatId, int settlementId) {
-        log.debug("method createNewRequestSetDestinationSettlement");
-        Settlement settlement = settlementService.findById(settlementId);
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDestinationSettlement(settlement);
-        storageAccess.update(chatId, dto);
     }
 
     private EditMessageText createNewRequestChooseResidenceAsDestinationMessage(Message incomeMessage) {
@@ -192,21 +190,73 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return editMessage;
     }
 
+    private EditMessageText createNewRequestTimeMessage(Message incomeMessage) {
+//        TODO добавить  кнопки с промежутками времени если выезд сегодня.
+        String messageText = messages.getCREATE_FIND_RIDE_REQUEST_TIME_MESSAGE();
+        String chatStatus = handlerPrefix + requestOperation.CREATE_REQUEST_TIME_STATUS.getValue();
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
+        log.debug("method: createNewRequestTimeMessage");
+        return editMessage;
+    }
+
+    private void setDTODirection(long chatId, String direction) {
+        log.debug("method createNewRequestSetDirection");
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDirection(direction);
+        storageAccess.update(chatId, dto);
+    }
+
+    private void setDTODepartureSettlement(long chatId, int settlementId) {
+        log.debug("method setDTODepartureSettlement");
+        Settlement settlement = settlementService.findById(settlementId);
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDepartureSettlement(settlement);
+        storageAccess.update(chatId, dto);
+    }
+
+    private void setDtoDestinationSettlement(long chatId, int settlementId) {
+        log.debug("method createNewRequestSetDestinationSettlement");
+        Settlement settlement = settlementService.findById(settlementId);
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDestinationSettlement(settlement);
+        storageAccess.update(chatId, dto);
+    }
+
     private void setDtoDate(long chatId, String day) {
         log.debug("method createNewRequestSetDate");
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
         if (isToday(day)) {
-            dto.setDepartureAt(LocalDate.now().atTime(0,0));
+            dto.setDepartureBefore(LocalDate.now().atTime(0, 0));
         } else {
-            dto.setDepartureAt(LocalDate.now().atTime(0,0).plusDays(1));
+            dto.setDepartureBefore(LocalDate.now().atTime(0, 0).plusDays(1));
         }
+        storageAccess.update(chatId, dto);
+    }
+
+    private void setDtoTime(long chatId, LocalTime time) {
+        log.debug("method createNewRequestSetTime");
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        dto.setDepartureBefore(dto.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
         storageAccess.update(chatId, dto);
     }
 
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
-        log.debug("method: createNecessityToCancelMessage");
+        log.debug("method: sendNecessityToCancelMessage");
         return editMessage;
+    }
+
+    private boolean isExpired(long chatId, LocalTime time) {
+        return storageAccess.getDTO(chatId).getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()).isBefore(LocalDateTime.now());
+    }
+
+//    private boolean isExpired(long chatId) {
+//        return storageAccess.getDTO(chatId).getDepartureTime().isBefore(LocalTime.now());
+//    }
+
+    private boolean isExpired(int requestId) {
+        return findPassengerRequestService.findById(requestId).getDepartureAt().isBefore(LocalDateTime.now());
+    }
+
+    private boolean isExpired(int requestId, LocalTime time) {
+        return findPassengerRequestService.findById(requestId).getDepartureAt().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
 
     private boolean isRequestQuantityLimit(long chatId) {
