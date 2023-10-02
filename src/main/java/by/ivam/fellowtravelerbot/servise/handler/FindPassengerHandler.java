@@ -59,16 +59,16 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             }
             case "CREATE_REQUEST_SEATS_STATUS" -> {
                 if (seatsQuantityIsValid(messageText)) {
-                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
-                    sendMessage = createNewRequestCommentaryMessage(incomeMessage);
+                    setDtoSeatsQuantity(chatId, Integer.parseInt(messageText));
+                    sendMessage = createNewRequestCommentaryMessage(chatId);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
             }
             case "CREATE_REQUEST_COMMENTARY_STATUS" -> {
-                createNewRequestSetCommentary(chatId, messageText);
+                setDtoCommentary(chatId, messageText);
                 if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
-                else sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                else sendMessage = checkDataBeforeSaveMessage(chatId);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
             case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
@@ -77,13 +77,13 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
-                    sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                    sendMessage = checkDataBeforeSaveMessage(chatId);
                 }
             }
             case "EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS" -> {
                 if (seatsQuantityIsValid(messageText)) {
-                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
-                    sendMessage = checkDataBeforeSaveMessage(incomeMessage);
+                    setDtoSeatsQuantity(chatId, Integer.parseInt(messageText));
+                    sendMessage = checkDataBeforeSaveMessage(chatId);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
@@ -109,7 +109,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             case "EDIT_CHANGE_COMMENTARY" -> {
                 FindPassengerRequest request = setEditedCommentary(trimId(chatStatus), messageText);
                 if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
-                else sendMessage =  editRequestSuccessSendMessage(chatId, request);
+                else sendMessage = editRequestSuccessSendMessage(chatId, request);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
         }
@@ -182,11 +182,11 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = createNewRequestTimeMessage(incomeMessage);
             }
             case "CREATE_REQUEST_CAR_CALLBACK" -> {
-                createNewRequestSetCar(chatId, trimId(callback));
+                setDtoCar(chatId, trimId(callback));
                 editMessage = createNewRequestSeatsMessage(incomeMessage);
             }
             case "CREATE_REQUEST_SKIP_COMMENT_CALLBACK" -> {
-                createNewRequestSetCommentary(chatId, "-");
+                setDtoCommentary(chatId, "-");
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "SAVE_REQUEST_CALLBACK" -> {
@@ -255,7 +255,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = editBeforeSaveChooseCarMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_CAR" -> {
-                createNewRequestSetCar(chatId, trimId(callback));
+                setDtoCar(chatId, trimId(callback));
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_SEATS_QUANTITY" -> {
@@ -436,7 +436,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private EditMessageText createNewRequestChooseResidenceAsDestinationMessage(Message incomeMessage) {
         String messageText = messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
-        String callback = requestOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue();
+        String callback = handlerPrefix + requestOperation.CREATE_REQUEST_DESTINATION_SETTLEMENT_CALLBACK.getValue();
         editMessage = createChooseResidenceMessage(incomeMessage, messageText, callback);
         log.debug("method: createNewRequestChooseResidenceAsDestinationMessage");
         return editMessage;
@@ -517,7 +517,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return sendMessage;
     }
 
-    private void createNewRequestSetCar(long chatId, int carId) {
+    private void setDtoCar(long chatId, int carId) {
         log.debug("method createNewRequestSetCar");
         FindPassengerRequestDTO dto = storageAccess.getDTO(chatId).setCar(carService.findById(carId));
         storageAccess.update(chatId, dto);
@@ -530,52 +530,34 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return editMessage;
     }
 
-    private void createNewRequestSetSeatsQuantity(long chatId, int seatsQuantity) {
-        log.debug("method createNewRequestSetSeatsQuantity");
+    private void setDtoSeatsQuantity(long chatId, int seatsQuantity) {
+        log.debug("method setDtoSeatsQuantity");
         FindPassengerRequestDTO dto = storageAccess.getDTO(chatId).setSeatsQuantity(seatsQuantity);
         storageAccess.update(chatId, dto);
     }
 
-    private SendMessage createNewRequestCommentaryMessage(Message incomeMessage) {
-        Long chatId = incomeMessage.getChatId();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+    private SendMessage createNewRequestCommentaryMessage(long chatId) {
+        sendMessage = createCommentaryMessage(chatId, handlerPrefix);
         log.debug("method: createNewRequestCommentaryMessage");
         return sendMessage;
     }
 
-    private void createNewRequestSetCommentary(long chatId, String commentary) {
+    private void setDtoCommentary(long chatId, String commentary) {
         log.debug("method createNewRequestSetCommentary");
         FindPassengerRequestDTO dto = storageAccess.getDTO(chatId).setCommentary(firstLetterToUpperCase(commentary));
         storageAccess.update(chatId, dto);
     }
 
     private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(dtoToString(storageAccess.getDTO(incomeMessage.getChatId())));
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        String messageText = dtoToString(storageAccess.getDTO(incomeMessage.getChatId()));
+        editMessage = createCheckDataBeforeSaveMessageSkipComment(incomeMessage, messageText, handlerPrefix);
         log.debug("method checkDataBeforeSaveMessageSkipComment");
         return editMessage;
     }
 
-    private SendMessage checkDataBeforeSaveMessage(Message incomeMessage) {
-        Long chatId = incomeMessage.getChatId();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(dtoToString(storageAccess.getDTO(chatId)));
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+    private SendMessage checkDataBeforeSaveMessage(long chatId) {
+        String messageText = dtoToString(storageAccess.getDTO(chatId));
+        sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
         log.debug("method checkDataBeforeSaveMessage");
         return sendMessage;
     }
@@ -656,7 +638,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText editBeforeSaveDestinationLocationMessage(Message incomeMessage) {
-
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_REQUEST_DESTINATION_LOCATION_MESSAGE());
         int settlementId = storageAccess.getDTO(incomeMessage.getChatId()).getDestinationSettlement().getId();

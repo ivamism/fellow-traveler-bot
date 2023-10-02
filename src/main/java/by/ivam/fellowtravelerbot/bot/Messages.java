@@ -191,5 +191,6 @@ public class Messages {
 //    Creation new request
     private final String CREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутку?";
     private final String CREATE_FIND_RIDE_REQUEST_TIME_MESSAGE = "Напишите время, до которого вы бы хотели уехать. Сделайте это  в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
+    private final String CREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE = "Напишите количество мест которое вам необходимо забронировать.\n Используйте цифру от 1 до 4";
 
 }

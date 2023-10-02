@@ -53,17 +53,22 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     setDtoTime(chatId, time);
-                    sendMessage = nextStep(chatId);
-//                    createNewRequestChooseCarMessage(chatId);
+                    sendMessage = createNewRequestSeatsMessage(chatId);
                 }
             }
             case "CREATE_REQUEST_SEATS_STATUS" -> {
                 if (seatsQuantityIsValid(messageText)) {
-//                    createNewRequestSetSeatsQuantity(chatId, Integer.parseInt(messageText));
-//                    sendMessage = createNewRequestCommentaryMessage(incomeMessage);
+                    setDtoPassengersQuantity(chatId, Integer.parseInt(messageText));
+                    sendMessage = createNewRequestCommentaryMessage(chatId);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
+            }
+            case "CREATE_REQUEST_COMMENTARY_STATUS" -> {
+                setDtoCommentary(chatId, messageText);
+                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
+                else sendMessage = checkDataBeforeSaveMessage(chatId);
+//                TODO добавить сообщение если комментарий слишком длинный
             }
         }
         sendBotMessage(sendMessage);
@@ -119,6 +124,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 String day = trimSecondSubstring(callback);
                 setDtoDate(chatId, day);
                 editMessage = createNewRequestTimeMessage(incomeMessage);
+            }
+            case "CREATE_REQUEST_SKIP_COMMENT_CALLBACK" -> {
+                setDtoCommentary(chatId, "-");
+                editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
@@ -235,6 +244,45 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
         dto.setDepartureBefore(dto.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
         storageAccess.update(chatId, dto);
+    }
+
+    private SendMessage createNewRequestSeatsMessage(long chatId) {
+        String chatStatus = handlerPrefix + requestOperation.CREATE_REQUEST_SEATS_STATUS.getValue();
+        sendMessage = createSeatsMessage(chatId, chatStatus);
+        log.debug("method: createNewRequestSeatsMessage");
+        return sendMessage;
+    }
+
+    private void setDtoPassengersQuantity(long chatId, int passengersQuantity) {
+        log.debug("method setDtoPassengersQuantity");
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setPassengersQuantity(passengersQuantity);
+        storageAccess.update(chatId, dto);
+    }
+
+    private SendMessage createNewRequestCommentaryMessage(long chatId) {
+        sendMessage = createCommentaryMessage(chatId, handlerPrefix);
+        log.debug("method: createNewRequestCommentaryMessage");
+        return sendMessage;
+    }
+
+    private void setDtoCommentary(long chatId, String commentary) {
+        log.debug("method setDtoCommentary");
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setCommentary(firstLetterToUpperCase(commentary));
+        storageAccess.update(chatId, dto);
+    }
+
+    private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
+        String messageText = "under composition";
+        editMessage = createCheckDataBeforeSaveMessageSkipComment(incomeMessage, messageText, handlerPrefix);
+        log.debug("method checkDataBeforeSaveMessageSkipComment");
+        return editMessage;
+    }
+
+    private SendMessage checkDataBeforeSaveMessage(long chatId) {
+        String messageText = "under composition";
+        sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
+        log.debug("method checkDataBeforeSaveMessage");
+        return sendMessage;
     }
 
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {

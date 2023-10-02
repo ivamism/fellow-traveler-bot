@@ -155,10 +155,31 @@ public class RequestHandler extends Handler {
     protected EditMessageText createSeatsMessage(Message incomeMessage, String chatStatus) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
-        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+//        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createSeatsMessage");
         return editMessage;
+    }
+    protected SendMessage createSeatsMessage(long chatId, String chatStatus) {
+        sendMessage.setText(messages.getCREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE());
+        sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
+//        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.addChatStatus(chatId, chatStatus);
+        log.debug("method: createSeatsMessage");
+        return sendMessage;
+    }
+
+    protected SendMessage createCommentaryMessage(long chatId, String handlerPrefix) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        chatStatusStorageAccess.addChatStatus(chatId, handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        log.debug("method: createCommentaryMessage");
+        return sendMessage;
     }
 
     protected EditMessageText createCommentaryMessage(Message incomeMessage, String chatStatus) {
@@ -169,6 +190,31 @@ public class RequestHandler extends Handler {
         log.debug("method: createCommentaryMessage");
         return editMessage;
     }
+
+    protected EditMessageText createCheckDataBeforeSaveMessageSkipComment(Message incomeMessage, String messageText, String handlerPrefix) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messageText);
+        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
+        log.debug("method checkDataBeforeSaveMessageSkipComment");
+        return editMessage;
+    }
+
+    protected SendMessage createCheckDataBeforeSaveMessage(long chatId, String messageText, String handlerPrefix) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messageText);
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
+        log.debug("method createCheckDataBeforeSaveMessage");
+        return sendMessage;
+    }
+
+    private List<Pair<String, String>> createCheckBeforeSaveButtonsAttributesList (String handlerPrefix){
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
+    }
+
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);

@@ -18,7 +18,7 @@ public class FindRideRequestDTO {
     private Settlement departureSettlement;
     private Settlement destinationSettlement;
     private LocalDateTime departureBefore;
-    private Duration departureDuring;
+//    private Duration departureDuring;
     private int passengersQuantity;
     private String commentary;
 }
