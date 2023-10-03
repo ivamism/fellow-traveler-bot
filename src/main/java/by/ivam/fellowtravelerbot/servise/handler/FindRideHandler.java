@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
+import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
@@ -21,6 +22,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 
@@ -128,6 +131,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             case "CREATE_REQUEST_SKIP_COMMENT_CALLBACK" -> {
                 setDtoCommentary(chatId, "-");
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
+            }
+            case "SAVE_REQUEST_CALLBACK" -> {
+                FindRideRequest request = saveRequest(chatId);
+                editMessage = saveRequestSuccessMessage(incomeMessage, request);
             }
         }
         sendEditMessage(editMessage);
@@ -272,23 +279,62 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
-        String messageText = "under composition";
-        editMessage = createCheckDataBeforeSaveMessageSkipComment(incomeMessage, messageText, handlerPrefix);
         log.debug("method checkDataBeforeSaveMessageSkipComment");
+        String messageText = dtoToString(storageAccess.getDTO(incomeMessage.getChatId()));
+        editMessage = createCheckDataBeforeSaveMessageSkipComment(incomeMessage, messageText, handlerPrefix);
         return editMessage;
     }
 
     private SendMessage checkDataBeforeSaveMessage(long chatId) {
-        String messageText = "under composition";
-        sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
         log.debug("method checkDataBeforeSaveMessage");
+        String messageText = dtoToString(storageAccess.getDTO(chatId));
+        sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
         return sendMessage;
+    }
+    private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
+        String messageText = requestToString(request);
+        editMessage = createRequestSaveSuccessMessage(incomeMessage, messageText);
+        log.debug("method saveRequestSuccessMessage");
+        return editMessage;
     }
 
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
         log.debug("method: sendNecessityToCancelMessage");
         return editMessage;
+    }
+
+    private FindRideRequest saveRequest(long chatId) {
+        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        storageAccess.delete(chatId);
+        chatStatusStorageAccess.deleteChatStatus(chatId);
+        log.debug("method saveRequest");
+        return findRideRequestService.addNewRequest(dto);
+    }
+
+    private String dtoToString(FindRideRequestDTO dto) {
+        String messageText = String.format(messages.getCREATE_FIND_RIDE_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
+                dto.getUser().getFirstName(),
+                dto.getDepartureSettlement().getName(),
+                dto.getDestinationSettlement().getName(),
+                dto.getDepartureBefore().toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                dto.getDepartureBefore().toLocalTime().toString(),
+                dto.getPassengersQuantity(),
+                dto.getCommentary());
+        return messageText;
+    }
+
+    public String requestToString(FindRideRequest request) {
+        String messageText = String.format(messages.getFIND_RIDE_REQUEST_TO_STRING_MESSAGE(),
+                request.getUser().getFirstName(),
+                request.getDepartureSettlement().getName(),
+                request.getDestinationSettlement().getName(),
+                request.getDepartureBefore().toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                request.getDepartureBefore().toLocalTime().toString(),
+                request.getPassengersQuantity(),
+                request.getCommentary(),
+                request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
+        return messageText;
     }
 
     private boolean isExpired(long chatId, LocalTime time) {

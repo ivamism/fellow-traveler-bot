@@ -563,9 +563,8 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
-        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        String messageText = requestToString(request);
+        editMessage = createRequestSaveSuccessMessage(incomeMessage, messageText);
         log.debug("method saveRequestSuccessMessage");
         return editMessage;
     }

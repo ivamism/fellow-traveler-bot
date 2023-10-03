@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,17 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     @Override
     public FindRideRequest addNewRequest(FindRideRequestDTO dto) {
-        return null;
+        FindRideRequest request = new FindRideRequest();
+        request.setUser(dto.getUser())
+                .setDirection(dto.getDirection())
+                .setDepartureSettlement(dto.getDepartureSettlement())
+                .setDestinationSettlement(dto.getDestinationSettlement())
+                .setDepartureBefore(dto.getDepartureBefore())
+                .setPassengersQuantity(dto.getPassengersQuantity())
+                .setCommentary(dto.getCommentary())
+                .setActive(true)
+                .setCreatedAt(LocalDateTime.now());
+        return repository.save(request);
     }
 
     @Override

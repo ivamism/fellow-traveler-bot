@@ -3,7 +3,6 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
-import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -213,6 +211,14 @@ public class RequestHandler extends Handler {
         buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
+    }
+
+    protected EditMessageText createRequestSaveSuccessMessage(Message incomeMessage, String requestToString) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getREQUEST_SAVE_SUCCESS_MESSAGE() + requestToString + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        log.debug("method createRequestSaveSuccessMessage");
+        return editMessage;
     }
 
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {

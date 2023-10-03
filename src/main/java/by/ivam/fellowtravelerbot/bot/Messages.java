@@ -134,7 +134,7 @@ public class Messages {
               Автомобиль: %s
               Гос. номер: %s
               Количество мест: %d
-              Коментарий: %s
+              Комментарий: %s
 
             Для сохранения нажмите "Сохранить"
             Для изменения нажмите "Редактировать"
@@ -153,11 +153,11 @@ public class Messages {
             Автомобиль: %s
             Гос. номер: %s
             Количество мест: %d
-            Коментарий: %s
+            Комментарий: %s
 
             Для продолжения работы с ботом выберите нужный пункт меню.""";
 
-    private final String CREATE_FIND_PASSENGER_REQUEST_SAVE_SUCCESS_MESSAGE1 = "Ваш запрос на поиск попутчиков успешно сохранен!\n\n";
+    private final String REQUEST_SAVE_SUCCESS_MESSAGE = "Ваш запрос успешно сохранен!\n\n";
     private final String FIND_PASSENGER_REQUEST_TO_STRING_MESSAGE = """
             Имя пользователя: %s
             Нас. пункт отправления: %s
@@ -169,7 +169,7 @@ public class Messages {
             Автомобиль: %s
             Гос. номер: %s
             Количество мест: %d
-            Коментарий: %s
+            Комментарий: %s
             Создан: %s
                                     
                         """;
@@ -192,5 +192,28 @@ public class Messages {
     private final String CREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутку?";
     private final String CREATE_FIND_RIDE_REQUEST_TIME_MESSAGE = "Напишите время, до которого вы бы хотели уехать. Сделайте это  в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
     private final String CREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE = "Напишите количество мест которое вам необходимо забронировать.\n Используйте цифру от 1 до 4";
+    private final String CREATE_FIND_RIDE_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE = """
+            Проверьте правильность введенных данных\s
 
+              Имя пользователя: %s
+              Нас. пункт отправления: %s
+              Нас. пункт назначения: %s
+              Дата выезда: %s
+              Время выезда: %s
+              Количество забронированных мест: %d
+              Комментарий: %s
+
+            Для сохранения нажмите "Сохранить"
+            Для изменения нажмите "Редактировать"
+            Для отмены нажмите "Отменить\"""";
+    private final String FIND_RIDE_REQUEST_TO_STRING_MESSAGE = """
+            Имя пользователя: %s
+            Нас. пункт отправления: %s
+            Нас. пункт назначения: %s
+            Дата выезда: %s
+            Время выезда: %s
+            Количество мест: %d
+            Комментарий: %s
+            
+            """;
 }

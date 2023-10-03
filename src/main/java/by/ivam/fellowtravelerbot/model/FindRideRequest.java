@@ -25,9 +25,10 @@ public class FindRideRequest {
     @ManyToOne
     @JoinColumn(name = "destination_settlement_id")
     private Settlement destinationSettlement;
-    private LocalDate departureDate;
-    private LocalTime departureTime;
-    private Duration departureDuring;
+    private LocalDateTime departureBefore;
+//    private LocalDate departureDate;
+//    private LocalTime departureTime;
+//    private Duration departureDuring;
     private String commentary;
     private boolean isActive;
     private LocalDateTime createdAt;
