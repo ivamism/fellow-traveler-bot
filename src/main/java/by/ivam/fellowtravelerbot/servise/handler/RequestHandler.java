@@ -72,6 +72,17 @@ public class RequestHandler extends Handler {
         log.debug("method: createChooseResidenceMessage");
         return editMessage;
     }
+    protected EditMessageText createChooseOfAllSettlementsMessage(Message incomeMessage, String messageText, String callback) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messageText);
+//        String callbackData = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
+        List<Pair<String, String>> buttonsAttributesList =
+                adminHandler.settlementsButtonsAttributesListCreator(callback, settlementService.findAll());
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: EditBeforeSaveDepartureSettlementMessage");
+        return editMessage;
+    }
 
     protected EditMessageText createChooseAnotherSettlementMessage(Message incomeMessage, List<Settlement> settlementList, String messageText, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -189,10 +200,11 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
+
     protected EditMessageText createCheckDataBeforeSaveMessageSkipComment(Message incomeMessage, String messageText, String handlerPrefix) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
-        editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
+        editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
         log.debug("method checkDataBeforeSaveMessageSkipComment");
         return editMessage;
     }
@@ -200,7 +212,7 @@ public class RequestHandler extends Handler {
     protected SendMessage createCheckDataBeforeSaveMessage(long chatId, String messageText, String handlerPrefix) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messageText);
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
+        sendMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(createCheckBeforeSaveButtonsAttributesList(handlerPrefix)));
         log.debug("method createCheckDataBeforeSaveMessage");
         return sendMessage;
     }
@@ -208,7 +220,7 @@ public class RequestHandler extends Handler {
     private List<Pair<String, String>> createCheckBeforeSaveButtonsAttributesList (String handlerPrefix){
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_REQUEST_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_REQUEST_BEFORE_SAVE_CALLBACK)); // Edit button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -220,6 +232,7 @@ public class RequestHandler extends Handler {
         log.debug("method createRequestSaveSuccessMessage");
         return editMessage;
     }
+
 
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -236,7 +249,7 @@ public class RequestHandler extends Handler {
         if (time.toNanoOfDay() == 100) {
             sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);
         } else {
-            sendMessage = createNewRequestExpiredTimeMessage(chatId);
+            sendMessage = createExpiredTimeMessage(chatId);
         }
         return sendMessage;
     }
@@ -249,7 +262,7 @@ public class RequestHandler extends Handler {
         return sendMessage;
     }
 
-    private SendMessage createNewRequestExpiredTimeMessage(long chatId) {
+    private SendMessage createExpiredTimeMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_EXPIRED_TIME_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));

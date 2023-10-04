@@ -63,6 +63,7 @@ public class Buttons {
     private final String EDIT_LAST_TEXT = "Редактировать последнее";
     private final String CANCEL_LAST_TEXT = "Отменить последнее";
     private final String CANCEL_REQUEST_TEXT = "Отменить запрос";
+    private final String PASSENGER_QUANTITY_TEXT = "Количество пассажиров";
 
 
     //    Main menu buttons
@@ -259,6 +260,10 @@ public class Buttons {
 
     public Pair<String, String> myPassengerRequestButtonCreate(String buttonCallback) {
         return Pair.of(AS_PASSENGER_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> passengerQuantityButtonCreate(String buttonCallback) {
+        return Pair.of(PASSENGER_QUANTITY_TEXT, buttonCallback);
     }
     public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
         return attributesType.entrySet()

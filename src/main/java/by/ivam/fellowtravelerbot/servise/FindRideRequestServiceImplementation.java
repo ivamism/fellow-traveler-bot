@@ -15,20 +15,23 @@ import java.util.Optional;
 @Log4j
 public class FindRideRequestServiceImplementation implements FindRideRequestService {
     @Autowired
-    FindRideRequestRepository repository;
+    private FindRideRequestRepository repository;
 
     @Override
     public FindRideRequest findById(int id) {
-        return null;
+        log.info("method findById");
+        return repository.findById(id).orElseThrow();
     }
 
     @Override
     public FindRideRequest findLastUserRequest(long chatId) {
+        log.info("method findLastUserRequest");
         return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId).orElseThrow();
     }
 
     @Override
     public Optional<FindRideRequest> findLastUserRequestOptional(long chatId) {
+        log.info("method findLastUserRequestOptional");
         return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
     }
 
@@ -44,23 +47,25 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setCommentary(dto.getCommentary())
                 .setActive(true)
                 .setCreatedAt(LocalDateTime.now());
+        log.info("method addNewRequest. Saved new request: " + request);
         return repository.save(request);
     }
 
     @Override
     public FindRideRequest updateRequest(FindRideRequest request) {
-        return null;
+        log.info("method updateRequest");
+        return repository.save(request);
     }
 
     @Override
     public List<FindRideRequest> usersRequestList(long chatId) {
-        return null;
+        log.info("method usersRequestList");
+        return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
     }
 
     @Override
     public List<FindRideRequest> usersActiveRequestList(long chatId) {
         log.info("method usersActiveRequestList");
-
         return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
     }
 
