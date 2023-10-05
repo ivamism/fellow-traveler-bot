@@ -79,6 +79,47 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 else sendMessage = checkDataBeforeSaveMessage(chatId);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
+            case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
+                LocalTime time = getTime(messageText);
+                if (time.toNanoOfDay() == 100 || isExpired(chatId, time)) {
+                    sendMessage = handleReceivedIncorrectTime(time, chatId);
+                } else {
+                    setDtoTime(chatId, time);
+                    sendMessage = checkDataBeforeSaveMessage(chatId);
+                }
+            }
+            case "EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS" -> {
+                if (seatsQuantityIsValid(messageText)) {
+                    setDtoPassengersQuantity(chatId, Integer.parseInt(messageText));
+                    sendMessage = checkDataBeforeSaveMessage(chatId);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
+                }
+            }
+            case "EDIT_CHANGE_TIME" -> {
+                LocalTime time = getTime(messageText);
+                int requestId = trimId(chatStatus);
+                if (time.toNanoOfDay() == 100 || isExpired(requestId, time)) {
+                    sendMessage = handleReceivedIncorrectTime(time, chatId);
+                } else {
+//                    FindPassengerRequest request = editSetTime(requestId, time);
+//                    sendMessage = editRequestSuccessSendMessage(chatId, request);
+                }
+            }
+            case "EDIT_CHANGE_SEATS_QUANTITY" -> {
+                if (seatsQuantityIsValid(messageText)) {
+//                    FindPassengerRequest request = setEditedSeatsQuantity(trimId(chatStatus), Integer.parseInt(messageText));
+//                    sendMessage = editRequestSuccessSendMessage(chatId, request);
+                } else {
+                    sendMessage = invalidSeatsQuantityFormatMessage(chatId);
+                }
+            }
+            case "EDIT_CHANGE_COMMENTARY" -> {
+//                FindPassengerRequest request = setEditedCommentary(trimId(chatStatus), messageText);
+//                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
+//                else sendMessage = editRequestSuccessSendMessage(chatId, request);
+//                TODO добавить сообщение если комментарий слишком длинный
+            }
         }
         sendBotMessage(sendMessage);
     }
@@ -170,20 +211,31 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_DATE" -> {
-                editMessage = nextStep(incomeMessage);
-//                        editBeforeSaveChangeDateMessage(incomeMessage);
+                editMessage = editBeforeSaveChangeDateMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_DATE" -> {
                 String day = trimSecondSubstring(callback);
                 setEditedDtoDate(chatId, day);
                 if (isExpired(chatId)) {
                     expiredTimeMessage(chatId);
-//                    editBeforeSaveTimeSendMessage(chatId);
+                    editBeforeSaveTimeSendMessage(chatId);
                 } else editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_TIME" -> {
-                editMessage = nextStep(incomeMessage);
-//                        editBeforeSaveTimeMessage(incomeMessage);
+                editMessage = editBeforeSaveTimeMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_SEATS_QUANTITY" -> {
+                editMessage = editBeforeSaveSeatsMessage(incomeMessage);
+            }
+            case "EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK" -> {
+                editMessage = editBeforeSaveCommentaryMessage(incomeMessage);
+            }
+            case "CHOOSE_REQUEST_TO_CANCEL_CALLBACK" -> {
+                editMessage = chooseRequestToCancelMessage(incomeMessage);
+            }
+            case "CANCEL_REQUEST" -> {
+                FindRideRequest request = cancelRequest(trimId(callback));
+                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
             }
         }
         sendEditMessage(editMessage);
@@ -294,6 +346,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         }
         storageAccess.update(chatId, dto);
     }
+
     private void setEditedDtoDate(long chatId, String day) {
         log.debug("method createNewRequestSetDate");
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
@@ -350,12 +403,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
         return sendMessage;
     }
+
     private EditMessageText saveRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
         String messageText = requestToString(request);
         editMessage = createRequestSaveSuccessMessage(incomeMessage, messageText);
         log.debug("method saveRequestSuccessMessage");
         return editMessage;
     }
+
     private EditMessageText startEditBeforeSaveRequestMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
@@ -369,6 +424,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: startEditBeforeSaveRequestMessage");
         return editMessage;
     }
+
     private EditMessageText editBeforeSaveSettlementLocationMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
@@ -381,6 +437,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: EditBeforeSaveSettlementLocationMessage");
         return editMessage;
     }
+
     private EditMessageText editBeforeSaveDateTimeMessage(Message incomeMessage) {
         String callbackDate = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_CALLBACK.getValue();
         String callbackTime = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_TIME_CALLBACK.getValue();
@@ -388,6 +445,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: EditBeforeSaveDateTimeMessage");
         return editMessage;
     }
+
     private EditMessageText editBeforeSaveDepartureSettlementMessage(Message incomeMessage) {
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
         String callback = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
@@ -395,6 +453,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: EditBeforeSaveDepartureSettlementMessage");
         return editMessage;
     }
+
     private EditMessageText editBeforeSaveDestinationSettlementMessage(Message incomeMessage) {
         String messageText = messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
         String callback = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
@@ -402,6 +461,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: EditBeforeSaveDestinationSettlementMessage");
         return editMessage;
     }
+
     private void editBeforeSaveSwapDepartureDestination(long chatId) {
         log.debug("method: editBeforeSaveSwapDepartureDestination");
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
@@ -416,9 +476,76 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         storageAccess.update(chatId, dto);
     }
 
+    private EditMessageText editBeforeSaveChangeDateMessage(Message incomeMessage) {
+        String todayCallback = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DATE_CALLBACK.getValue() + Day.TODAY;
+        String tomorrowCallback = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DATE_CALLBACK.getValue() + Day.TOMORROW;
+        editMessage = createChooseDateMessage(incomeMessage, todayCallback, tomorrowCallback);
+        log.debug("method: editBeforeSaveChangeDateMessage");
+        return editMessage;
+    }
+
+    private void editBeforeSaveTimeSendMessage(long chatId) {
+        String callback = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
+        createTimeSendMessage(chatId, callback);
+        log.debug("method: editBeforeSaveTimeMessage");
+    }
+
+    private EditMessageText editBeforeSaveTimeMessage(Message incomeMessage) {
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
+        String chatStatus = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
+        log.debug("method: editBeforeSaveTimeMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editBeforeSaveSeatsMessage(Message incomeMessage) {
+        String chatStatus = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_SEATS_QUANTITY_STATUS.getValue();
+        editMessage = createSeatsMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveSeatsMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editBeforeSaveCommentaryMessage(Message incomeMessage) {
+        String chatStatus = handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS.getValue();
+        createCommentaryMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveCommentaryMessage");
+        return editMessage;
+    }
+
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
         log.debug("method: sendNecessityToCancelMessage");
+        return editMessage;
+    }
+    private EditMessageText chooseRequestToCancelMessage(Message incomeMessage) {
+        String message = messages.getCHOOSE_REQUEST_TO_CANCEL_MESSAGE();
+        String callback = handlerPrefix + requestOperation.CANCEL_REQUEST_CALLBACK.getValue();
+        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
+        log.debug("method: chooseRequestToEditMessage");
+        return editMessage;
+    }
+    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
+//        TODO вынести в суперкласс
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
+        log.debug("method: createChoiceRequestMessage");
+        return editMessage;
+    }
+
+    private FindRideRequest cancelRequest(int requestId) {
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        request.setActive(false)
+                .setCanceled(true)
+                .setCanceledAt(LocalDateTime.now());
+        log.debug("method cancelRequest");
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         return editMessage;
     }
 
@@ -479,6 +606,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return messageText;
     }
 
+
     private String dtoToString(FindRideRequestDTO dto) {
         String messageText = String.format(messages.getCREATE_FIND_RIDE_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
                 dto.getUser().getFirstName(),
@@ -497,8 +625,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 request.getDepartureSettlement().getName(),
                 request.getDestinationSettlement().getName(),
                 request.getDepartureBefore().toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-                request.getDepartureBefore().toLocalTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-//                request.getDepartureBefore().toLocalTime().toString(),
+                request.getDepartureBefore().toLocalTime().toString(),
                 request.getPassengersQuantity(),
                 request.getCommentary(),
                 request.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));

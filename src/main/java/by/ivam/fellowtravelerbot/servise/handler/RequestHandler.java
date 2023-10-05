@@ -245,6 +245,14 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
+//    protected EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
+//        editMessageTextGeneralPreset(incomeMessage);
+//        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
+//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
+//        log.debug("method: createChoiceRequestMessage");
+//        return editMessage;
+//    }
+
     protected SendMessage handleReceivedIncorrectTime(LocalTime time, long chatId) {
         if (time.toNanoOfDay() == 100) {
             sendMessage = createNewRequestInvalidTimeFormatMessage(chatId);

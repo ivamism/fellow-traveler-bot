@@ -993,6 +993,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
+        //        TODO вынести в суперкласс
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
