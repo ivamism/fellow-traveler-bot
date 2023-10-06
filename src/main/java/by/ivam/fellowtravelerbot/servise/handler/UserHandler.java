@@ -100,7 +100,8 @@ TODO разделить функциональные действия и отп�
             case "MY_RIDES_MENU" -> editMessage = showUserActiveRequestsListMessage(incomeMessage);
             case "EDIT_REQUEST" -> {
                 editMessage = chooseRequestToEdit(incomeMessage);
-            }case "CANCEL_REQUEST" -> {
+            }
+            case "CANCEL_REQUEST" -> {
                 editMessage = chooseRequestToCancel(incomeMessage);
             }
 
@@ -327,9 +328,9 @@ TODO разделить функциональные действия и отп�
     private EditMessageText showUserActiveRequestsListMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         Long chatId = incomeMessage.getChatId();
-        editMessage.setText(findPassengerHandler.requestListToString(incomeMessage.getChatId()));
-
-        if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() | findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
+        String messageText = String.format(messages.getALL_ACTIVE_REQUESTS_TO_STRING_MESSAGE(), findPassengerHandler.requestListToString(chatId), findRideHandler.requestListToString(chatId));
+        editMessage.setText(messageText);
+        if (findPassengerRequestService.findLastUserRequestOptional(chatId).isPresent() || findRideRequestService.findLastUserRequestOptional(chatId).isPresent()) {
             List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
             buttonsAttributesList.add(buttons.editLastButtonCreate(UserOperation.EDIT_LAST_REQUEST.getValue())); // Edit last request button
             buttonsAttributesList.add(buttons.editButtonCreate(Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_REQUEST)); // Edit some request button
@@ -338,32 +339,32 @@ TODO разделить функциональные действия и отп�
             buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
             editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         } else editMessage.setReplyMarkup(null);
+        log.debug("method showUserActiveRequestsListMessage");
         return editMessage;
     }
 
-    private EditMessageText chooseTypeOfRequestMessage(Message incomeMessage, String passCallback, String rideCallback) {
+    private EditMessageText chooseTypeOfRequestMessage(Message incomeMessage, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCHOOSE_TYPE_OF_REQUEST_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.myPassengerRequestButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + passCallback)); // Passenger request button
-        buttonsAttributesList.add(buttons.myRidesRequestButtonCreate("TODO callback")); // Ride request button
+        buttonsAttributesList.add(buttons.myPassengerRequestButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + callback)); // Passenger request button
+        buttonsAttributesList.add(buttons.myRidesRequestButtonCreate(Handlers.FIND_RIDE.getHandlerPrefix() + callback)); // Ride request button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method chooseTypeOfRequestMessage");
         return editMessage;
     }
 
-    private EditMessageText chooseRequestToEdit(Message incomeMessage){
-        String passCallback = requestOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
-        String rideCallback = "TODO callback";
-        editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
+    private EditMessageText chooseRequestToEdit(Message incomeMessage) {
+        String callback = requestOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
+        editMessage = chooseTypeOfRequestMessage(incomeMessage, callback);
         log.debug("method chooseRequestToEdit");
         return editMessage;
     }
-    private EditMessageText chooseRequestToCancel(Message incomeMessage){
-        String passCallback = requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
-        String rideCallback = "TODO callback";
-        editMessage=chooseTypeOfRequestMessage(incomeMessage,passCallback,rideCallback);
+
+    private EditMessageText chooseRequestToCancel(Message incomeMessage) {
+        String callback = requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
+        editMessage = chooseTypeOfRequestMessage(incomeMessage, callback);
         log.debug("method chooseRequestToCancel");
         return editMessage;
     }

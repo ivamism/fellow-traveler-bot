@@ -986,16 +986,15 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        String requestToString = requestToString(request);
+        editMessage = createCancelRequestSuccessMessage(incomeMessage, requestToString);
+        log.debug("method: cancelRequestSuccessMessage");
         return editMessage;
     }
 
-    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
-        //        TODO вынести в суперкласс
+    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String messageText, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
+        editMessage.setText(messageText + requestListToString(incomeMessage.getChatId()));
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
         log.debug("method: createChoiceRequestMessage");
         return editMessage;
@@ -1047,7 +1046,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return findPassengerRequestService.usersActiveRequestList(chatId);
     }
 
-    public List<Pair<String, String>> requestButtonsAttributesListCreator(String callbackData, long chatId) {
+    private List<Pair<String, String>> requestButtonsAttributesListCreator(String callbackData, long chatId) {
         List<FindPassengerRequest> requestList = getUserActiveFindPassengerRequestsList(chatId);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         if (requestList.isEmpty()) {

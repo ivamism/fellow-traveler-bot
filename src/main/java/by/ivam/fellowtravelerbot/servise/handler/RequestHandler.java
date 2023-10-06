@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
+import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,7 @@ public class RequestHandler extends Handler {
         log.debug("method: createChooseResidenceMessage");
         return editMessage;
     }
+
     protected EditMessageText createChooseOfAllSettlementsMessage(Message incomeMessage, String messageText, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
@@ -170,6 +172,7 @@ public class RequestHandler extends Handler {
         log.debug("method: createSeatsMessage");
         return editMessage;
     }
+
     protected SendMessage createSeatsMessage(long chatId, String chatStatus) {
         sendMessage.setText(messages.getCREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
@@ -217,7 +220,7 @@ public class RequestHandler extends Handler {
         return sendMessage;
     }
 
-    private List<Pair<String, String>> createCheckBeforeSaveButtonsAttributesList (String handlerPrefix){
+    private List<Pair<String, String>> createCheckBeforeSaveButtonsAttributesList(String handlerPrefix) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
         buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_REQUEST_BEFORE_SAVE_CALLBACK)); // Edit button
@@ -232,6 +235,13 @@ public class RequestHandler extends Handler {
         log.debug("method createRequestSaveSuccessMessage");
         return editMessage;
     }
+    protected EditMessageText createCancelRequestSuccessMessage(Message incomeMessage, String requestToString) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        log.debug("method createCancelRequestSuccessMessage");
+        return editMessage;
+    }
 
 
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
@@ -244,14 +254,6 @@ public class RequestHandler extends Handler {
         log.debug("method: editLocationMessage");
         return editMessage;
     }
-
-//    protected EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
-//        log.debug("method: createChoiceRequestMessage");
-//        return editMessage;
-//    }
 
     protected SendMessage handleReceivedIncorrectTime(LocalTime time, long chatId) {
         if (time.toNanoOfDay() == 100) {
@@ -331,7 +333,6 @@ public class RequestHandler extends Handler {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
         try {
             time = LocalTime.parse(timeString, formatter);
-
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -344,7 +345,7 @@ public class RequestHandler extends Handler {
     }
 
     protected void editMessageTextGeneralPreset(Message incomeMessage) {
-        long chatId =incomeMessage.getChatId();
+        long chatId = incomeMessage.getChatId();
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
     }

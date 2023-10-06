@@ -177,7 +177,6 @@ public class Messages {
     private final String FIND_PASSENGER_REQUEST_START_EDIT_MESSAGE = "Выберите, что вы хотите изменить.";
     private final String FIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск пассажиров.";
     private final String FIND_PASSENGER_SUCCESS_EDITION_MESSAGE = "Изменения успешно сохранены.\n\n";
-    private final String FIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск попуток.";
     private final String CHOOSE_TYPE_OF_REQUEST_MESSAGE = "Выберите тип запроса.";
     private final String CHOOSE_REQUEST_TO_EDIT_MESSAGE = "Выберите запрос, который вы хотите изменить.\n\n";
     private final String CHOOSE_REQUEST_TO_CANCEL_MESSAGE = "Выберите запрос, который вы хотите отменить.\n\n";
@@ -187,11 +186,13 @@ public class Messages {
             "Хотите продолжить?";
 
 
+
+
     //    FindRideRequest
-//    Creation new request
     private final String CREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутку?";
     private final String CREATE_FIND_RIDE_REQUEST_TIME_MESSAGE = "Напишите время, до которого вы бы хотели уехать. Сделайте это  в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
     private final String CREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE = "Напишите количество мест которое вам необходимо забронировать.\n Используйте цифру от 1 до 4";
+    private final String FIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE = "У вас нет активных запросов на поиск попуток.";
     private final String CREATE_FIND_RIDE_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE = """
             Проверьте правильность введенных данных\s
 
@@ -216,4 +217,7 @@ public class Messages {
             Комментарий: %s
             
             """;
+    private final String ALL_ACTIVE_REQUESTS_TO_STRING_MESSAGE = "Запросы на поиск пассажиров:\n\n%s\nЗапросы на поиск попуток:\n\n%s";
+
+
 }

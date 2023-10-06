@@ -7,9 +7,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
-import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
-import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
 import lombok.Data;
@@ -236,6 +234,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             case "CANCEL_REQUEST" -> {
                 FindRideRequest request = cancelRequest(trimId(callback));
                 editMessage = cancelRequestSuccessMessage(incomeMessage, request);
+            }
+            case "CHOOSE_REQUEST_TO_EDIT" -> {
+                editMessage = nextStep(incomeMessage);
+//                        chooseRequestToEditMessage(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
@@ -517,6 +519,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: sendNecessityToCancelMessage");
         return editMessage;
     }
+
     private EditMessageText chooseRequestToCancelMessage(Message incomeMessage) {
         String message = messages.getCHOOSE_REQUEST_TO_CANCEL_MESSAGE();
         String callback = handlerPrefix + requestOperation.CANCEL_REQUEST_CALLBACK.getValue();
@@ -524,10 +527,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: chooseRequestToEditMessage");
         return editMessage;
     }
-    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String message, String callback) {
-//        TODO вынести в суперкласс
+
+    private EditMessageText createChoiceRequestMessage(Message incomeMessage, String messageText, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(message + requestListToString(incomeMessage.getChatId()));
+        editMessage.setText(messageText + requestListToString(incomeMessage.getChatId()));
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(requestButtonsAttributesListCreator(callback, incomeMessage.getChatId())));
         log.debug("method: createChoiceRequestMessage");
         return editMessage;
@@ -543,9 +546,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        String requestToString = requestToString(request);
+        editMessage = createCancelRequestSuccessMessage(incomeMessage, requestToString);
         return editMessage;
     }
 
@@ -587,7 +589,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     public String requestListToString(long chatId) {
         List<FindRideRequest> requests = getUserActiveFindPassengerRequestsList(chatId);
         if (requests.isEmpty()) {
-            return messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE();
+            return messages.getFIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE();
         } else {
             StringBuilder text = new StringBuilder();
             for (FindRideRequest request : requests) {
@@ -605,7 +607,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         } else messageText = messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE();
         return messageText;
     }
-
 
     private String dtoToString(FindRideRequestDTO dto) {
         String messageText = String.format(messages.getCREATE_FIND_RIDE_REQUEST_CHECK_DATA_BEFORE_SAVE_MESSAGE(),
