@@ -235,12 +235,40 @@ public class RequestHandler extends Handler {
         log.debug("method createRequestSaveSuccessMessage");
         return editMessage;
     }
+
     protected EditMessageText createCancelRequestSuccessMessage(Message incomeMessage, String requestToString) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE() + requestToString + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         log.debug("method createCancelRequestSuccessMessage");
         return editMessage;
+    }
+
+    protected EditMessageText createStartEditRequestMessage(Message incomeMessage, List<Pair<String, String>> buttonsAttributesList) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createStartEditRequestMessage");
+        return editMessage;
+    }
+
+    protected List<Pair<String, String>> createEditBeforeSaveuttonsAttributesList(String handlerPrefix) {
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
+        buttonsAttributesList.add(buttons.passengerQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue())); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
+    }
+    protected List<Pair<String, String>> createEditBeforeSaveuttonsAttributesList(String handlerPrefix, int requestId) {
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
+        buttonsAttributesList.add(buttons.carDetailsButtonCreate(handlerPrefix + requestOperation.EDIT_CAR_DETAILS_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
     }
 
 

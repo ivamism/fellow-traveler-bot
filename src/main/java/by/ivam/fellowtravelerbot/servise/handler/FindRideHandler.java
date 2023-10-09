@@ -236,8 +236,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = cancelRequestSuccessMessage(incomeMessage, request);
             }
             case "CHOOSE_REQUEST_TO_EDIT" -> {
-                editMessage = nextStep(incomeMessage);
-//                        chooseRequestToEditMessage(incomeMessage);
+                editMessage = chooseRequestToEditMessage(incomeMessage);
             }
         }
         sendEditMessage(editMessage);
@@ -414,15 +413,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText startEditBeforeSaveRequestMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
-        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
-        buttonsAttributesList.add(buttons.passengerQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue())); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        editMessage = createStartEditRequestMessage(incomeMessage, createEditBeforeSaveuttonsAttributesList(handlerPrefix));
         log.debug("method: startEditBeforeSaveRequestMessage");
         return editMessage;
     }
@@ -511,6 +502,19 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         String chatStatus = handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS.getValue();
         createCommentaryMessage(incomeMessage, chatStatus);
         log.debug("method: editBeforeSaveCommentaryMessage");
+        return editMessage;
+    }
+
+    private EditMessageText chooseRequestToEditMessage(Message incomeMessage) {
+        String message = messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE();
+        String callback = handlerPrefix + requestOperation.EDIT_REQUEST_START_CALLBACK.getValue();
+        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
+        log.debug("method: chooseRequestToEditMessage");
+        return editMessage;
+    }
+    private EditMessageText startEditRequestMessage(Message incomeMessage, int requestId) {
+        editMessage = createStartEditRequestMessage(incomeMessage, createEditBeforeSaveuttonsAttributesList(handlerPrefix, requestId));
+        log.debug("method: startEditRequestMessage");
         return editMessage;
     }
 
