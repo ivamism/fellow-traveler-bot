@@ -238,6 +238,9 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             case "CHOOSE_REQUEST_TO_EDIT" -> {
                 editMessage = chooseRequestToEditMessage(incomeMessage);
             }
+            case "EDIT_REQUEST_START" -> {
+                editMessage = startEditRequestMessage(incomeMessage, trimId(callback));
+            }
         }
         sendEditMessage(editMessage);
     }
