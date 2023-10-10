@@ -3,7 +3,6 @@ package by.ivam.fellowtravelerbot.servise.handler;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
-import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,7 +251,7 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
-    protected List<Pair<String, String>> createEditBeforeSaveuttonsAttributesList(String handlerPrefix) {
+    protected List<Pair<String, String>> createEditButtonsAttributesList(String handlerPrefix) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
         buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
@@ -261,7 +260,7 @@ public class RequestHandler extends Handler {
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
-    protected List<Pair<String, String>> createEditBeforeSaveuttonsAttributesList(String handlerPrefix, int requestId) {
+    protected List<Pair<String, String>> createEditButtonsAttributesList(String handlerPrefix, int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
         buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
@@ -271,6 +270,13 @@ public class RequestHandler extends Handler {
         return buttonsAttributesList;
     }
 
+    protected EditMessageText createEditSettlementLocationMessage(Message incomeMessage, List<Pair<String, String>> buttonsAttributesList) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_REQUEST_START_EDIT_MESSAGE());
+        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createEditSettlementLocationMessage");
+        return editMessage;
+    }
 
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
