@@ -100,8 +100,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 if (time.toNanoOfDay() == 100 || isExpired(requestId, time)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
-//                    FindPassengerRequest request = editSetTime(requestId, time);
-//                    sendMessage = editRequestSuccessSendMessage(chatId, request);
+                    FindRideRequest request = editSetTime(requestId, time);
+                    sendMessage = editRequestSuccessSendMessage(chatId, request);
                 }
             }
             case "EDIT_CHANGE_SEATS_QUANTITY" -> {
@@ -248,27 +248,44 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editSettlementLocationMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_SWAP_DEP_DEST" -> {
-                editMessage = nextStep(incomeMessage);
-//                FindPassengerRequest request = editSwapDepartureDestination(trimId(callback));
-//                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
+                FindRideRequest request = editSwapDepartureDestination(trimId(callback));
+                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DEP_SETTLEMENT" -> {
-                editMessage = nextStep(incomeMessage);
-//                editMessage = editDepartureSettlementMessage(incomeMessage, trimId(callback));
+                editMessage = editDepartureSettlementMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DEP_SETTLEMENT" -> {
                 editMessage = nextStep(incomeMessage);
-//                setEditedDepartureSettlement(trimId(callback), trimSecondId(callback));
-//                editMessage = editDepartureLocationMessage(incomeMessage, trimId(callback), trimSecondId(callback));
+                FindRideRequest request = setEditedDepartureSettlement(trimId(callback), trimSecondId(callback));
+                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DEST_SETTLEMENT" -> {
-                editMessage = nextStep(incomeMessage);
-//                editMessage = editDestinationSettlementMessage(incomeMessage, trimId(callback));
+                editMessage = editDestinationSettlementMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DEST_SETTLEMENT" -> {
                 editMessage = nextStep(incomeMessage);
-//                setEditedDestinationSettlement(trimId(callback), trimSecondId(callback));
-//                editMessage = editDestinationLocationMessage(incomeMessage, trimId(callback), trimSecondId(callback));
+                FindRideRequest request = setEditedDestinationSettlement(trimId(callback), trimSecondId(callback));
+                editMessage = editRequestSuccessEditMessage(incomeMessage, request);
+            }
+            case "EDIT_DATE_TIME" -> {
+                editMessage = editDateTimeMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_DATE" -> {
+                editMessage = editDateMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_CHANGE_DATE" -> {
+//                String day = trimSecondSubstring(callback);
+                int requestId = trimSecondId(callback);
+                FindRideRequest request = editSetDate(requestId, trimSecondSubstring(callback));
+                if (isExpired(requestId)) { //TODO проверить работу - выдает всегда тру
+                    expiredTimeMessage(chatId);
+                    editMessage = editTimeSendValidTimeMessage(incomeMessage, requestId);
+                } else {
+                    editMessage = editRequestSuccessEditMessage(incomeMessage, request);
+                }
+            }
+            case "EDIT_TIME" -> {
+                editMessage = editTimeMessage(incomeMessage, trimId(callback));
             }
         }
         sendEditMessage(editMessage);
@@ -450,6 +467,16 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return editMessage;
     }
 
+    private List<Pair<String, String>> createEditButtonsAttributesList(String handlerPrefix) {
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
+        buttonsAttributesList.add(buttons.passengerQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue())); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
+    }
+
     private EditMessageText editBeforeSaveSettlementLocationMessage(Message incomeMessage) {
         List<Pair<String, String>> buttonsAttributesList = createEditSettlementsLocationButtonsAttributesList();
         editMessage = createEditSettlementLocationMessage(incomeMessage, buttonsAttributesList);
@@ -502,6 +529,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         dto.setDepartureSettlement(dto.getDestinationSettlement());
         dto.setDestinationSettlement(settlement);
         storageAccess.update(chatId, dto);
+        log.debug("method: editBeforeSaveSwapDepartureDestination");
     }
 
     private EditMessageText editBeforeSaveChangeDateMessage(Message incomeMessage) {
@@ -541,33 +569,160 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText chooseRequestToEditMessage(Message incomeMessage) {
-        String message = messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE();
+        String message = messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE() + requestListToString(incomeMessage.getChatId());
         String callback = handlerPrefix + requestOperation.EDIT_REQUEST_START_CALLBACK.getValue();
-        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
+        List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(callback, incomeMessage.getChatId());
+        editMessage = createChoiceRequestMessage(incomeMessage, message, buttonsAttributesList);
         log.debug("method: chooseRequestToEditMessage");
         return editMessage;
     }
 
     private EditMessageText startEditRequestMessage(Message incomeMessage, int requestId) {
-        editMessage = createStartEditRequestMessage(incomeMessage, createEditButtonsAttributesList(handlerPrefix, requestId));
+        editMessage = createStartEditRequestMessage(incomeMessage, createEditButtonsAttributesList(requestId));
         log.debug("method: startEditRequestMessage");
         return editMessage;
     }
 
+    private List<Pair<String, String>> createEditButtonsAttributesList(int requestId) {
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
+        buttonsAttributesList.add(buttons.carDetailsButtonCreate(handlerPrefix + requestOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+        return buttonsAttributesList;
+    }
+
     private EditMessageText editSettlementLocationMessage(Message incomeMessage, int requestId) {
-        List<Pair<String, String>> buttonsAttributesList = createEditSettlementsLocationButtonsAttributesList(handlerPrefix, requestId);
+        List<Pair<String, String>> buttonsAttributesList = createEditSettlementsLocationButtonsAttributesList(requestId);
         editMessage = createEditSettlementLocationMessage(incomeMessage, buttonsAttributesList);
         log.debug("method: editSettlementLocationMessage");
         return editMessage;
     }
 
-    private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList(String handlerPrefix, int requestId) {
+    private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList(int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + requestOperation.EDIT_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue() + requestId)); // Swap departure and destination button
         buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_DEPARTURE_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure settlement button
         buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_DESTINATION_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
+    }
+
+    private FindRideRequest editSwapDepartureDestination(int requestId) {
+        log.debug("method: editSwapDepartureDestination");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        if (request.getDirection().equals(Direction.FROM_MINSK.getValue())) {
+            request.setDirection(Direction.TOWARDS_MINSK.getValue());
+        } else {
+            request.setDirection(Direction.FROM_MINSK.getValue());
+        }
+        Settlement settlement = request.getDepartureSettlement();
+        request.setDepartureSettlement(request.getDestinationSettlement());
+        request.setDestinationSettlement(settlement);
+        findRideRequestService.updateRequest(request);
+        log.debug("method: editBeforeSaveSwapDepartureDestination");
+        return request;
+    }
+
+    private EditMessageText editDepartureSettlementMessage(Message incomeMessage, int requestId) {
+        String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
+        String callbackData =
+                handlerPrefix + requestOperation.EDIT_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
+        return createEditSettlementMessage(incomeMessage, messageText, callbackData, requestId);
+    }
+
+    private EditMessageText editDestinationSettlementMessage(Message incomeMessage, int requestId) {
+        String messageText = messages.getCREATE_REQUEST_DESTINATION_SETTLEMENT_MESSAGE();
+        String callbackData =
+                handlerPrefix + requestOperation.EDIT_CHANGE_DESTINATION_SETTLEMENT_CALLBACK.getValue();
+        return createEditSettlementMessage(incomeMessage, messageText, callbackData, requestId);
+    }
+
+    private FindRideRequest setEditedDepartureSettlement(int requestId, int settlementId) {
+        log.debug("method: setEditedDepartureSettlement");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        request.setDepartureSettlement(settlementService.findById(settlementId));
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private FindRideRequest setEditedDestinationSettlement(int requestId, int settlementId) {
+        log.debug("method: setEditedDestinationSettlement");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        request.setDestinationSettlement(settlementService.findById(settlementId));
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editDateTimeMessage(Message incomeMessage, int requestId) {
+        String callbackDate = handlerPrefix + requestOperation.EDIT_DATE_CALLBACK.getValue() + requestId;
+        String callbackTime = handlerPrefix + requestOperation.EDIT_TIME_CALLBACK.getValue() + requestId;
+        editMessage = createDateTimeMessage(incomeMessage, callbackDate, callbackTime);
+        log.debug("method: editDateTimeMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editDateMessage(Message incomeMessage, int requestId) {
+        String todayCallback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TODAY.getValue(), requestId);
+        String tomorrowCallback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TOMORROW.getValue(), requestId);
+        editMessage = createChooseDateMessage(incomeMessage, todayCallback, tomorrowCallback);
+        log.debug("method: editBeforeSaveChangeDateMessage");
+        return editMessage;
+    }
+
+    private FindRideRequest editSetDate(int requestId, String day) {
+        log.debug("method editSetDate");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        LocalDateTime rideBefore = request.getDepartureBefore();
+        if (isToday(day)) {
+            request.setDepartureBefore(rideBefore.withDayOfMonth(LocalDate.now().getDayOfMonth()));
+        } else {
+            request.setDepartureBefore(rideBefore.withDayOfMonth(LocalDate.now().getDayOfMonth() + 1));
+        }
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editTimeMessage(Message incomeMessage, int requestId) {
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
+//        TODO добавить  кнопки с промежутками времени если выезд сегодня.
+        String chatStatus = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
+        editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
+        log.debug("method: editTimeMessage");
+        return editMessage;
+    }
+
+    private EditMessageText editTimeSendValidTimeMessage(Message incomeMessage, int requestId) {
+        String callback = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
+        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
+        editMessage = createTimeMessage(incomeMessage, messageText, callback);
+        log.debug("method: editTimeSendValidTimeMessage");
+        return editMessage;
+    }
+
+    private FindRideRequest editSetTime(int requestId, LocalTime time) {
+        log.debug("method editSetTime");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+//        LocalDateTime rideDate = request.getDepartureBefore();
+//        rideDate = rideDate.withHour(time.getHour()).withMinute(time.getMinute());
+//        request.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute());
+
+        request.setDepartureBefore(request.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editRequestSuccessEditMessage(Message incomeMessage, FindRideRequest request) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.deleteChatStatus(incomeMessage.getChatId());
+        return editMessage;
+    }
+
+    private SendMessage editRequestSuccessSendMessage(long chatId, FindRideRequest request) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        chatStatusStorageAccess.deleteChatStatus(chatId);
+        return sendMessage;
     }
 
     private EditMessageText sendNecessityToCancelMessage(Message incomeMessage) {
@@ -577,6 +732,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText chooseRequestToCancelMessage(Message incomeMessage) {
+//        TODO переделать как и в выводе списка для редактирования
         String message = messages.getCHOOSE_REQUEST_TO_CANCEL_MESSAGE();
         String callback = handlerPrefix + requestOperation.CANCEL_REQUEST_CALLBACK.getValue();
         editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
