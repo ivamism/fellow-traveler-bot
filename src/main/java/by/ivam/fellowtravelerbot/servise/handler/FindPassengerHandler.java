@@ -319,7 +319,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = editDateMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DATE" -> {
-//                String day = trimSecondSubstring(callback);
                 int requestId = trimSecondId(callback);
                 FindPassengerRequest request = editSetDate(trimSecondId(callback), trimSecondSubstring(callback));
                 if (isExpired(requestId)) {
@@ -771,18 +770,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return buttonsAttributesList;
     }
 
-//    private EditMessageText createEditSettlementMessage(Message incomeMessage, String messageText, String callbackData, int requestId) {
-//        editMessageTextGeneralPreset(incomeMessage);
-//        editMessage.setText(messageText);
-//        List<Pair<String, String>> buttonsAttributesList =
-//                adminHandler.settlementsButtonsAttributesListCreator(callbackData, settlementService.findAll(), requestId);
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-//        log.debug("method: editDepartureSettlementMessage");
-//        return editMessage;
-//    }
 
-    //                TODO продумать изменения направления
     private EditMessageText editDepartureSettlementMessage(Message incomeMessage, int requestId) {
         String messageText = messages.getCREATE_REQUEST_DEPARTURE_SETTLEMENT_MESSAGE();
         String callbackData =

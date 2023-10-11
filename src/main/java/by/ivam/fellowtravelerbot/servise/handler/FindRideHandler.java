@@ -255,7 +255,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editDepartureSettlementMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DEP_SETTLEMENT" -> {
-                editMessage = nextStep(incomeMessage);
                 FindRideRequest request = setEditedDepartureSettlement(trimId(callback), trimSecondId(callback));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
@@ -263,7 +262,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editDestinationSettlementMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DEST_SETTLEMENT" -> {
-                editMessage = nextStep(incomeMessage);
                 FindRideRequest request = setEditedDestinationSettlement(trimId(callback), trimSecondId(callback));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
@@ -274,10 +272,9 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editDateMessage(incomeMessage, trimId(callback));
             }
             case "EDIT_CHANGE_DATE" -> {
-//                String day = trimSecondSubstring(callback);
                 int requestId = trimSecondId(callback);
                 FindRideRequest request = editSetDate(requestId, trimSecondSubstring(callback));
-                if (isExpired(requestId)) { //TODO проверить работу - выдает всегда тру
+                if (isExpired(requestId)) {
                     expiredTimeMessage(chatId);
                     editMessage = editTimeSendValidTimeMessage(incomeMessage, requestId);
                 } else {
@@ -854,11 +851,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private boolean isExpired(int requestId) {
-        return findPassengerRequestService.findById(requestId).getDepartureAt().isBefore(LocalDateTime.now());
+        return findRideRequestService.findById(requestId).getDepartureBefore().isBefore(LocalDateTime.now());
     }
 
     private boolean isExpired(int requestId, LocalTime time) {
-        return findPassengerRequestService.findById(requestId).getDepartureAt().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
+        return findRideRequestService.findById(requestId)
+                .getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute())
+                .isBefore(LocalDateTime.now());
+//        return findRideRequestService.findById(requestId).getDepartureBefore().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
 
     private boolean isRequestQuantityLimit(long chatId) {
