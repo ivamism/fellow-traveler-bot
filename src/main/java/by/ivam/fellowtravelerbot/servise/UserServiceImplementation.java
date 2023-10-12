@@ -21,16 +21,13 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private DeletedUserRepository deletedUserRepository;
 
-
     @Override
     public User findUserById(long chatId) {
-
         return userRepository.findById(chatId).orElseThrow();
     }
 
     @Override
     public Optional<User> findById(long chatId) {
-
         return userRepository.findById(chatId);
     }
 
@@ -82,6 +79,5 @@ public class UserServiceImplementation implements UserService {
     public User updateUser(User user) {
         log.info("Update User: " + user);
         return userRepository.save(user);
-
     }
 }

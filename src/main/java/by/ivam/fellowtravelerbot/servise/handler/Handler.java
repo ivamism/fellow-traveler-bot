@@ -86,7 +86,6 @@ public class Handler {
         return id;
     }
 
-
     public String firstLetterToUpperCase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }

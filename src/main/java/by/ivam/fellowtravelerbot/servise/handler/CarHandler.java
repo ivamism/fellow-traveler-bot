@@ -590,7 +590,6 @@ public class CarHandler extends Handler implements HandlerInterface {
         return buttons.buttonsAttributesListCreator(carButtonsAttributes, callbackData);
     }
 
-
     public void editMessageTextGeneralPreset(Message incomeMessage) {
         editMessage.setChatId(incomeMessage.getChatId());
         editMessage.setMessageId(incomeMessage.getMessageId());

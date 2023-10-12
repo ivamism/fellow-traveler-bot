@@ -15,13 +15,10 @@ import java.time.LocalDateTime;
 @Data
 @Log4j
 public class CallbackDispatcher extends Dispatcher {
-
     @Autowired
     FindRideRequestService findRideRequestService;
     @Autowired
     FindPassengerRequestService findPassengerRequestService;
-
-
     public void onCallbackReceived(CallbackQuery callbackQuery) {
         Message incomeMessage = callbackQuery.getMessage();
         String callbackData = callbackQuery.getData();

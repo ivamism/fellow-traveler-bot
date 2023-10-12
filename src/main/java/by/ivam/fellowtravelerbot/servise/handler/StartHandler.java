@@ -44,7 +44,6 @@ public class StartHandler extends Handler implements HandlerInterface {
         startMessaging(incomeMessage);
     }
 
-
     public void startMessaging(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
 

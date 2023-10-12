@@ -35,7 +35,6 @@ public class FindRideDTOStorageAccessImplementation implements FindRideDTOStorag
     public void update(long chatId, FindRideRequestDTO requestDTO) {
         storage.getFindRideRequestDTOStorage().put(chatId, requestDTO);
         log.debug("update FindRideRequestDTO in storage " + requestDTO + " with userId " + chatId);
-
     }
 
     @Override
@@ -43,6 +42,4 @@ public class FindRideDTOStorageAccessImplementation implements FindRideDTOStorag
         storage.getFindRideRequestDTOStorage().remove(chatId);
         log.debug("delete FindRideRequestDTO from storage. chatId: " + chatId);
     }
-
-
 }

@@ -51,8 +51,6 @@ log.info("CarService: get User's cars list");
     @Override
     public void deleteAllUsersCars(List<Integer> carIdList) {
         carIdList.forEach(id -> deleteCarById(id));
-
-//        carRepository.deleteAllByUser_chatId(chatId);
         log.info("CarService: deleteAllUsersCars");
     }
 

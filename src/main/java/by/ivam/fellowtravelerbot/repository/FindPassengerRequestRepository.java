@@ -10,9 +10,4 @@ public interface FindPassengerRequestRepository extends JpaRepository<FindPassen
     List<FindPassengerRequest> findByUser_ChatIdAndIsActiveTrueOrderByDepartureAtAsc(Long chatId);
 
     Optional <FindPassengerRequest> findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(Long chatId);
-
-
-
-
-
 }

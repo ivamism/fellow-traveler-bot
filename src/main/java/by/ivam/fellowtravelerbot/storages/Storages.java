@@ -17,6 +17,4 @@ public class Storages {
     HashMap<Long, LocationDTO> locationDTOStorage = new HashMap<>();
     HashMap<Long, FindRideRequestDTO> findRideRequestDTOStorage = new HashMap<>();
     HashMap<Long, FindPassengerRequestDTO> findPassengerRequestDTOStorage = new HashMap<>();
-
-
 }

@@ -213,7 +213,6 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-
 //    Edit User's data
 
     private String getUserData(long chatId) {
@@ -315,7 +314,6 @@ TODO разделить функциональные действия и отп�
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         return editMessage;
     }
-
 
     private EditMessageText deleteUserSuccessMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);

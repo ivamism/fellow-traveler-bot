@@ -35,7 +35,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         return repository.findFirstByUser_ChatIdAndIsActiveTrueOrderByCreatedAtDesc(chatId);
     }
 
-
     @Override
     public FindPassengerRequest addNewRequest(FindPassengerRequestDTO dto) {
         FindPassengerRequest request = new FindPassengerRequest();

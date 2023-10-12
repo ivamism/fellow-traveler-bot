@@ -913,7 +913,5 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     private List<FindRideRequest> getUserActiveRequestsList(long chatId) {
         return findRideRequestService.usersActiveRequestList(chatId);
     }
-
-
 }
 
