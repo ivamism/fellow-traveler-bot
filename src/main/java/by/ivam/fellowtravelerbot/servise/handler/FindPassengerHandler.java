@@ -323,7 +323,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 FindPassengerRequest request = editSetDate(trimSecondId(callback), trimSecondSubstring(callback));
                 if (isExpired(requestId)) {
                     expiredTimeMessage(chatId);
-                    editTimeSendValidTimeMessage(chatId);
+                    editTimeSendValidTimeMessage(chatId, requestId);
                 } else {
                     editMessage = editRequestSuccessEditMessage(incomeMessage, request);
                 }
@@ -573,6 +573,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         log.debug("method: startEditBeforeSaveRequestMessage");
         return editMessage;
     }
+
     private List<Pair<String, String>> createEditButtonsAttributesList() {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
@@ -585,12 +586,12 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private EditMessageText editBeforeSaveSettlementLocationMessage(Message incomeMessage) {
         List<Pair<String, String>> buttonsAttributesList = createEditSettlementsLocationButtonsAttributesList();
-        editMessage = createEditSettlementLocationMessage(incomeMessage,  buttonsAttributesList);
+        editMessage = createEditSettlementLocationMessage(incomeMessage, buttonsAttributesList);
         log.debug("method: EditBeforeSaveSettlementLocationMessage");
         return editMessage;
     }
 
-      private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList() {
+    private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList() {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
         buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
@@ -743,6 +744,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         log.debug("method: startEditRequestMessage");
         return editMessage;
     }
+
     private List<Pair<String, String>> createEditButtonsAttributesList(int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
@@ -759,6 +761,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         log.debug("method: editSettlementLocationMessage");
         return editMessage;
     }
+
     private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList(String handlerPrefix, int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + requestOperation.EDIT_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue() + requestId)); // Swap departure and destination button
@@ -883,8 +886,8 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return editMessage;
     }
 
-    private void editTimeSendValidTimeMessage(long chatId) {
-        String callback = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue();
+    private void editTimeSendValidTimeMessage(long chatId, int requestId) {
+        String callback = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
         createTimeSendMessage(chatId, callback);
         log.debug("method: editTimeSendValidTimeMessage");
     }

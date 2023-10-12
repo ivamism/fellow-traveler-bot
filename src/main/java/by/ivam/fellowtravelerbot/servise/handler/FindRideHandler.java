@@ -276,7 +276,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 FindRideRequest request = editSetDate(requestId, trimSecondSubstring(callback));
                 if (isExpired(requestId)) {
                     expiredTimeMessage(chatId);
-                    editMessage = editTimeSendValidTimeMessage(incomeMessage, requestId);
+                    editTimeSendValidTimeMessage(chatId, requestId);
                 } else {
                     editMessage = editRequestSuccessEditMessage(incomeMessage, request);
                 }
@@ -544,7 +544,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText editBeforeSaveTimeMessage(Message incomeMessage) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
+        String messageText = messages.getCREATE_FIND_RIDE_REQUEST_TIME_MESSAGE();
         String chatStatus = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_TIME_STATUS.getValue();
         editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
         log.debug("method: editBeforeSaveTimeMessage");
@@ -679,7 +679,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText editTimeMessage(Message incomeMessage, int requestId) {
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
+        String messageText = messages.getCREATE_FIND_RIDE_REQUEST_TIME_MESSAGE();
 //        TODO добавить  кнопки с промежутками времени если выезд сегодня.
         String chatStatus = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
         editMessage = createTimeMessage(incomeMessage, messageText, chatStatus);
@@ -687,21 +687,15 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return editMessage;
     }
 
-    private EditMessageText editTimeSendValidTimeMessage(Message incomeMessage, int requestId) {
+    private void editTimeSendValidTimeMessage(long chatId, int requestId) {
         String callback = handlerPrefix + requestOperation.EDIT_CHANGE_TIME_STATUS.getValue() + requestId;
-        String messageText = messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE();
-        editMessage = createTimeMessage(incomeMessage, messageText, callback);
+        createTimeSendMessage(chatId, callback);
         log.debug("method: editTimeSendValidTimeMessage");
-        return editMessage;
     }
 
     private FindRideRequest editSetTime(int requestId, LocalTime time) {
         log.debug("method editSetTime");
         FindRideRequest request = findRideRequestService.findById(requestId);
-//        LocalDateTime rideDate = request.getDepartureBefore();
-//        rideDate = rideDate.withHour(time.getHour()).withMinute(time.getMinute());
-//        request.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute());
-
         request.setDepartureBefore(request.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
         return findRideRequestService.updateRequest(request);
     }
