@@ -20,17 +20,19 @@ import java.util.List;
 public class RequestHandler extends Handler {
 
     @Autowired
-    AdminHandler adminHandler;
+    protected AdminHandler adminHandler;
     @Autowired
-    CarHandler carHandler;
-    SendMessage sendMessage = new SendMessage();
-    EditMessageText editMessage = new EditMessageText();
+    protected CarHandler carHandler;
+
+    protected SendMessage sendMessage = new SendMessage();
+    protected EditMessageText editMessage = new EditMessageText();
 
     protected SendMessage createNewRequest(long chatId, String messageText, String handlerPrefix) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messageText);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
-        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Start create button
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix
+                + requestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Start create button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequest");
@@ -41,8 +43,10 @@ public class RequestHandler extends Handler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
-        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
+        buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix
+                + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
+        buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix
+                + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChoseDirectionMessage");
@@ -53,7 +57,8 @@ public class RequestHandler extends Handler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
-        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
+        buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix
+                + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
@@ -76,7 +81,6 @@ public class RequestHandler extends Handler {
     protected EditMessageText createChooseOfAllSettlementsMessage(Message incomeMessage, String messageText, String callback) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
-//        String callbackData = handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_CHANGE_DEPARTURE_SETTLEMENT_CALLBACK.getValue();
         List<Pair<String, String>> buttonsAttributesList =
                 adminHandler.settlementsButtonsAttributesListCreator(callback, settlementService.findAll());
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
@@ -166,7 +170,6 @@ public class RequestHandler extends Handler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-//        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createSeatsMessage");
         return editMessage;
@@ -175,7 +178,6 @@ public class RequestHandler extends Handler {
     protected SendMessage createSeatsMessage(long chatId, String chatStatus) {
         sendMessage.setText(messages.getCREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-//        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(chatId, chatStatus);
         log.debug("method: createSeatsMessage");
         return sendMessage;
@@ -250,6 +252,7 @@ public class RequestHandler extends Handler {
         log.debug("method: createStartEditRequestMessage");
         return editMessage;
     }
+
     //                TODO продумать изменения направления
     protected EditMessageText createEditSettlementLocationMessage(Message incomeMessage, List<Pair<String, String>> buttonsAttributesList) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -269,6 +272,7 @@ public class RequestHandler extends Handler {
         log.debug("method: editDepartureSettlementMessage");
         return editMessage;
     }
+
     protected EditMessageText editLocationMessage(Message incomeMessage, String messageText, String callbackData, int settlementId) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
@@ -329,20 +333,9 @@ public class RequestHandler extends Handler {
         return editMessage;
     }
 
-
-
-//    protected EditMessageText createChooseRequestToEditMessage(Message incomeMessage, String handlerPrefix) {
-//        String message = messages.getCHOOSE_REQUEST_TO_EDIT_MESSAGE();
-//        String callback = handlerPrefix + requestOperation.EDIT_REQUEST_START_CALLBACK.getValue();
-//        editMessage = createChoiceRequestMessage(incomeMessage, message, callback);
-//        log.debug("method: chooseRequestToEditMessage");
-//        return editMessage;
-//    }
     protected EditMessageText createChoiceRequestMessage(Message incomeMessage, String messageText, List<Pair<String, String>> buttonsAttributesList) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
-//        String callback = handlerPrefix + requestOperation.EDIT_REQUEST_START_CALLBACK.getValue();
-//        editMessage.setText(messageText + requestListToString(incomeMessage.getChatId()));
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createChoiceRequestMessage");
         return editMessage;
@@ -357,7 +350,6 @@ public class RequestHandler extends Handler {
 
     protected LocalTime getTime(String timeString) {
         LocalTime time = LocalTime.of(0, 0, 0, 100);
-
         if (timeString.contains(("."))) {
             DateTimeFormatter dotFormatter = DateTimeFormatter.ofPattern("H.m");
             time = parseTime(timeString, dotFormatter);

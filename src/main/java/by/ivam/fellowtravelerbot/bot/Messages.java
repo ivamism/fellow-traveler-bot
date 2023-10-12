@@ -181,9 +181,10 @@ public class Messages {
     private final String CHOOSE_REQUEST_TO_EDIT_MESSAGE = "Выберите запрос, который вы хотите изменить.\n\n";
     private final String CHOOSE_REQUEST_TO_CANCEL_MESSAGE = "Выберите запрос, который вы хотите отменить.\n\n";
     private final String FIND_PASSENGER_CANCEL_REQUEST_SUCCESS_MESSAGE = "Ваш запрос на поиск попутчиков отменен.\n\n";
-    private final String FIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE = "У вас максимально возможное количество активных запросов на поиск попутчиков.\n" +
-            "Прежде чем сформировать новый, необходимо отменить один из существующих.\n" +
-            "Хотите продолжить?";
+    private final String FIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE = """
+            У вас максимально возможное количество активных запросов на поиск попутчиков.
+            Прежде чем сформировать новый, необходимо отменить один из существующих.
+            Хотите продолжить?""";
 
 
 

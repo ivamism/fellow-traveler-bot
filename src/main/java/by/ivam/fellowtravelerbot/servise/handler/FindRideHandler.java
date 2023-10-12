@@ -7,7 +7,6 @@ import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
-import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
@@ -42,8 +41,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     @Autowired
     private final AdminHandler adminHandler;
     private final String handlerPrefix = Handlers.FIND_RIDE.getHandlerPrefix();
-    SendMessage sendMessage = new SendMessage();
-    EditMessageText editMessage = new EditMessageText();
+    private SendMessage sendMessage = new SendMessage();
+    private EditMessageText editMessage = new EditMessageText();
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
@@ -473,10 +472,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private List<Pair<String, String>> createEditButtonsAttributesList(String handlerPrefix) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
-        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
-        buttonsAttributesList.add(buttons.passengerQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue())); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_SETTLEMENT_LOCATION_CALLBACK.getValue())); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_DATE_TIME_CALLBACK.getValue())); // Edit date or time button
+        buttonsAttributesList.add(buttons.passengerQuantityButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_SEATS_QUANTITY_CALLBACK.getValue())); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_COMMENTARY_CALLBACK)); // Tomorrow button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -490,9 +493,12 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList() {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
-        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
-        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit departure location button
+        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue())); // Swap departure and destination button
+        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_DEPARTURE_SETTLEMENT_CALLBACK.getValue())); // Edit departure settlement button
+        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix
+                + requestOperation.EDIT_BEFORE_SAVE_DESTINATION_SETTLEMENT_CALLBACK.getValue())); // Edit departure location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -589,10 +595,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private List<Pair<String, String>> createEditButtonsAttributesList(int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
-        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
-        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
-        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
+        buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix
+                + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
+        buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix
+                + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
+        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(handlerPrefix
+                + requestOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix
+                + requestOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -606,9 +616,12 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private List<Pair<String, String>> createEditSettlementsLocationButtonsAttributesList(int requestId) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix + requestOperation.EDIT_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue() + requestId)); // Swap departure and destination button
-        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_DEPARTURE_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure settlement button
-        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix + requestOperation.EDIT_DESTINATION_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure location button
+        buttonsAttributesList.add(buttons.swapDepartureDestinationButtonCreate(handlerPrefix
+                + requestOperation.EDIT_SWAP_DEPARTURE_DESTINATION_CALLBACK.getValue() + requestId)); // Swap departure and destination button
+        buttonsAttributesList.add(buttons.departureSettlementButtonCreate(handlerPrefix
+                + requestOperation.EDIT_DEPARTURE_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure settlement button
+        buttonsAttributesList.add(buttons.destinationSettlementButtonCreate(handlerPrefix
+                + requestOperation.EDIT_DESTINATION_SETTLEMENT_CALLBACK.getValue() + requestId)); // Edit departure location button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -666,8 +679,10 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private EditMessageText editDateMessage(Message incomeMessage, int requestId) {
-        String todayCallback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TODAY.getValue(), requestId);
-        String tomorrowCallback = handlerPrefix + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TOMORROW.getValue(), requestId);
+        String todayCallback = handlerPrefix
+                + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TODAY.getValue(), requestId);
+        String tomorrowCallback = handlerPrefix
+                + String.format(requestOperation.EDIT_CHANGE_DATE_CALLBACK.getValue(), Day.TOMORROW.getValue(), requestId);
         editMessage = createChooseDateMessage(incomeMessage, todayCallback, tomorrowCallback);
         log.debug("method: editBeforeSaveChangeDateMessage");
         return editMessage;
@@ -737,7 +752,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private EditMessageText editRequestSuccessEditMessage(Message incomeMessage, FindRideRequest request) {
         editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE()
+                + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.deleteChatStatus(incomeMessage.getChatId());
         return editMessage;
@@ -745,7 +761,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private SendMessage editRequestSuccessSendMessage(long chatId, FindRideRequest request) {
         sendMessage.setChatId(chatId);
-        sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
+        sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE()
+                + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.deleteChatStatus(chatId);
         return sendMessage;
@@ -887,7 +904,6 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return findRideRequestService.findById(requestId)
                 .getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute())
                 .isBefore(LocalDateTime.now());
-//        return findRideRequestService.findById(requestId).getDepartureBefore().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
 
     private boolean isRequestQuantityLimit(long chatId) {
