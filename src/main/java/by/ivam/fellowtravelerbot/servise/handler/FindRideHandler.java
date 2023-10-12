@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
+import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
@@ -106,16 +107,16 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             }
             case "EDIT_CHANGE_SEATS_QUANTITY" -> {
                 if (seatsQuantityIsValid(messageText)) {
-//                    FindPassengerRequest request = setEditedSeatsQuantity(trimId(chatStatus), Integer.parseInt(messageText));
-//                    sendMessage = editRequestSuccessSendMessage(chatId, request);
+                    FindRideRequest request = setEditedSeatsQuantity(trimId(chatStatus), Integer.parseInt(messageText));
+                    sendMessage = editRequestSuccessSendMessage(chatId, request);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
             }
             case "EDIT_CHANGE_COMMENTARY" -> {
-//                FindPassengerRequest request = setEditedCommentary(trimId(chatStatus), messageText);
-//                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
-//                else sendMessage = editRequestSuccessSendMessage(chatId, request);
+                FindRideRequest request = setEditedCommentary(trimId(chatStatus), messageText);
+                if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
+                else sendMessage = editRequestSuccessSendMessage(chatId, request);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
         }
@@ -283,6 +284,12 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             }
             case "EDIT_TIME" -> {
                 editMessage = editTimeMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_SEATS_QUANTITY" -> {
+                editMessage = editSeatsMessage(incomeMessage, trimId(callback));
+            }
+            case "EDIT_COMMENTARY" -> {
+                editMessage = editCommentaryMessage(incomeMessage, trimId(callback));
             }
         }
         sendEditMessage(editMessage);
@@ -584,7 +591,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.settlementLocationButtonCreate(handlerPrefix + requestOperation.EDIT_SETTLEMENT_LOCATION_CALLBACK.getValue() + requestId)); // Edit settlements or locations button
         buttonsAttributesList.add(buttons.dateTimeButtonCreate(handlerPrefix + requestOperation.EDIT_DATE_TIME_CALLBACK.getValue() + requestId)); // Edit date or time button
-        buttonsAttributesList.add(buttons.carDetailsButtonCreate(handlerPrefix + requestOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
+        buttonsAttributesList.add(buttons.seatsQuantityButtonCreate(handlerPrefix + requestOperation.EDIT_SEATS_QUANTITY_CALLBACK.getValue() + requestId)); // Change car or seats quantity button
         buttonsAttributesList.add(buttons.commentaryButtonCreate(handlerPrefix + requestOperation.EDIT_COMMENTARY_CALLBACK.getValue() + requestId)); // Edit commentary button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
@@ -697,6 +704,34 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method editSetTime");
         FindRideRequest request = findRideRequestService.findById(requestId);
         request.setDepartureBefore(request.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editSeatsMessage(Message incomeMessage, int requestId) {
+        String chatStatus = handlerPrefix + requestOperation.EDIT_CHANGE_SEATS_QUANTITY_STATUS.getValue() + requestId;
+        editMessage = createSeatsMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveSeatsMessage");
+        return editMessage;
+    }
+
+    private FindRideRequest setEditedSeatsQuantity(int requestId, int quantity) {
+        log.debug("method: setEditedSeatsQuantity");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        request.setPassengersQuantity(quantity);
+        return findRideRequestService.updateRequest(request);
+    }
+
+    private EditMessageText editCommentaryMessage(Message incomeMessage, int requestId) {
+        String chatStatus = handlerPrefix + requestOperation.EDIT_CHANGE_COMMENTARY_STATUS.getValue() + requestId;
+        createCommentaryMessage(incomeMessage, chatStatus);
+        log.debug("method: editBeforeSaveCommentaryMessage");
+        return editMessage;
+    }
+
+    private FindRideRequest setEditedCommentary(int requestId, String commentary) {
+        log.debug("method: setEditedSeatsQuantity");
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        request.setCommentary(firstLetterToUpperCase(commentary));
         return findRideRequestService.updateRequest(request);
     }
 

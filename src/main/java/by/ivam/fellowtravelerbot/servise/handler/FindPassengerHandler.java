@@ -947,7 +947,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     private FindPassengerRequest setEditedCommentary(int requestId, String commentary) {
         log.debug("method: setEditedSeatsQuantity");
         FindPassengerRequest request = findPassengerRequestService.findById(requestId);
-        request.setCommentary(commentary);
+        request.setCommentary(firstLetterToUpperCase(commentary));
         return findPassengerRequestService.updateRequest(request);
     }
 
