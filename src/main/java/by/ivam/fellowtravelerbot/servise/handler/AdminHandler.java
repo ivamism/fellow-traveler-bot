@@ -64,11 +64,9 @@ public class AdminHandler extends Handler implements HandlerInterface {
             process = trimProcess(callback);
         }
         log.debug("process: " + process);
-        switch (process) {
-            case "DEPARTURE_LOCATION_SET_SETTLEMENT_CALLBACK" -> {
-                departureLocationSetSettlement(chatId, callback);
-                editMessage = departureLocationNameRequestMessage(incomeMessage);
-            }
+        if (process.equals("DEPARTURE_LOCATION_SET_SETTLEMENT_CALLBACK")) {
+            departureLocationSetSettlement(chatId, callback);
+            editMessage = departureLocationNameRequestMessage(incomeMessage);
         }
         sendEditMessage(editMessage);
     }

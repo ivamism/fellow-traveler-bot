@@ -25,8 +25,8 @@ public class StartHandler extends Handler implements HandlerInterface {
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
         log.debug("method handleReceivedCallback");
-        switch (callback) {
-            case "CANCEL_CALLBACK" -> editMessage = quitProcessMessage(incomeMessage);
+        if (callback.equals("CANCEL_CALLBACK")) {
+            editMessage = quitProcessMessage(incomeMessage);
         }
         sendEditMessage(editMessage);
     }
