@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -24,10 +25,11 @@ This class handle operations with User registration process, editing, deleting, 
  */
 
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 @Log4j
-public class UserHandler extends Handler implements HandlerInterface {
+public class UserHandler extends BaseHandler implements HandlerInterface {
     @Autowired
     UserDTOStorageAccess userDTOStorageAccess;
     @Autowired
@@ -42,10 +44,6 @@ public class UserHandler extends Handler implements HandlerInterface {
     FindRideHandler findRideHandler;
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
-
-    /*  TODO Добавить сообщение о невозможности пользоваться ботом без регистрации и предложить вернутся к регистрации
-TODO разделить функциональные действия и отправку сообщений
-     */
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
@@ -71,7 +69,7 @@ TODO разделить функциональные действия и отп�
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-            process = trimProcess(callback);
+            process = extractProcess(callback);
         }
 
         log.debug("method handleReceivedCallback. get callback: " + callback);
@@ -122,7 +120,6 @@ TODO разделить функциональные действия и отп�
         sendBotMessage(sendMessage);
     }
 
-    // Ask user to confirm telegram User's first name as UserName or edit it
     private EditMessageText confirmUserFirstName(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         String firstName = incomeMessage.getChat().getFirstName();
@@ -139,7 +136,6 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    //    Request to send users choice of userFirstName
     private EditMessageText editUserFirstNameBeforeSaving(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         long chatId = incomeMessage.getChatId();
@@ -151,7 +147,6 @@ TODO разделить функциональные действия и отп�
         return editMessage;
     }
 
-    //    request user to confirm that edited userFirstName is correct
     private SendMessage confirmEditedUserFirstName(Message incomeMessage) {
 
         String incomeMessageText = incomeMessage.getText();
@@ -180,7 +175,7 @@ TODO разделить функциональные действия и отп�
     }
 
     private void setSettlementToDTO(long chatId, String callbackData) {
-        userDTOStorageAccess.setResidence(chatId, settlementService.findById(trimId(callbackData)));
+        userDTOStorageAccess.setResidence(chatId, settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
         log.debug("method setResidenceToDTO");
     }
 
@@ -214,7 +209,6 @@ TODO разделить функциональные действия и отп�
     }
 
 //    Edit User's data
-
     private String getUserData(long chatId) {
         User user = userService.findUserById(chatId);
         return String.format(messages.getUSER_DATA(),
@@ -291,7 +285,7 @@ TODO разделить функциональные действия и отп�
 
     private User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
-        user.setResidence(settlementService.findById(trimId(callbackData)));
+        user.setResidence(settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
         return userService.updateUser(user);
     }
 

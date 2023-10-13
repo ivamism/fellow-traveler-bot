@@ -2,20 +2,19 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
-import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.servise.*;
 import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-import java.time.LocalTime;
-
 @Log4j
-public class Handler {
+@Data
+public class BaseHandler {
     @Autowired
     Messages messages;
     @Autowired
@@ -30,7 +29,6 @@ public class Handler {
     SettlementService settlementService;
     @Autowired
     LocationService locationService;
-
     @Autowired
     FindPassengerRequestService findPassengerRequestService;
     @Autowired
@@ -39,62 +37,43 @@ public class Handler {
     ChatStatusStorageAccess chatStatusStorageAccess;
     @Autowired
     ResponseMessageProcessor messageProcessor;
+    private final int PROCESS = 0;
+    private final int FIRST_PARAMETER = 1;
+    private final int SECOND_PARAMETER = 2;
 
-    public String trimProcess(String s) {
-        String subS = " ";
+    protected String extractParameter(String statusString, int parameterNumber) {
+        String extraction = "";
         try {
-            subS = s.split(":")[0];
+            extraction = statusString.split(":")[parameterNumber];
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return subS;
+        return extraction;
     }
 
-
-    public String trimSecondSubstring(String s) {
-        String subS = " ";
-        try {
-            subS = s.split(":")[1];
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return subS;
+    protected String extractProcess(String s) {
+        return extractParameter(s, PROCESS);
     }
 
-    public int trimId(String s) {
+    protected int extractId(String s, int parameterNumber) {
         int id = -1;
         try {
-          String  subS = s.split(":")[1];
-           id= Integer.parseInt(subS);
+            id = Integer.parseInt(extractParameter(s, parameterNumber));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         return id;
     }
 
-    public int trimSecondId(String s) {
-        String[] strings = new String[0];
-        int id = -1;
-        try {
-            strings = s.split(":");
-            if (strings.length > 2) {
-                id = Integer.parseInt(strings[2]);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return id;
+    protected String firstLetterToUpperCase(String s) {
+        return s.replace(s.charAt(0), Character.toUpperCase(s.charAt(0)));
     }
 
-    public String firstLetterToUpperCase(String s) {
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
-
-    public void sendBotMessage(SendMessage message) {
+    protected void sendBotMessage(SendMessage message) {
         messageProcessor.sendMessage(message);
     }
 
-    public void sendEditMessage(EditMessageText editMessage) {
+    protected void sendEditMessage(EditMessageText editMessage) {
         messageProcessor.sendEditedMessage(editMessage);
     }
 }

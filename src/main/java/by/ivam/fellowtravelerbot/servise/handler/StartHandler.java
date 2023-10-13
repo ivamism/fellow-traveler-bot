@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,14 +9,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 @Log4j
-public class StartHandler extends Handler implements HandlerInterface {
+public class StartHandler extends BaseHandler implements HandlerInterface {
     @Autowired
     UserHandler userHandler;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {

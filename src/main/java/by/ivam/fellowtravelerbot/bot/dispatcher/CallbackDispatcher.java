@@ -27,7 +27,7 @@ public class CallbackDispatcher extends Dispatcher {
         if (callbackData.contains("-")) {
             String handler = getHandler(callbackData);
             String callback = getProcess(callbackData);
-            log.info("Get callBack: " + callbackData + ", Handler: " + handler);
+            log.info("Get callBack: " + callbackData + ", BaseHandler: " + handler);
             switch (handler) {
                 case "START" -> startHandler.handleReceivedCallback(callback, incomeMessage);
                 case "ADMIN" -> adminHandler.handleReceivedCallback(callback, incomeMessage);

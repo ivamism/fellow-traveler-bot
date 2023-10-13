@@ -4,6 +4,8 @@ import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.model.Settlement;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -16,8 +18,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Log4j
-public class RequestHandler extends Handler {
+@Data
+public class RequestHandler extends BaseHandler {
 
     @Autowired
     protected AdminHandler adminHandler;
@@ -26,6 +30,7 @@ public class RequestHandler extends Handler {
 
     protected SendMessage sendMessage = new SendMessage();
     protected EditMessageText editMessage = new EditMessageText();
+
 
     protected SendMessage createNewRequest(long chatId, String messageText, String handlerPrefix) {
         sendMessage.setChatId(chatId);
