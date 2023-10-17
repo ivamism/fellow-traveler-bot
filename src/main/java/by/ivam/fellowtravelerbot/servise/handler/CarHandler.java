@@ -24,13 +24,16 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @Log4j
-public class CarHandler extends Handler implements HandlerInterface {
+public class CarHandler extends BaseHandler implements HandlerInterface {
     @Autowired
     CarDTO carDTO;
     @Autowired
     AddCarStorageAccess addCarStorageAccess;
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
+
+
+
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
@@ -40,7 +43,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         String process = chatStatus;
         if (chatStatus.contains(":")) {
-            process = trimProcess(chatStatus);
+            process = extractProcess(chatStatus);
         }
         switch (process) {
             case "ADD_CAR_MODEL_CHAT_STATUS" -> {
@@ -76,19 +79,19 @@ public class CarHandler extends Handler implements HandlerInterface {
                 sendMessage = checkDataBeforeSaveCarMessage(incomeMessage);
             }
             case "EDIT_CAR_MODEL_CHAT_STATUS" -> {
-                Car car = setCarEditedModel(trimId(chatStatus), messageText);
+                Car car = setCarEditedModel(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COLOR_CHAT_STATUS" -> {
-                Car car = setCarEditedColor(trimId(chatStatus), messageText);
+                Car car = setCarEditedColor(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_PLATES_CHAT_STATUS" -> {
-                Car car = setCarEditedPlates(trimId(chatStatus), messageText);
+                Car car = setCarEditedPlates(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COMMENTARY_CHAT_STATUS" -> {
-                Car car = setCarEditedCommentary(trimId(chatStatus), messageText);
+                Car car = setCarEditedCommentary(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
         }
@@ -100,7 +103,7 @@ public class CarHandler extends Handler implements HandlerInterface {
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-            process = trimProcess(callback);
+            process = extractProcess(callback);
         }
         log.debug("process: " + process);
         switch (process) {
@@ -122,16 +125,16 @@ public class CarHandler extends Handler implements HandlerInterface {
             case "ADD_CAR_EDIT_COMMENTARY_CALLBACK" ->
                     editMessage = changeCommentaryBeforeSavingRequestMessage(incomeMessage);
             case "EDIT_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToEdit(incomeMessage);
-            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" -> editMessage = editCarMessage(incomeMessage, trimId(callback));
-            case "EDIT_CAR_MODEL_CALLBACK" -> editMessage = editCarModelRequestMessage(incomeMessage, trimId(callback));
-            case "EDIT_CAR_COLOR_CALLBACK" -> editMessage = editCarColorRequestMessage(incomeMessage, trimId(callback));
+            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" -> editMessage = editCarMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+            case "EDIT_CAR_MODEL_CALLBACK" -> editMessage = editCarModelRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+            case "EDIT_CAR_COLOR_CALLBACK" -> editMessage = editCarColorRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
             case "EDIT_CAR_PLATES_CALLBACK" ->
-                    editMessage = changeCarPlatesRequestMessage(incomeMessage, trimId(callback));
+                    editMessage = changeCarPlatesRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
             case "EDIT_CAR_COMMENTARY_CALLBACK" ->
-                    editMessage = editCarCommentaryRequestMessage(incomeMessage, trimId(callback));
+                    editMessage = editCarCommentaryRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
             case "DELETE_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToDelete(incomeMessage);
             case "DELETE_CAR_CALLBACK" -> {
-                String deletedCar = deleteCar(trimId(callback));
+                String deletedCar = deleteCar(extractId(callback, getFIRST_PARAMETER()));
                 editMessage = deleteCarMessage(incomeMessage, deletedCar);
             }
             case "DELETE_ALL_CARS_CALLBACK" -> {
@@ -419,14 +422,11 @@ public class CarHandler extends Handler implements HandlerInterface {
         editMessage.setText(messages.getADD_CAR_ADD_PLATE_NUMBER_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_EDIT_PLATES_CHAT_STATUS);
-
         log.info("CarHandler method changePlateNumberRequestMessage: request to send plate number");
-
         return editMessage;
     }
 
     private void setEditedBeforeSavingPlateNumber(Long chatId, String plateNumber) {
-
         addCarStorageAccess.setPlateNumber(chatId, plateNumber.toUpperCase());
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("CarHandler method setEditedPlateNumber: set model " + plateNumber + " to carDTO and send to storage");
@@ -437,7 +437,6 @@ public class CarHandler extends Handler implements HandlerInterface {
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.ADD_CAR_EDIT_COMMENTARY_CHAT_STATUS);
-
         log.info("CarHandler method changeCommentaryRequestMessage: request to send commentary");
         return editMessage;
     }
@@ -455,7 +454,6 @@ public class CarHandler extends Handler implements HandlerInterface {
             int firstCarId = getUsersCarsList(chatId).get(0).getId();
             int secondCarId = getUsersCarsList(chatId).get(1).getId();
             editMessage.setText(CarListToString(chatId));
-
             List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
             buttonsAttributesList.add(buttons.firstChoiceButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_CHOOSE_CAR_CALLBACK.getValue() + firstCarId)); // Choose first car button
             buttonsAttributesList.add(buttons.secondChoiceButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_CHOOSE_CAR_CALLBACK.getValue() + secondCarId)); // Choose second car button
@@ -472,7 +470,6 @@ public class CarHandler extends Handler implements HandlerInterface {
         Car car = carService.findById(carId);
         String carToSend = carToString(car);
         editMessageTextGeneralPreset(incomeMessage);
-
         editMessage.setText(String.format(messages.getEDIT_CAR_CHOSEN_PREFIX_MESSAGE(), carToSend) + messages.getEDIT_CAR_START_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.modelButtonCreate(Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_MODEL_CALLBACK.getValue() + carId)); // Edit model button
@@ -489,7 +486,6 @@ public class CarHandler extends Handler implements HandlerInterface {
     private EditMessageText editCarModelRequestMessage(Message incomeMessage, int carId) {
         editMessageTextGeneralPreset(incomeMessage);
         String modelActualValue = carService.findById(carId).getModel();
-
         editMessage.setText(messages.getADD_CAR_ADD_MODEL_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), modelActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_MODEL_CHAT_STATUS.getValue() + carId);
@@ -506,7 +502,6 @@ public class CarHandler extends Handler implements HandlerInterface {
     private EditMessageText editCarColorRequestMessage(Message incomeMessage, int carId) {
         editMessageTextGeneralPreset(incomeMessage);
         String colorActualValue = carService.findById(carId).getColor();
-
         editMessage.setText(messages.getADD_CAR_ADD_COLOR_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), colorActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_COLOR_CHAT_STATUS.getValue() + carId);
@@ -539,7 +534,6 @@ public class CarHandler extends Handler implements HandlerInterface {
     private EditMessageText editCarCommentaryRequestMessage(Message incomeMessage, int carId) {
         editMessageTextGeneralPreset(incomeMessage);
         String commentaryActualValue = carService.findById(carId).getCommentary();
-
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE() + String.format(messages.getACTUAL_VALUE_MESSAGE(), commentaryActualValue));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
         chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), Handlers.CAR.getHandlerPrefix() + CarOperation.EDIT_CAR_COMMENTARY_CHAT_STATUS.getValue() + carId);

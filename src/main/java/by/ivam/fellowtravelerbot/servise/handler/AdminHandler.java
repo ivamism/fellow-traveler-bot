@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -23,10 +24,11 @@ import java.util.stream.Collectors;
 /*
 This class handle Admin functional
  */
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Data
 @Log4j
-public class AdminHandler extends Handler implements HandlerInterface {
+public class AdminHandler extends BaseHandler implements HandlerInterface {
     @Autowired
     DepartureLocationStorageAccess departureLocationStorageAccess;
 
@@ -40,7 +42,7 @@ public class AdminHandler extends Handler implements HandlerInterface {
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         String process = chatStatus;
         if (chatStatus.contains(":")) {
-            process = trimProcess(chatStatus);
+            process = extractProcess(chatStatus);
         }
         switch (process) {
             case "ADD_SETTLEMENT_NAME_CHAT_STATUS" -> {
@@ -61,7 +63,7 @@ public class AdminHandler extends Handler implements HandlerInterface {
         Long chatId = incomeMessage.getChatId();
         String process = callback;
         if (callback.contains(":")) {
-            process = trimProcess(callback);
+            process = extractProcess(callback);
         }
         log.debug("process: " + process);
         if (process.equals("DEPARTURE_LOCATION_SET_SETTLEMENT_CALLBACK")) {
@@ -134,7 +136,7 @@ public class AdminHandler extends Handler implements HandlerInterface {
     private void departureLocationSetSettlement(long chatId, String callbackData) {
         log.debug("AdminHandler method departureLocationSetSettlement");
         LocationDTO location = new LocationDTO();
-        location.setSettlement(settlementService.findById(trimId(callbackData)));
+        location.setSettlement(settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
 
@@ -180,7 +182,7 @@ public class AdminHandler extends Handler implements HandlerInterface {
     public Map<Integer, String> createSettlementsMap(List<Settlement> settlementList) {
         return settlementList
                 .stream()
-                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
+                .collect(Collectors.toMap(Settlement::getId, settlement -> settlement.getName()));
     }
 
     public Map<Integer, String> createLocationsMap(int settlementId) {
@@ -203,8 +205,5 @@ public class AdminHandler extends Handler implements HandlerInterface {
 
     public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int settlementId) {
         return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData);
-    }
-    public List<Pair<String, String>> locationButtonsAttributesListCreator(String callbackData, int requestId, int settlementId) {
-        return buttons.buttonsAttributesListCreator(createLocationsMap(settlementId), callbackData, requestId);
     }
 }
