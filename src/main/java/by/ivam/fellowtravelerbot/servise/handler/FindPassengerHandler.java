@@ -8,7 +8,7 @@ import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.storages.interfaces.FindPassengerStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindPassengerDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class FindPassengerHandler extends RequestHandler implements HandlerInterface {
     private final String handlerPrefix = Handlers.FIND_PASSENGER.getHandlerPrefix();
     @Autowired
-    private FindPassengerStorageAccess storageAccess;
+    private FindPassengerDtoOperations storageAccess;
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
@@ -732,7 +732,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     private FindPassengerRequest saveRequest(long chatId) {
         FindPassengerRequestDTO dto = storageAccess.getDTO(chatId);
         storageAccess.delete(chatId);
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         log.debug("method saveRequest");
         return findPassengerRequestService.addNewRequest(dto);
     }
@@ -972,7 +972,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.deleteChatStatus(incomeMessage.getChatId());
+        chatStatusOperations.deleteChatStatus(incomeMessage.getChatId());
         return editMessage;
     }
 
@@ -980,7 +980,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE() + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         return sendMessage;
     }
 

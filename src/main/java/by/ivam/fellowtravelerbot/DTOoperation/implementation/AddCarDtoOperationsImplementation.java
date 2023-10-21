@@ -1,37 +1,41 @@
-package by.ivam.fellowtravelerbot.storages;
+package by.ivam.fellowtravelerbot.DTOoperation.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
-import by.ivam.fellowtravelerbot.storages.interfaces.AddCarStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.AddCarDtoOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 @Component
 @Data
 @Log4j
-public class AddCarStorageAccessImplementation implements AddCarStorageAccess {
-
-    @Autowired
-    Storages storage;
+public class AddCarDtoOperationsImplementation implements AddCarDtoOperations {
+//
+//    @Autowired
+//    Storages storage;
+    private HashMap<Long, CarDTO> carDTOStorage = new HashMap<>();
 
     @Override
     public void addCarDTO(Long chatId, CarDTO carDTO) {
-        storage.CarDTOStorage.put(chatId, carDTO);
+        carDTOStorage.put(chatId, carDTO);
+//        storage.CarDTOStorage.put(chatId, carDTO);
         log.debug("add carDTO to storage " + carDTO + " with userId " + chatId);
     }
 
     @Override
     public void deleteCarDTO(Long chatId) {
-        storage.CarDTOStorage.remove(chatId);
+        carDTOStorage.remove(chatId);
+//        storage.CarDTOStorage.remove(chatId);
         log.debug("remove carDTO from storage");
     }
 
     @Override
     public CarDTO findCarDTO(Long chatId) {
-        CarDTO carDTO = Optional.ofNullable(storage.CarDTOStorage.get(chatId)).orElseThrow();
+        CarDTO carDTO = Optional.ofNullable(carDTOStorage.get(chatId)).orElseThrow();
+//        CarDTO carDTO = Optional.ofNullable(storage.CarDTOStorage.get(chatId)).orElseThrow();
         log.debug("get carDTO from storage " + carDTO);
         return carDTO;
     }

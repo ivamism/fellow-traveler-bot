@@ -1,12 +1,8 @@
-package by.ivam.fellowtravelerbot.storages.interfaces;
+package by.ivam.fellowtravelerbot.DTOoperation.interfaces;
 
-import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-public interface FindRideDTOStorageAccess {
+public interface FindRideDtoOperations {
     void addFindRideDTO(long chatId, FindRideRequestDTO findRideRequestDTO);
     FindRideRequestDTO getDTO(long chatId);
 

@@ -4,7 +4,7 @@ import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.enums.BotCommands;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.ChatStatusOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class MessageDispatcher extends Dispatcher {
     @Autowired
     Messages messages;
     @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+    ChatStatusOperations chatStatusOperations;
 
     SendMessage sendMessage = new SendMessage();
 
@@ -115,7 +115,7 @@ public class MessageDispatcher extends Dispatcher {
     private void handleUserMessage(Message incomeMessage) {
         log.debug("method handleUserMessage");
         long chatId = incomeMessage.getChatId();
-        String chatStatus = chatStatusStorageAccess.findChatStatus(chatId);
+        String chatStatus = chatStatusOperations.findChatStatus(chatId);
         log.debug("get chatStatus - " + chatStatus);
         if (chatStatus.contains("-")) {
             String handler = getHandler(chatStatus);

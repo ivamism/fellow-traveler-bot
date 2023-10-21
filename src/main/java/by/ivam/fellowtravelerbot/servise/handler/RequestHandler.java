@@ -144,7 +144,7 @@ public class RequestHandler extends BaseHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_TIME_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(chatId, chatStatus);
+        chatStatusOperations.addChatStatus(chatId, chatStatus);
         log.debug("method: createTimeSendMessage");
         sendBotMessage(sendMessage);
     }
@@ -154,7 +154,7 @@ public class RequestHandler extends BaseHandler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messageText);
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
+        chatStatusOperations.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createTimeMessage");
         return editMessage;
     }
@@ -175,7 +175,7 @@ public class RequestHandler extends BaseHandler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getCREATE_FIND_PASSENGER_REQUEST_SEATS_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
+        chatStatusOperations.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createSeatsMessage");
         return editMessage;
     }
@@ -183,7 +183,7 @@ public class RequestHandler extends BaseHandler {
     protected SendMessage createSeatsMessage(long chatId, String chatStatus) {
         sendMessage.setText(messages.getCREATE_FIND_RIDE_REQUEST_SEATS_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(chatId, chatStatus);
+        chatStatusOperations.addChatStatus(chatId, chatStatus);
         log.debug("method: createSeatsMessage");
         return sendMessage;
     }
@@ -195,7 +195,7 @@ public class RequestHandler extends BaseHandler {
         buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-        chatStatusStorageAccess.addChatStatus(chatId, handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        chatStatusOperations.addChatStatus(chatId, handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
         log.debug("method: createCommentaryMessage");
         return sendMessage;
     }
@@ -204,7 +204,7 @@ public class RequestHandler extends BaseHandler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(incomeMessage.getChatId(), chatStatus);
+        chatStatusOperations.addChatStatus(incomeMessage.getChatId(), chatStatus);
         log.debug("method: createCommentaryMessage");
         return editMessage;
     }

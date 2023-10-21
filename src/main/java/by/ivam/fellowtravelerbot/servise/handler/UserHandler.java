@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
-import by.ivam.fellowtravelerbot.storages.interfaces.UserDTOStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.UserDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -31,7 +31,7 @@ This class handle operations with User registration process, editing, deleting, 
 @Log4j
 public class UserHandler extends BaseHandler implements HandlerInterface {
     @Autowired
-    UserDTOStorageAccess userDTOStorageAccess;
+    UserDtoOperations userDtoOperations;
     @Autowired
     UserDTO userDTO;
     @Autowired
@@ -142,7 +142,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
 
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME_CHAT_STATUS);
+        chatStatusOperations.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.REGISTRATION_GET_EDITED_NAME_CHAT_STATUS);
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -175,7 +175,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
     }
 
     private void setSettlementToDTO(long chatId, String callbackData) {
-        userDTOStorageAccess.setResidence(chatId, settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
+        userDtoOperations.setResidence(chatId, settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
         log.debug("method setResidenceToDTO");
     }
 
@@ -191,9 +191,9 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
     }
 
     private User userRegistration(long chatId) {
-        User user = userService.registerNewUser(userDTOStorageAccess.findUserDTO(chatId));
-        chatStatusStorageAccess.deleteChatStatus(chatId);
-        userDTOStorageAccess.deleteUserDTO(chatId);
+        User user = userService.registerNewUser(userDtoOperations.findUserDTO(chatId));
+        chatStatusOperations.deleteChatStatus(chatId);
+        userDtoOperations.deleteUserDTO(chatId);
 
         log.info("method userRegistration. Call saving to DB user: " + user);
         return user;
@@ -252,7 +252,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
         String firstName = userService.findUserById(chatId).getFirstName();
         editMessage.setText(messages.getEDIT_USER_FIRSTNAME_MESSAGE() + String.format(messages.getEDIT_USER_FIRSTNAME_MESSAGE_POSTFIX(), firstName));
         editMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CHAT_STATUS);
+        chatStatusOperations.addChatStatus(chatId, Handlers.USER.getHandlerPrefix() + UserOperation.EDIT_NAME_CHAT_STATUS);
         log.debug("method editUserFirstNameBeforeSaving. Send request to enter User's firstname or nick");
         return editMessage;
     }
@@ -373,7 +373,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
         userDTO.setChatId(chatId)
                 .setFirstName(incomeMessage.getChat().getFirstName())
                 .setTelegramUserName(incomeMessage.getChat().getUserName());
-        userDTOStorageAccess.addUserDTO(chatId, userDTO);
+        userDtoOperations.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator");
     }
 
@@ -382,7 +382,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
         userDTO.setChatId(chatId)
                 .setFirstName(firstname)
                 .setTelegramUserName(incomeMessage.getChat().getUserName());
-        userDTOStorageAccess.addUserDTO(chatId, userDTO);
+        userDtoOperations.addUserDTO(chatId, userDTO);
         log.debug("method userDTOCreator with edited firstname");
     }
 

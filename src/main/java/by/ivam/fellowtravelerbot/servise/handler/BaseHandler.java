@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.servise.*;
-import by.ivam.fellowtravelerbot.storages.ChatStatusStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.ChatStatusOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class BaseHandler {
     @Autowired
     FindRideRequestService findRideRequestService;
     @Autowired
-    ChatStatusStorageAccess chatStatusStorageAccess;
+    ChatStatusOperations chatStatusOperations;
     @Autowired
     ResponseMessageProcessor messageProcessor;
     private final int PROCESS = 0;

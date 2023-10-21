@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.storages.interfaces.DepartureLocationStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.DepartureLocationDtoOperation;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -30,7 +30,7 @@ This class handle Admin functional
 @Log4j
 public class AdminHandler extends BaseHandler implements HandlerInterface {
     @Autowired
-    DepartureLocationStorageAccess departureLocationStorageAccess;
+    DepartureLocationDtoOperation departureLocationDtoOperation;
 
     SendMessage sendMessage = new SendMessage();
     EditMessageText editMessage = new EditMessageText();
@@ -100,13 +100,13 @@ public class AdminHandler extends BaseHandler implements HandlerInterface {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_SETTLEMENT_NAME_MESSAGE());
         sendMessage.setReplyMarkup(keyboards.oneButtonsInlineKeyboard(buttons.cancelButtonCreate()));
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.ADMIN.getHandlerPrefix() + AdminOperation.ADD_SETTLEMENT_NAME_CHAT_STATUS);
+        chatStatusOperations.addChatStatus(chatId, Handlers.ADMIN.getHandlerPrefix() + AdminOperation.ADD_SETTLEMENT_NAME_CHAT_STATUS);
         log.debug("AdminHandler method settlementNameRequestMessage");
         return sendMessage;
     }
 
     private Settlement saveSettlement(Long chatId, String settlementName) {
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         log.debug("CarHandler method saveSettlement: call to save " + settlementName + " to DB");
         return settlementService.addNewSettlement(firstLetterToUpperCase(settlementName));
     }
@@ -137,7 +137,7 @@ public class AdminHandler extends BaseHandler implements HandlerInterface {
         log.debug("AdminHandler method departureLocationSetSettlement");
         LocationDTO location = new LocationDTO();
         location.setSettlement(settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
-        departureLocationStorageAccess.addLocation(chatId, location);
+        departureLocationDtoOperation.addLocation(chatId, location);
     }
 
     private EditMessageText departureLocationNameRequestMessage(Message incomeMessage) {
@@ -146,7 +146,7 @@ public class AdminHandler extends BaseHandler implements HandlerInterface {
         editMessage.setMessageId(incomeMessage.getMessageId());
         editMessage.setText(messages.getADD_LOCATION_NAME_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.addChatStatus(chatId, Handlers.ADMIN.getHandlerPrefix() + AdminOperation.DEPARTURE_LOCATION_REQUEST_NAME_CHAT_STATUS);
+        chatStatusOperations.addChatStatus(chatId, Handlers.ADMIN.getHandlerPrefix() + AdminOperation.DEPARTURE_LOCATION_REQUEST_NAME_CHAT_STATUS);
 
         log.debug("AdminHandler method departureLocationNameRequestMessage");
         return editMessage;
@@ -154,10 +154,10 @@ public class AdminHandler extends BaseHandler implements HandlerInterface {
 
     private Location departureLocationSave(long chatId, String name) {
         log.debug("AdminHandler method departureLocationSave");
-        LocationDTO locationDTO = departureLocationStorageAccess.findDTO(chatId);
+        LocationDTO locationDTO = departureLocationDtoOperation.findDTO(chatId);
         locationDTO.setName(firstLetterToUpperCase(name));
-        departureLocationStorageAccess.deleteLocation(chatId);
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        departureLocationDtoOperation.deleteLocation(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
 
         return locationService.addNewLocation(locationDTO);
     }

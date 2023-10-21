@@ -34,7 +34,7 @@ public class FindPassengerRequest {
     @ManyToOne
     @JoinColumn(name = "destination_location_id")
     private Location destinationLocation;
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
     private int seatsQuantity;

@@ -1,8 +1,8 @@
-package by.ivam.fellowtravelerbot.storages.interfaces;
+package by.ivam.fellowtravelerbot.DTOoperation.interfaces;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
 
-public interface AddCarStorageAccess {
+public interface AddCarDtoOperations {
     void addCarDTO(Long chatId, CarDTO carDTO);
     void deleteCarDTO(Long chatId);
     CarDTO findCarDTO(Long chatId);

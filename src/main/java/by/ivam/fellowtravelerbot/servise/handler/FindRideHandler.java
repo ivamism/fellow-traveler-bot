@@ -8,7 +8,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.storages.interfaces.FindRideDTOStorageAccess;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindRideDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Log4j
 public class FindRideHandler extends RequestHandler implements HandlerInterface {
     @Autowired
-    private final FindRideDTOStorageAccess storageAccess;
+    private final FindRideDtoOperations storageAccess;
     @Autowired
     private final AdminHandler adminHandler;
     private final String handlerPrefix = Handlers.FIND_RIDE.getHandlerPrefix();
@@ -754,7 +754,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         editMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE()
                 + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.deleteChatStatus(incomeMessage.getChatId());
+        chatStatusOperations.deleteChatStatus(incomeMessage.getChatId());
         return editMessage;
     }
 
@@ -763,7 +763,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         sendMessage.setText(messages.getFIND_PASSENGER_SUCCESS_EDITION_MESSAGE()
                 + requestToString(request) + messages.getFURTHER_ACTION_MESSAGE());
         sendMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         return sendMessage;
     }
 
@@ -808,7 +808,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     private FindRideRequest saveRequest(long chatId) {
         FindRideRequestDTO dto = storageAccess.getDTO(chatId);
         storageAccess.delete(chatId);
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         log.debug("method saveRequest");
         FindRideRequest request = findRideRequestService.addNewRequest(dto);
         return request;

@@ -1,6 +1,6 @@
-package by.ivam.fellowtravelerbot.storages;
+package by.ivam.fellowtravelerbot.DTOoperation.interfaces;
 
-public interface ChatStatusStorageAccess {
+public interface ChatStatusOperations {
 
     void addChatStatus(Long chatId, String chatStatus);
     void deleteChatStatus(Long chatId);

@@ -79,7 +79,7 @@ public class StartHandler extends BaseHandler implements HandlerInterface {
         editMessage.setText(messages.getFURTHER_ACTION_MESSAGE());
         editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
         log.info("method quitProcessMessage: Quit the process");
-        chatStatusStorageAccess.deleteChatStatus(chatId);
+        chatStatusOperations.deleteChatStatus(chatId);
         return editMessage;
     }
 }
