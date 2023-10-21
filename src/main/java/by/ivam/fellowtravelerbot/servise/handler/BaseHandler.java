@@ -38,13 +38,14 @@ public class BaseHandler {
     @Autowired
     ResponseMessageProcessor messageProcessor;
     private final int PROCESS = 0;
-    private final int FIRST_PARAMETER = 1;
-    private final int SECOND_PARAMETER = 2;
+    private final int FIRST_VALUE = 1;
+    private final int SECOND_VALUE = 2;
+    private final String REGEX = ":";
 
     protected String extractParameter(String statusString, int parameterNumber) {
         String extraction = "";
         try {
-            extraction = statusString.split(":")[parameterNumber];
+           extraction = statusString.split(REGEX)[parameterNumber];
         } catch (Exception e) {
             log.error(e.getMessage());
         }

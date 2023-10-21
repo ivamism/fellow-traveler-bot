@@ -175,7 +175,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
     }
 
     private void setSettlementToDTO(long chatId, String callbackData) {
-        userDTOStorageAccess.setResidence(chatId, settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
+        userDTOStorageAccess.setResidence(chatId, settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
         log.debug("method setResidenceToDTO");
     }
 
@@ -285,7 +285,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
 
     private User editUserSetResidence(long chatId, String callbackData) {
         User user = userService.findUserById(chatId);
-        user.setResidence(settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
+        user.setResidence(settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
         return userService.updateUser(user);
     }
 

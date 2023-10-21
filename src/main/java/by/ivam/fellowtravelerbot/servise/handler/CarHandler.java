@@ -79,19 +79,19 @@ public class CarHandler extends BaseHandler implements HandlerInterface {
                 sendMessage = checkDataBeforeSaveCarMessage(incomeMessage);
             }
             case "EDIT_CAR_MODEL_CHAT_STATUS" -> {
-                Car car = setCarEditedModel(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
+                Car car = setCarEditedModel(extractId(chatStatus, getFIRST_VALUE()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COLOR_CHAT_STATUS" -> {
-                Car car = setCarEditedColor(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
+                Car car = setCarEditedColor(extractId(chatStatus, getFIRST_VALUE()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_PLATES_CHAT_STATUS" -> {
-                Car car = setCarEditedPlates(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
+                Car car = setCarEditedPlates(extractId(chatStatus, getFIRST_VALUE()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
             case "EDIT_CAR_COMMENTARY_CHAT_STATUS" -> {
-                Car car = setCarEditedCommentary(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
+                Car car = setCarEditedCommentary(extractId(chatStatus, getFIRST_VALUE()), messageText);
                 sendMessage = editionCarSuccessMessage(chatId, car);
             }
         }
@@ -125,16 +125,16 @@ public class CarHandler extends BaseHandler implements HandlerInterface {
             case "ADD_CAR_EDIT_COMMENTARY_CALLBACK" ->
                     editMessage = changeCommentaryBeforeSavingRequestMessage(incomeMessage);
             case "EDIT_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToEdit(incomeMessage);
-            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" -> editMessage = editCarMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
-            case "EDIT_CAR_MODEL_CALLBACK" -> editMessage = editCarModelRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
-            case "EDIT_CAR_COLOR_CALLBACK" -> editMessage = editCarColorRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+            case "EDIT_CAR_CHOOSE_CAR_CALLBACK" -> editMessage = editCarMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
+            case "EDIT_CAR_MODEL_CALLBACK" -> editMessage = editCarModelRequestMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
+            case "EDIT_CAR_COLOR_CALLBACK" -> editMessage = editCarColorRequestMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             case "EDIT_CAR_PLATES_CALLBACK" ->
-                    editMessage = changeCarPlatesRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                    editMessage = changeCarPlatesRequestMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             case "EDIT_CAR_COMMENTARY_CALLBACK" ->
-                    editMessage = editCarCommentaryRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                    editMessage = editCarCommentaryRequestMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             case "DELETE_CAR_REQUEST_CALLBACK" -> editMessage = sendCarListToDelete(incomeMessage);
             case "DELETE_CAR_CALLBACK" -> {
-                String deletedCar = deleteCar(extractId(callback, getFIRST_PARAMETER()));
+                String deletedCar = deleteCar(extractId(callback, getFIRST_VALUE()));
                 editMessage = deleteCarMessage(incomeMessage, deletedCar);
             }
             case "DELETE_ALL_CARS_CALLBACK" -> {

@@ -136,7 +136,7 @@ public class AdminHandler extends BaseHandler implements HandlerInterface {
     private void departureLocationSetSettlement(long chatId, String callbackData) {
         log.debug("AdminHandler method departureLocationSetSettlement");
         LocationDTO location = new LocationDTO();
-        location.setSettlement(settlementService.findById(extractId(callbackData, getFIRST_PARAMETER())));
+        location.setSettlement(settlementService.findById(extractId(callbackData, getFIRST_VALUE())));
         departureLocationStorageAccess.addLocation(chatId, location);
     }
 

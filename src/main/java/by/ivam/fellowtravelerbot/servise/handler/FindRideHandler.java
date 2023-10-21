@@ -95,7 +95,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             }
             case "EDIT_CHANGE_TIME" -> {
                 LocalTime time = getTime(messageText);
-                int requestId = extractId(chatStatus, getFIRST_PARAMETER());
+                int requestId = extractId(chatStatus, getFIRST_VALUE());
                 if (time.toNanoOfDay() == 100 || isExpired(requestId, time)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
@@ -105,14 +105,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             }
             case "EDIT_CHANGE_SEATS_QUANTITY" -> {
                 if (seatsQuantityIsValid(messageText)) {
-                    FindRideRequest request = setEditedSeatsQuantity(extractId(chatStatus, getFIRST_PARAMETER()), Integer.parseInt(messageText));
+                    FindRideRequest request = setEditedSeatsQuantity(extractId(chatStatus, getFIRST_VALUE()), Integer.parseInt(messageText));
                     sendMessage = editRequestSuccessSendMessage(chatId, request);
                 } else {
                     sendMessage = invalidSeatsQuantityFormatMessage(chatId);
                 }
             }
             case "EDIT_CHANGE_COMMENTARY" -> {
-                FindRideRequest request = setEditedCommentary(extractId(chatStatus, getFIRST_PARAMETER()), messageText);
+                FindRideRequest request = setEditedCommentary(extractId(chatStatus, getFIRST_VALUE()), messageText);
                 if (messageText.length() >= 1000) sendMessage = nextStep(chatId);
                 else sendMessage = editRequestSuccessSendMessage(chatId, request);
 //                TODO добавить сообщение если комментарий слишком длинный
@@ -138,7 +138,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 }
             }
             case "CREATE_REQUEST_DIRECTION" -> {
-                String direction = extractParameter(callback, getFIRST_PARAMETER());
+                String direction = extractParameter(callback, getFIRST_VALUE());
                 setDTODirection(chatId, direction);
                 int settlementId = settlementService.findByName("Минск").getId();
                 if (direction.equals(String.valueOf(Direction.FROM_MINSK))) {
@@ -150,7 +150,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 }
             }
             case "CREATE_REQ_DEP_SETTLEMENT" -> {
-                int settlementId = extractId(callback, getFIRST_PARAMETER());
+                int settlementId = extractId(callback, getFIRST_VALUE());
                 if (settlementId == -1) {
                     editMessage = createNewRequestChooseAnotherSettlementAsDepartureMessage(incomeMessage);
                 } else {
@@ -159,7 +159,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 }
             }
             case "CREATE_REQ_DEST_SETTLEMENT" -> {
-                int settlementId = extractId(callback, getFIRST_PARAMETER());
+                int settlementId = extractId(callback, getFIRST_VALUE());
                 if (settlementId == -1) {
                     editMessage = createNewRequestChooseAnotherSettlementAsDestinationMessage(incomeMessage);
                 } else {
@@ -168,7 +168,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 }
             }
             case "CREATE_REQUEST_DATE" -> {
-                String day = extractParameter(callback, getFIRST_PARAMETER());
+                String day = extractParameter(callback, getFIRST_VALUE());
                 setDtoDate(chatId, day);
                 editMessage = createNewRequestTimeMessage(incomeMessage);
             }
@@ -193,14 +193,14 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editBeforeSaveDepartureSettlementMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_DEP_SETTLEMENT" -> {
-                setDTODepartureSettlement(chatId, extractId(callback, getFIRST_PARAMETER()));
+                setDTODepartureSettlement(chatId, extractId(callback, getFIRST_VALUE()));
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_DEST_SETTLEMENT" -> {
                 editMessage = editBeforeSaveDestinationSettlementMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_DEST_SETTLEMENT" -> {
-                setDtoDestinationSettlement(chatId, extractId(callback, getFIRST_PARAMETER()));
+                setDtoDestinationSettlement(chatId, extractId(callback, getFIRST_VALUE()));
                 editMessage = checkDataBeforeSaveMessageSkipComment(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_SWAP_DEP_DEST" -> {
@@ -211,7 +211,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = editBeforeSaveChangeDateMessage(incomeMessage);
             }
             case "EDIT_BEFORE_SAVE_CHANGE_DATE" -> {
-                String day = extractParameter(callback, getFIRST_PARAMETER());
+                String day = extractParameter(callback, getFIRST_VALUE());
                 setEditedDtoDate(chatId, day);
                 if (isExpired(chatId)) {
                     expiredTimeMessage(chatId);
@@ -231,48 +231,48 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 editMessage = chooseRequestToCancelMessage(incomeMessage);
             }
             case "CANCEL_REQUEST" -> {
-                FindRideRequest request = cancelRequest(extractId(callback, getFIRST_PARAMETER()));
+                FindRideRequest request = cancelRequest(extractId(callback, getFIRST_VALUE()));
                 editMessage = cancelRequestSuccessMessage(incomeMessage, request);
             }
             case "CHOOSE_REQUEST_TO_EDIT" -> {
                 editMessage = chooseRequestToEditMessage(incomeMessage);
             }
             case "EDIT_REQUEST_START" -> {
-                editMessage = startEditRequestMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = startEditRequestMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "NO_ACTIVE_REQUEST" -> {
                 editMessage = noActiveRequestsMessage(incomeMessage);
             }
             case "EDIT_SETTLEMENT_LOCATION" -> {
-                editMessage = editSettlementLocationMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editSettlementLocationMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_SWAP_DEP_DEST" -> {
-                FindRideRequest request = editSwapDepartureDestination(extractId(callback, getFIRST_PARAMETER()));
+                FindRideRequest request = editSwapDepartureDestination(extractId(callback, getFIRST_VALUE()));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DEP_SETTLEMENT" -> {
-                editMessage = editDepartureSettlementMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editDepartureSettlementMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_CHANGE_DEP_SETTLEMENT" -> {
-                FindRideRequest request = setEditedDepartureSettlement(extractId(callback, getFIRST_PARAMETER()), extractId(callback, getSECOND_PARAMETER()));
+                FindRideRequest request = setEditedDepartureSettlement(extractId(callback, getFIRST_VALUE()), extractId(callback, getSECOND_VALUE()));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DEST_SETTLEMENT" -> {
-                editMessage = editDestinationSettlementMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editDestinationSettlementMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_CHANGE_DEST_SETTLEMENT" -> {
-                FindRideRequest request = setEditedDestinationSettlement(extractId(callback, getFIRST_PARAMETER()), extractId(callback, getSECOND_PARAMETER()));
+                FindRideRequest request = setEditedDestinationSettlement(extractId(callback, getFIRST_VALUE()), extractId(callback, getSECOND_VALUE()));
                 editMessage = editRequestSuccessEditMessage(incomeMessage, request);
             }
             case "EDIT_DATE_TIME" -> {
-                editMessage = editDateTimeMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editDateTimeMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_DATE" -> {
-                editMessage = editDateMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editDateMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_CHANGE_DATE" -> {
-                int requestId = extractId(callback, getSECOND_PARAMETER());
-                FindRideRequest request = editSetDate(requestId, extractParameter(callback, getFIRST_PARAMETER()));
+                int requestId = extractId(callback, getSECOND_VALUE());
+                FindRideRequest request = editSetDate(requestId, extractParameter(callback, getFIRST_VALUE()));
                 if (isExpired(requestId)) {
                     expiredTimeMessage(chatId);
                     editTimeSendValidTimeMessage(chatId, requestId);
@@ -281,13 +281,13 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
                 }
             }
             case "EDIT_TIME" -> {
-                editMessage = editTimeMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editTimeMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_SEATS_QUANTITY" -> {
-                editMessage = editSeatsMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editSeatsMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
             case "EDIT_COMMENTARY" -> {
-                editMessage = editCommentaryMessage(incomeMessage, extractId(callback, getFIRST_PARAMETER()));
+                editMessage = editCommentaryMessage(incomeMessage, extractId(callback, getFIRST_VALUE()));
             }
         }
         sendEditMessage(editMessage);
@@ -810,7 +810,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         storageAccess.delete(chatId);
         chatStatusStorageAccess.deleteChatStatus(chatId);
         log.debug("method saveRequest");
-        return findRideRequestService.addNewRequest(dto);
+        FindRideRequest request = findRideRequestService.addNewRequest(dto);
+        return request;
     }
 
     private FindRideRequest getLastRequest(long chatId) {

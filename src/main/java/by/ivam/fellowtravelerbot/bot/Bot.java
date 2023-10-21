@@ -11,15 +11,17 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 @Log4j
 public class Bot extends TelegramLongPollingBot {
     public Bot(String botToken) {
         super(botToken);
     }
+
     @Autowired
     BotConfig botConfig;
     @Autowired
-   Messages messages;
+    Messages messages;
     @Autowired
     ResponseMessageProcessor messageProcessor;
     @Autowired
@@ -30,23 +32,23 @@ public class Bot extends TelegramLongPollingBot {
     @PostConstruct
     public void init() {
         messageProcessor.setBot(this);
-
     }
+
     @Override
     public String getBotUsername() {
         return botConfig.getBotName();
     }
+
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()){
+        if (update.hasMessage()) {
             messageDispatcher.onMessageReceived(update.getMessage());
         } else if (update.hasCallbackQuery()) {
             callbackDispatcher.onCallbackReceived(update.getCallbackQuery());
-
         }
     }
-    public  void sendMessage(SendMessage message) {
 
+    public void sendMessage(SendMessage message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -61,5 +63,4 @@ public class Bot extends TelegramLongPollingBot {
             log.error(messages.getERROR_TEXT() + e.getMessage());
         }
     }
-
 }
