@@ -123,6 +123,15 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
+    public FindPassengerRequest disActivateRequestById(int requestId) {
+        log.info("method disActivateRequestById");
+        FindPassengerRequest request = findById(requestId);
+        request.setActive(false);
+        repository.save(request);
+        return request;
+    }
+
+    @Override
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
     }
 
