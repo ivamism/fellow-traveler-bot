@@ -42,7 +42,7 @@ public class BaseHandler {
     private final int SECOND_VALUE = 2;
     private final String REGEX = ":";
 
-    protected String extractParameter(String statusString, int parameterNumber) {
+    public String extractParameter(String statusString, int parameterNumber) {
         String extraction = "";
         try {
            extraction = statusString.split(REGEX)[parameterNumber];
@@ -52,11 +52,11 @@ public class BaseHandler {
         return extraction;
     }
 
-    protected String extractProcess(String s) {
+    public String extractProcess(String s) {
         return extractParameter(s, PROCESS);
     }
 
-    protected int extractId(String s, int parameterNumber) {
+    public int extractId(String s, int parameterNumber) {
         int id = -1;
         try {
             id = Integer.parseInt(extractParameter(s, parameterNumber));
@@ -66,7 +66,7 @@ public class BaseHandler {
         return id;
     }
 
-    protected String firstLetterToUpperCase(String s) {
+    public String firstLetterToUpperCase(String s) {
         return s.replace(s.charAt(0), Character.toUpperCase(s.charAt(0)));
     }
 

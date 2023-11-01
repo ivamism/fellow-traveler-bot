@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("rides")
+@RedisHash("find_passenger_request")
 @Accessors(chain = true)
 public class FindPassRequestRedis {
     @Id
