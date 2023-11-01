@@ -340,7 +340,7 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
         editMessage.setText(messages.getCHOOSE_TYPE_OF_REQUEST_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.myPassengerRequestButtonCreate(Handlers.FIND_PASSENGER.getHandlerPrefix() + callback)); // Passenger request button
-        buttonsAttributesList.add(buttons.myRidesRequestButtonCreate(Handlers.FIND_RIDE.getHandlerPrefix() + callback)); // Ride request button
+        buttonsAttributesList.add(buttons.myRidesRequestButtonCreate(Handlers.FIND_RIDE.getHandlerPrefix() + callback)); // Rides request button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method chooseTypeOfRequestMessage");

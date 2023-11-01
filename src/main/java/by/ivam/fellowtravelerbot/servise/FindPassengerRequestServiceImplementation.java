@@ -2,12 +2,15 @@ package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
+import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +19,8 @@ import java.util.Optional;
 public class FindPassengerRequestServiceImplementation implements FindPassengerRequestService {
     @Autowired
     FindPassengerRequestRepository repository;
+    @Autowired
+    FindPassRequestRedisService redisService;
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -54,7 +59,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setCanceledAt(LocalDateTime.of(1, 1, 1, 1, 1));
 
         log.info("method addNewRequest. Saved new request: " + request);
-        return repository.save(request);
+        repository.save(request);
+        placeInRedis(request);
+        return request;
     }
 
     @Override
@@ -80,6 +87,16 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
+    }
 
+    private void placeInRedis(FindPassengerRequest request) {
+        FindPassRequestRedis passRequestRedis = new FindPassRequestRedis();
+        passRequestRedis.setId(Integer.toString(request.getId()))
+                .setDirection(request.getDirection())
+                .setDepartureAt(request.getDepartureAt())
+                .setSeatsQuantity(request.getSeatsQuantity())
+                .setExpireDuration(LocalDateTime.now().until(request.getDepartureAt(), ChronoUnit.SECONDS));
+        log.info("method placeInRedis");
+        redisService.saveRedisRequest(passRequestRedis);
     }
 }
