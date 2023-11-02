@@ -7,25 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Service;
+
 @Log4j
 @Service
-public class MessageSubscriber implements MessageListener {
-
-    @Autowired
+public class FindPassengerRequestCreationListener implements MessageListener {
+    //    @Autowired
     BaseHandler baseHandler;
     @Autowired
     FindPassengerRequestService requestService;
 
     public void onMessage(Message message, byte[] pattern) {
+        log.debug(message.getChannel().toString());
+
         String receivedMessage = message.toString();
         log.info("Message received: " + receivedMessage);
         System.out.println("Message received: " + receivedMessage);
 
         String channelTopic = baseHandler.extractProcess(receivedMessage);
         int requestId = baseHandler.extractId(receivedMessage, baseHandler.getFIRST_VALUE());
-        switch (channelTopic){
-            case "find_passenger_request" ->{
-               requestService.cancelRequestById(requestId);
+        switch (channelTopic) {
+            case "find_passenger_request" -> {
+                requestService.disActivateRequestById(requestId);
             }
         }
     }

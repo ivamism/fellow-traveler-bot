@@ -21,4 +21,6 @@ public interface FindRideRequestService {
     void cancelRequestById(int id);
 
     void cancelAllUsersActiveRequests(List<Integer> requestsIdList);
+
+
 }

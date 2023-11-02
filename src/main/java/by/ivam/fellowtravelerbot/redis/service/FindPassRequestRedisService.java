@@ -29,10 +29,10 @@ public class FindPassRequestRedisService {
     }
 
 //    public void addRide(Dto dto){
-//        saveRide(criateRide(dto));
+//        saveRide(createRide(dto));
 //    }
 //
-//    Ride criateRide(Dto dto){
+//    Ride createRide(Dto dto){
 //        Ride ride = new Ride();
 //        ride.setId(Integer.toString(dto.getId()))
 //                .setDirection(dto.getDirection())
@@ -62,5 +62,15 @@ public class FindPassRequestRedisService {
 
     public void delete(String id) {
         repository.deleteById(id);
+    }
+
+    public List<FindPassRequestRedis> findMatches (int id){
+        FindPassRequestRedis passRequestRedis = findById(Integer.toString(id));
+        String direction = passRequestRedis.getDirection();
+        LocalDateTime departureAt = passRequestRedis.getDepartureAt().plusHours(2);
+        List<FindPassRequestRedis> matches = repository.findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(direction, departureAt);
+        log.info("Method findMatches. Matches found: " + matches.toString());
+
+        return matches;
     }
 }

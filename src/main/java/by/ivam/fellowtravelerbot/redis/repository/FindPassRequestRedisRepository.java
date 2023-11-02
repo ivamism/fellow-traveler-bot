@@ -12,4 +12,8 @@ public interface FindPassRequestRedisRepository extends CrudRepository<FindPassR
     List<FindPassRequestRedis> findAllByDirection(String direction);
 
     List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
+
+    List<FindPassRequestRedis> findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(String direction, LocalDateTime DepartureAt);
+
+
 }
