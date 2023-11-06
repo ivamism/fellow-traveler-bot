@@ -55,8 +55,8 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setCommentary(dto.getCommentary())
                 .setActive(true)
                 .setCreatedAt(LocalDateTime.now())
-                .setCanceled(false)
-                .setCanceledAt(LocalDateTime.of(1, 1, 1, 1, 1));
+                .setCanceled(false);
+//                .setCanceledAt(LocalDateTime.of(1, 1, 1, 1, 1));
 
         log.info("method addNewRequest. Saved new request: " + request);
         repository.save(request);
@@ -87,9 +87,10 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public FindPassengerRequest disActivateRequestById(int requestId) {
-        log.info("method cancelRequestById");
+        log.info("method disActivateRequestById");
         FindPassengerRequest request = findById(requestId);
         request.setActive(false);
+        repository.save(request);
         return request;
     }
 
@@ -99,7 +100,8 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     private void placeInRedis(FindPassengerRequest request) {
         FindPassRequestRedis passRequestRedis = new FindPassRequestRedis();
-        passRequestRedis.setId(Integer.toString(request.getId()))
+        passRequestRedis.setRequestId(Integer.toString(request.getId()))
+                .setChatId(request.getUser().getChatId())
                 .setDirection(request.getDirection())
                 .setDepartureAt(request.getDepartureAt())
                 .setSeatsQuantity(request.getSeatsQuantity())

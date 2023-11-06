@@ -18,7 +18,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class FindPassRequestRedis {
     @Id
-    String id;
+    String requestId;
+    long chatId;
     @Indexed
     String direction;
     @Indexed

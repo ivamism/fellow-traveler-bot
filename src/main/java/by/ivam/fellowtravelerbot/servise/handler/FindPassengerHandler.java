@@ -114,6 +114,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 else sendMessage = editRequestSuccessSendMessage(chatId, request);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
+
         }
         sendBotMessage(sendMessage);
     }
@@ -356,6 +357,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 FindPassengerRequest request = cancelRequest(extractId(callback, getFIRST_VALUE()));
                 editMessage = cancelRequestSuccessMessage(incomeMessage, request);
             }
+
         }
         sendEditMessage(editMessage);
     }
@@ -1020,6 +1022,14 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         editMessage = createNecessityToCancelMessage(incomeMessage, handlerPrefix);
         log.debug("method: createNecessityToCancelMessage");
         return editMessage;
+    }
+
+    public void sendExpireDepartureTimeMessage(int requestId){
+        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+        sendMessage.setChatId(request.getUser().getChatId());
+        sendMessage.setText("Request is expire"); //TODO Вынести сообщение в Messages
+        log.debug("method: sendExpireDepartureTimeMessage");
+        sendBotMessage(sendMessage);
     }
 
     private EditMessageText createChooseCarMessage(Message incomeMessage, String callback) {
