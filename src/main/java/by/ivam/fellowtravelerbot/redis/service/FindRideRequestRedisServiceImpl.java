@@ -1,8 +1,8 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
 
-import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
-import by.ivam.fellowtravelerbot.redis.repository.FindPassRequestRedisRepository;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
+import by.ivam.fellowtravelerbot.redis.repository.FindRideRequestRedisRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,17 +18,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Log4j
-public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisService {
-    private final FindPassRequestRedis EMPTY_RIDE = new FindPassRequestRedis();
+public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisService {
+    private final FindRideRequestRedis EMPTY_RIDE = new FindRideRequestRedis();
     @Autowired
-    FindPassRequestRedisRepository repository;
+    FindRideRequestRedisRepository repository;
 
 //    @Autowired
 //    FindPassengerHandler findPassengerHandler;
 
 
     @Override
-    public void saveRequest(FindPassRequestRedis request) {
+    public void saveRequest(FindRideRequestRedis request) {
         log.info("method saveRedisRequest");
         repository.save(request);
     }
@@ -48,24 +48,24 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
 //    }
 
     @Override
-    public FindPassRequestRedis findById(String id) {
-        return repository.findById(id).orElse(EMPTY_RIDE);
+    public FindRideRequestRedis findById(String id) {
+        return repository.findById(id).orElseThrow();
     }
 
 
     @Override
-    public Iterable<FindPassRequestRedis> findAll() {
-        Iterable<FindPassRequestRedis> rides = repository.findAll();
+    public Iterable<FindRideRequestRedis> findAll() {
+        Iterable<FindRideRequestRedis> rides = repository.findAll();
         return rides;
     }
 
     @Override
-    public List<FindPassRequestRedis> findAllByDirection(String direction) {
+    public List<FindRideRequestRedis> findAllByDirection(String direction) {
         return repository.findAllByDirection(direction);
     }
 
     @Override
-    public List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {
+    public List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {
         return repository.findAllByDirectionAndDepartureAt(direction, departureAt);
     }
 
@@ -80,11 +80,11 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
     }
 
     @Override
-    public List<FindPassRequestRedis> findMatches(int id){
-        FindPassRequestRedis passRequestRedis = findById(Integer.toString(id));
+    public List<FindRideRequestRedis> findMatches(int id){
+        FindRideRequestRedis passRequestRedis = findById(Integer.toString(id));
         String direction = passRequestRedis.getDirection();
-        LocalDateTime departureAt = passRequestRedis.getDepartureAt().plusHours(2);
-        List<FindPassRequestRedis> matches = repository.findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(direction, departureAt);
+        LocalDateTime departureAt = passRequestRedis.getDepartureBefore().plusHours(2);
+        List<FindRideRequestRedis> matches = repository.findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(direction, departureAt);
         log.info("Method findMatches. Matches found: " + matches.toString());
 
         return matches;

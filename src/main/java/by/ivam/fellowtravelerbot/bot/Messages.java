@@ -219,4 +219,6 @@ public class Messages {
             
             """;
     private final String ALL_ACTIVE_REQUESTS_TO_STRING_MESSAGE = "Запросы на поиск пассажиров:\n\n%s\nЗапросы на поиск попуток:\n\n%s";
+    private final String TIME_EXPIRE_MESSAGE = "Время действия запроса истекло\n\n%s";
+    private final String APPEARED_NEW_REQUEST_MESSAGE = "Появился новый запрос, который вам может подойти:\n\n%s";
 }

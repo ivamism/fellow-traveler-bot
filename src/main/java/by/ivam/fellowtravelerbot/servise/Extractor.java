@@ -1,17 +1,19 @@
-package by.ivam.fellowtravelerbot;
+package by.ivam.fellowtravelerbot.servise;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
+import org.springframework.stereotype.Component;
 
 @Data
 @Log4j
+@Component
 public class Extractor {
-    private   final int INDEX_ZERO = 0;
-    private   final int INDEX_ONE = 1;
-    private   final int INDEX_TWO = 2;
-    private   final String REGEX_COLON = ":";
+    public static   final int INDEX_ZERO = 0;
+    public   static final int INDEX_ONE = 1;
+    public   static final int INDEX_TWO = 2;
+    public static  final String REGEX_COLON = ":";
 
-    public String extractParameter(String statusString, int parameterNumber) {
+    public static String extractParameter(String statusString, int parameterNumber) {
         String extraction = "";
         try {
             extraction = statusString.split(REGEX_COLON)[parameterNumber];
@@ -21,11 +23,11 @@ public class Extractor {
         return extraction;
     }
 
-    public String extractProcess(String s) {
+    public static String extractProcess(String s) {
         return extractParameter(s, INDEX_ZERO);
     }
 
-    public int extractId(String s, int parameterNumber) {
+    public static int extractId(String s, int parameterNumber) {
         int id = -1;
         try {
             id = Integer.parseInt(extractParameter(s, parameterNumber));

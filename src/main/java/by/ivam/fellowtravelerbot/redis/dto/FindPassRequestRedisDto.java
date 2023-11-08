@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 @Data
-public class Dto {
+public class FindPassRequestRedisDto {
     int id;
     String direction;
     LocalDateTime DepartureAt;

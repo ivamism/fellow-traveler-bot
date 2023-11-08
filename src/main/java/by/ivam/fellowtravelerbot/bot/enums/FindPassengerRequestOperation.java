@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.bot.enums;
 import lombok.Getter;
 
 @Getter
-public enum requestOperation {
+public enum FindPassengerRequestOperation {
     CREATE_REQUEST_CALLBACK("CREATE_REQUEST"),
     CREATE_REQUEST_DIRECTION_CALLBACK("CREATE_REQUEST_DIRECTION:"),
     CREATE_REQUEST_SETTLEMENT_DEPARTURE_CALLBACK("CREATE_REQ_DEP_SETTLEMENT:"),
@@ -69,11 +69,13 @@ public enum requestOperation {
     EDIT_CHANGE_COMMENTARY_STATUS("EDIT_CHANGE_COMMENTARY:"),
     CHOOSE_REQUEST_TO_CANCEL_CALLBACK("CHOOSE_REQUEST_TO_CANCEL_CALLBACK"),
     CANCEL_REQUEST_CALLBACK("CANCEL_REQUEST:"),
+    ACCEPT_REQUEST_CALLBACK("ACCEPT_REQUEST:"),
+    CHAT_WITH_PASSENGER_CALLBACK("CHAT_WITH_PASSENGER:"), //вынести в отдельный енам для хандлера юзерчата
     ;
 
     private final String value;
 
-    requestOperation(String value) {
+    FindPassengerRequestOperation(String value) {
         this.value = value;
     }
 }

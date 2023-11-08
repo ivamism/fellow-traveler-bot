@@ -107,6 +107,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setSeatsQuantity(request.getSeatsQuantity())
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureAt(), ChronoUnit.SECONDS));
         log.info("method placeInRedis");
-        redisService.saveRedisRequest(passRequestRedis);
+        redisService.saveRequest(passRequestRedis);
     }
 }

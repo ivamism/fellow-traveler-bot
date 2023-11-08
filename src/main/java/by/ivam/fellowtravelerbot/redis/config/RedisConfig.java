@@ -26,22 +26,29 @@ public class RedisConfig {
         return template;
     }
 
-        @Bean
+    @Bean
     public ChannelTopic chanelTopic() {
         return new ChannelTopic("__key*__:*");
     }
 
     @Bean
-    public MessageListenerAdapter messageListenerAdapter() {
-        return new MessageListenerAdapter(new MessageListener());
+    public MessageListenerAdapter messageListenerAdapter(MessageListener messageListener) {
+        return new MessageListenerAdapter(messageListener);
+//        return new MessageListenerAdapter(new MessageListener());
     }
 
     @Bean
     public RedisMessageListenerContainer redisContainer(RedisConnectionFactory redisConnectionFactory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(messageListenerAdapter(), new PatternTopic("__key*__:*"));
+//        container.addMessageListener(messageListenerAdapter(), chanelTopic());
+        container.addMessageListener(messageListenerAdapter(new MessageListener()), new PatternTopic("__key*__:*"));
         return container;
+    }
+
+    @Bean
+    MessageListener messageListener() {
+        return new MessageListener();
     }
 //    @Bean
 //    MessagePublisher messagePublisher() {

@@ -25,6 +25,7 @@ public class Buttons {
     private final String EDIT_BUTTON_TEXT = "Редактировать";
     private final String CANCEL_BUTTON_TEXT = "Отменить";
     private final String SEND_BUTTON_TEXT = "Отправить";
+    private final String ACCEPT_BUTTON_TEXT = "Принять";
     private final String SKIP_STEP_TEXT = "Пропустить";
     private final String ANOTHER_TEXT = "Другой";
     private final String DELETE_TEXT = "Удалить";
@@ -64,6 +65,8 @@ public class Buttons {
     private final String CANCEL_LAST_TEXT = "Отменить последнее";
     private final String CANCEL_REQUEST_TEXT = "Отменить запрос";
     private final String PASSENGER_QUANTITY_TEXT = "Количество пассажиров";
+    private final String CHAT_PASSENGER_TEXT = "Написать пассажиру";
+    private final String CHAT_DRIVER_TEXT = "Написать водителю";
 
 
     //    Main menu buttons
@@ -265,16 +268,31 @@ public class Buttons {
     public Pair<String, String> passengerQuantityButtonCreate(String buttonCallback) {
         return Pair.of(PASSENGER_QUANTITY_TEXT, buttonCallback);
     }
+
+    public Pair<String, String> acceptButtonCreate(String buttonCallback) {
+        return Pair.of(ACCEPT_BUTTON_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> chatToDriverButtonCreate(String buttonCallback) {
+        return Pair.of(CHAT_DRIVER_TEXT, buttonCallback);
+    }
+
+    public Pair<String, String> chatToPassengerButtonCreate(String buttonCallback) {
+        return Pair.of(CHAT_PASSENGER_TEXT, buttonCallback);
+    }
+
+
     public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData) {
         return attributesType.entrySet()
                 .stream()
                 .map(entry -> Pair.of(entry.getValue(), callbackData + entry.getKey()))
                 .collect(Collectors.toList());
     }
+
     public List<Pair<String, String>> buttonsAttributesListCreator(Map<Integer, String> attributesType, String callbackData, int requestId) {
         return attributesType.entrySet()
                 .stream()
-                .map(entry -> Pair.of(entry.getValue(), String.format(callbackData, requestId,  entry.getKey()) ))
+                .map(entry -> Pair.of(entry.getValue(), String.format(callbackData, requestId, entry.getKey())))
                 .collect(Collectors.toList());
     }
 

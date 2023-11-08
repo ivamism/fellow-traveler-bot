@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FindPassRequestRedisService {
-    void saveRedisRequest(FindPassRequestRedis request);
+    void saveRequest(FindPassRequestRedis request);
 
     FindPassRequestRedis findById(String id);
 

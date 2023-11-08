@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
-import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
+import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
@@ -348,14 +348,14 @@ public class UserHandler extends BaseHandler implements HandlerInterface {
     }
 
     private EditMessageText chooseRequestToEdit(Message incomeMessage) {
-        String callback = requestOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
+        String callback = FindPassengerRequestOperation.CHOOSE_REQUEST_TO_EDIT_CALLBACK.getValue();
         editMessage = chooseTypeOfRequestMessage(incomeMessage, callback);
         log.debug("method chooseRequestToEdit");
         return editMessage;
     }
 
     private EditMessageText chooseRequestToCancel(Message incomeMessage) {
-        String callback = requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
+        String callback = FindPassengerRequestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue();
         editMessage = chooseTypeOfRequestMessage(incomeMessage, callback);
         log.debug("method chooseRequestToCancel");
         return editMessage;

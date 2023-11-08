@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
-import by.ivam.fellowtravelerbot.bot.enums.requestOperation;
+import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,7 +37,7 @@ public class RequestHandler extends BaseHandler {
         sendMessage.setText(messageText);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
         buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix
-                + requestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Start create button
+                + FindPassengerRequestOperation.CREATE_REQUEST_CALLBACK.getValue())); // Start create button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequest");
@@ -49,9 +49,9 @@ public class RequestHandler extends BaseHandler {
         editMessage.setText(messages.getCREATE_REQUEST_DIRECTION_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         buttonsAttributesList.add(buttons.towardMinskButtonCreate(handlerPrefix
-                + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
+                + FindPassengerRequestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.TOWARDS_MINSK)); // toward Minsk button
         buttonsAttributesList.add(buttons.fromMinskButtonCreate(handlerPrefix
-                + requestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
+                + FindPassengerRequestOperation.CREATE_REQUEST_DIRECTION_CALLBACK.getValue() + Direction.FROM_MINSK)); // from Minsk button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.twoButtonsFirstRowOneButtonSecondRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNewRequestChoseDirectionMessage");
@@ -63,7 +63,7 @@ public class RequestHandler extends BaseHandler {
         editMessage.setText(messages.getFIND_PASSENGER_NECESSITY_TO_CANCEL_REQUEST_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
         buttonsAttributesList.add(buttons.yesButtonCreate(handlerPrefix
-                + requestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
+                + FindPassengerRequestOperation.CHOOSE_REQUEST_TO_CANCEL_CALLBACK.getValue())); // Edit date button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         editMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
         log.debug("method: createNecessityToCancelMessage");
@@ -192,10 +192,10 @@ public class RequestHandler extends BaseHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getADD_CAR_ADD_COMMENTARY_MESSAGE());
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + requestOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
+        buttonsAttributesList.add(buttons.skipButtonCreate(handlerPrefix + FindPassengerRequestOperation.CREATE_REQUEST_SKIP_COMMENT_CALLBACK)); // Skip step button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-        chatStatusOperations.addChatStatus(chatId, handlerPrefix + requestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
+        chatStatusOperations.addChatStatus(chatId, handlerPrefix + FindPassengerRequestOperation.CREATE_REQUEST_COMMENTARY_STATUS);
         log.debug("method: createCommentaryMessage");
         return sendMessage;
     }
@@ -228,8 +228,8 @@ public class RequestHandler extends BaseHandler {
 
     private List<Pair<String, String>> createCheckBeforeSaveButtonsAttributesList(String handlerPrefix) {
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + requestOperation.SAVE_REQUEST_CALLBACK)); // Save button
-        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + requestOperation.EDIT_REQUEST_BEFORE_SAVE_CALLBACK)); // Edit button
+        buttonsAttributesList.add(buttons.saveButtonCreate(handlerPrefix + FindPassengerRequestOperation.SAVE_REQUEST_CALLBACK)); // Save button
+        buttonsAttributesList.add(buttons.editButtonCreate(handlerPrefix + FindPassengerRequestOperation.EDIT_REQUEST_BEFORE_SAVE_CALLBACK)); // Edit button
         buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         return buttonsAttributesList;
     }
@@ -334,7 +334,7 @@ public class RequestHandler extends BaseHandler {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getFIND_PASSENGER_NO_ACTIVE_REQUEST_MESSAGE());
         log.info("noActiveRequestsMessage");
-        editMessage.setReplyMarkup(null); //need to set null to remove no longer necessary inline keyboard
+        editMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
         return editMessage;
     }
 
@@ -344,6 +344,14 @@ public class RequestHandler extends BaseHandler {
         editMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
         log.debug("method: createChoiceRequestMessage");
         return editMessage;
+    }
+
+    protected SendMessage createExpireRequestTimeMessage(long chatId, String requestToString){
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(String.format(messages.getTIME_EXPIRE_MESSAGE(), requestToString));
+        sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
+        log.debug("method: sendExpireRequestTimeMessage");
+        return sendMessage;
     }
 
     protected boolean isToday(String day) {

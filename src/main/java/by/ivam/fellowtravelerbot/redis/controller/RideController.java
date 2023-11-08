@@ -18,7 +18,7 @@ public class RideController {
 
 //    @PostMapping()
 //    @ResponseStatus(HttpStatus.CREATED)
-//    public void create(@RequestBody Dto dto) {
+//    public void create(@RequestBody FindPassRequestRedisDto dto) {
 //        service.addRide(dto);
 //    }
 
