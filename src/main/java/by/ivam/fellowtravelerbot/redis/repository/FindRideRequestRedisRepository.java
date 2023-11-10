@@ -15,5 +15,4 @@ public interface FindRideRequestRedisRepository extends CrudRepository<FindRideR
 
     List<FindRideRequestRedis> findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(String direction, LocalDateTime DepartureAt);
 
-
 }

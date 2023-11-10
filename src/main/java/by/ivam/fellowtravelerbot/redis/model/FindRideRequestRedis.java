@@ -20,7 +20,7 @@ public class FindRideRequestRedis {
     String direction;
     @Indexed
     LocalDateTime DepartureBefore;
-    int seatsQuantity;
+    int passengersQuantity;
     @TimeToLive
     long expireDuration;
 }

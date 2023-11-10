@@ -2,12 +2,15 @@ package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
+import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindRideRequestRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +19,8 @@ import java.util.Optional;
 public class FindRideRequestServiceImplementation implements FindRideRequestService {
     @Autowired
     private FindRideRequestRepository repository;
+    @Autowired
+    private FindRideRequestRedisService redisService;
 
     @Override
     public FindRideRequest findById(int id) {
@@ -48,7 +53,9 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setActive(true)
                 .setCreatedAt(LocalDateTime.now());
         log.info("method addNewRequest. Saved new request: " + request);
-        return repository.save(request);
+        repository.save(request);
+        placeInRedis(request);
+        return request;
     }
 
     @Override
@@ -78,4 +85,17 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
 
     }
+
+    private void placeInRedis(FindRideRequest request) {
+        FindRideRequestRedis rideRequestRedis = new FindRideRequestRedis();
+        rideRequestRedis.setRequestId(Integer.toString(request.getId()))
+                .setChatId(request.getUser().getChatId())
+                .setDirection(request.getDirection())
+                .setDepartureBefore(request.getDepartureBefore())
+                .setPassengersQuantity(request.getPassengersQuantity())
+                .setExpireDuration(LocalDateTime.now().until(request.getDepartureBefore(), ChronoUnit.SECONDS));
+        log.info("method placeInRedis");
+        redisService.saveRequest(rideRequestRedis);
+    }
+
 }

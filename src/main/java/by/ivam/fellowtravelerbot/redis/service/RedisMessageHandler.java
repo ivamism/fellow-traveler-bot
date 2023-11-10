@@ -15,17 +15,16 @@ import org.springframework.stereotype.Service;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class RedisMessageHandler {
 
     @Autowired
     FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
     FindPassengerRequestService findPassengerRequestService;
-
     @Autowired
     private FindPassengerHandler findPassengerHandler;
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
+    private final String FIND_RIDE_REQUEST = "find_ride_request";
 
     public void handleMessage(String event, String message) {
         String requestType = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
@@ -33,15 +32,24 @@ public class RedisMessageHandler {
         String requestIdString = Extractor.extractParameter(message, Extractor.INDEX_ONE);
         switch (event) {
             case "hset" -> {
-                log.debug("get new request type: " + requestType + ", id: " + requestIdString);
-                findPassengerRequestService.findById(requestId);
+
+                if (requestType.equals(FIND_PASSENGER_REQUEST)) {
+                    log.debug("get new request type: " + requestType + ", id: " + requestIdString);
+//                    findPassengerRequestService.findById(requestId);
+                } else if (requestType.equals(FIND_RIDE_REQUEST)) {
+                    log.debug("get new request type: " + requestType + ", id: " + requestIdString);
+                }
+
             }
             case "expired" -> {
-                log.debug("get expired request type: " + requestType + ", id: " + requestId);
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
+                    log.debug("get expired request type: " + requestType + ", id: " + requestId);
                     findPassengerRequestService.disActivateRequestById(requestId);
                     findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
+                } else if (requestType.equals(FIND_RIDE_REQUEST)) {
+                    log.debug("get new request type: " + requestType + ", id: " + requestIdString);
                 }
+
             }
         }
     }

@@ -1,6 +1,5 @@
 services:
   postgres:
-#    image: postgres:alpine3.18
     image: postgres:16.0-alpine3.18
     environment:
       POSTGRES_DB: "fellow_travel"
@@ -24,7 +23,7 @@ services:
 #    volumes:
 #       - redis_volume:/var/lib/docker/volumes/redis_volume/_data
 volumes:
-  fellow_travel_db: {external: true}
+  fellow_travel_db:
 #    - external: true
 #  redis_volume:
 #    - external: true
