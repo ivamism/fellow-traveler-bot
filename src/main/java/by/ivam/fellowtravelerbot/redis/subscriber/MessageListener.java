@@ -13,11 +13,12 @@ import org.springframework.data.redis.connection.Message;
 public class MessageListener implements org.springframework.data.redis.connection.MessageListener {
     @Autowired
     RedisMessageHandler messageHandler;
+
     public void onMessage(Message message, byte[] pattern) {
         String event = Extractor.extractParameter(new String(message.getChannel()), Extractor.INDEX_ONE);
         String receivedMessage = message.toString();
         messageHandler.handleMessage(event, receivedMessage);
-        log.info("Message received: " + receivedMessage);
+        log.debug("Message received: " + receivedMessage + ", event: " + event);
     }
 }
 
