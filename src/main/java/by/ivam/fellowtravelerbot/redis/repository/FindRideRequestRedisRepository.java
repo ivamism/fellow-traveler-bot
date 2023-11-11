@@ -19,6 +19,4 @@ public interface FindRideRequestRedisRepository extends CrudRepository<FindRideR
 
     List<FindRideRequestRedis> findByDirectionAndPassengersQuantityLessThanEqual(String direction, int passengersQuantity);
 
-    List<FindRideRequestRedis> findByExpireDuration(long expireDuration);
-
 }

@@ -1,15 +1,11 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
-import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
-import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
-import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -34,11 +30,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     @Autowired
     FindPassengerHandler findPassengerHandler;
 
-    @Autowired
-    FindPassRequestRedisService findPassRequestRedisService;
-    @Autowired
-    FindRideRequestRedisService findRideRequestRedisService;
-
 
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
@@ -52,6 +43,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         String process = chatStatus;
         if (chatStatus.contains(":")) process = Extractor.extractProcess(chatStatus);
+//        if (chatStatus.contains(":")) process = extractProcess(chatStatus);
         switch (process) {
 
         }
@@ -64,56 +56,37 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String process = callback;
         if (callback.contains(":")) {
             process = Extractor.extractProcess(callback);
-
+//            process = extractProcess(callback);
         }
         switch (process) {
-
-            case "BOOK_REQUEST_CALLBACK" -> {
-                String initiator = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                String firstId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
-                String secondId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
-                matchService.addBooking(firstId, secondId, initiator);
-                editMessage = sendNoticeAboutSendingBookingMessage(incomeMessage);
-//                TODO отправить сообщение о том что выслан запрос на бронирование
+            case "ACCEPT_FIND_RIDE_REQUEST" -> {
+log.debug("");
             }
-            case "ACCEPT_BOOKING" -> {
-                log.debug("ACCEPT_BOOKING - " + callback);
-                nextStep(incomeMessage);
-            }
-            case "DENY_BOOKING" -> {
-                String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                onDenyBookingDeny(incomeMessage, bookingId);
-//                sendNoticeAboutDenyBookingMessage(bookingId);
-//                matchService.deleteBooking(bookingId);
-//                log.debug("DENY_BOOKING - " + callback);
-////                editMessage = sendReplyDenyBookingMessage(incomeMessage);
-//                sendReplyDenyBookingMessage(incomeMessage);
+              case "ACCEPT_FIND_PASS_REQUEST" -> {
 
             }
+
         }
-        sendEditMessage(editMessage);
+
     }
 
     public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableRideRequestMessage");
         String requestListsToString = findRideRequestListsToString(requestIdList);
-        String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
-                BookingInitiator.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
+        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage =
-                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+
         sendBotMessage(sendMessage);
     }
 
     public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
-        //Todo изменить сообщение
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
-        String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
-                BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
+        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_PASS_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage =
-                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+
         sendBotMessage(sendMessage);
     }
 
@@ -122,74 +95,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getSUITABLE_REQUESTS_LIST_MESSAGE(), requestsList));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-        log.debug("method: createListOfSuitableRequestsMessage");
         return sendMessage;
-    }
-
-    public void sendBookingAnnouncementMessage(Booking booking) {
-        log.debug("method sendBookingAnnouncementMessage");
-        String initiator = booking.getInitiator();
-        String bookingId = booking.getId();
-        if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-
-            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
-            int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
-            FindPassengerRequest requestToSend = findPassengerRequestService.findById(findPassRequestId);
-            String requestToString = findPassengerHandler.requestToString(requestToSend);
-            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
-        } else {
-            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-            int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
-            FindRideRequest requestToSend = findRideRequestService.findById(findRideRequestId);
-            String requestToString = findRideHandler.requestToString(requestToSend);
-            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
-        }
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
-        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
-                + MatchingOperation.ACCEPT_BOOKING_CALLBACK.getValue() + bookingId)); // Start create button
-        buttonsAttributesList.add(buttons.denyButtonCreate(handlerPrefix
-                + MatchingOperation.DENY_BOOKING_CALLBACK.getValue() + bookingId)); // Cancel button
-        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-        sendBotMessage(sendMessage);
-    }
-
-    private EditMessageText sendNoticeAboutSendingBookingMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getNOTICE_ABOUT_SENDING_BOOKING_MESSAGE());
-        log.debug("method sendNoticeAboutSendingBookingMessage");
-        return editMessage;
-    }
-
-    private void sendNoticeAboutDenyBookingMessage(String bookingId) {
-        Booking booking = matchService.getBooking(bookingId);
-        if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
-        } else sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-        sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
-        sendMessage.setReplyMarkup(null);
-        sendBotMessage(sendMessage);
-        log.debug("method sendNoticeAboutDenyBookingMessage");
-    }
-
-    //    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
-    private void sendReplyDenyBookingMessage(Message incomeMessage) {
-        editMessageTextGeneralPreset(incomeMessage);
-        editMessage.setText(messages.getBOOKING_DENY_REPLY_MESSAGE());
-        editMessage.setReplyMarkup(null);
-        log.debug("method sendReplyDenyBookingMessage");
-//        return editMessage;
-        sendEditMessage(editMessage);
-    }
-
-    private void onDenyBookingDeny(Message incomeMessage, String bookingId) {
-        log.debug("method onDenyBookingDeny");
-        sendNoticeAboutDenyBookingMessage(bookingId);
-//                editMessage = sendReplyDenyBookingMessage(incomeMessage);
-        sendReplyDenyBookingMessage(incomeMessage); //TODO сообщение о бронировании должно отправлятся другому
-
-
-        matchService.deleteBooking(bookingId);
-
     }
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
@@ -206,7 +112,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             return text.toString();
         }
     }
-
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
     private String findPassengerRequestListsToString(List<Integer> requestsIdList) {
@@ -236,29 +141,5 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         }
         return buttonsAttributesList;
-    }
-
-    protected void editMessageTextGeneralPreset(Message incomeMessage) {
-        long chatId = incomeMessage.getChatId();
-        editMessage.setChatId(chatId);
-        editMessage.setMessageId(incomeMessage.getMessageId());
-    }
-
-    protected SendMessage nextStep(long chatId) {
-//        TODO удалить метод по окончании реализации всего функционала
-        sendMessage.setChatId(chatId);
-        sendMessage.setText("nextStep");
-        sendMessage.setReplyMarkup(null);
-        log.debug("method: nextStep");
-        return sendMessage;
-    }
-
-    protected EditMessageText nextStep(Message incomemessage) {
-        //        TODO удалить метод по окончании реализации всего функционала
-        editMessageTextGeneralPreset(incomemessage);
-        editMessage.setText("nextStep");
-        editMessage.setReplyMarkup(null);
-        log.debug("method: nextStep");
-        return editMessage;
     }
 }

@@ -7,14 +7,13 @@ import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-//@EnableScheduling
 @Log4j
-public class AsyncConfiguration
-        extends AsyncConfigurerSupport {
+public class AsyncConfiguration extends AsyncConfigurerSupport {
 
     @Override
     public Executor getAsyncExecutor() {
@@ -30,9 +29,16 @@ public class AsyncConfiguration
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return (ex, method, params) -> {
-            log.error("Exception: " + ex.getMessage()+". Method Name: " + method.getName());
-            ex.printStackTrace();
+        return new AsyncUncaughtExceptionHandler() {
+            @Override
+            public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+                log.error("Exception: " + ex.getMessage()+". Method Name: " + method.getName());
+
+//                System.out.println("Exception: " + ex.getMessage());
+//                System.out.println("Method Name: " + method.getName());
+                ex.printStackTrace();
+
+            }
         };
     }
 }

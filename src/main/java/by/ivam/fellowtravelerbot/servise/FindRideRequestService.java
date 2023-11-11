@@ -17,6 +17,7 @@ public interface FindRideRequestService {
 
     List<FindRideRequest> usersRequestList(long chatId);
     List<FindRideRequest> usersActiveRequestList(long chatId);
+    List<FindRideRequest> requestListByIdList(List<Integer> requestIdList);
 
     void cancelRequestById(int id);
 

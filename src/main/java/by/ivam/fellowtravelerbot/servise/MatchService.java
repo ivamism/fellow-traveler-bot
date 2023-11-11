@@ -1,9 +1,9 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.redis.model.Booking;
+
 public interface MatchService {
-    void cancelRequestById(int id);
-
-    void getNewFindPassengerRequest(int requestId);
-
-    void getNewFindRideRequest(int requestId);
+    void getNewFindPassengerRequest(String requestId);
+    void getNewFindRideRequest(String requestId);
+void addBooking(Booking booking);
 }
