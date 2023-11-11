@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindRideRequestRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -91,7 +92,8 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     }
 
-    private void placeInRedis(FindRideRequest request) {
+    @Async
+    public void placeInRedis(FindRideRequest request) {
         FindRideRequestRedis rideRequestRedis = new FindRideRequestRedis();
         rideRequestRedis.setRequestId(Integer.toString(request.getId()))
                 .setChatId(request.getUser().getChatId())

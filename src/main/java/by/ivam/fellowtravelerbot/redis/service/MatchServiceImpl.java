@@ -10,6 +10,8 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     FindPassRequestRedisService findPassRequestRedisService;
+    @Autowired
+    FindRideRequestRedisService findRideRequestRedisService;
 
     @Override
     public void cancelRequestById(int id) {

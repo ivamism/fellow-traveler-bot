@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -103,7 +104,8 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
     }
 
-    private void placeInRedis(FindPassengerRequest request) {
+    @Async
+    public void placeInRedis(FindPassengerRequest request) {
         FindPassRequestRedis passRequestRedis = new FindPassRequestRedis();
         passRequestRedis.setRequestId(Integer.toString(request.getId()))
                 .setChatId(request.getUser().getChatId())
