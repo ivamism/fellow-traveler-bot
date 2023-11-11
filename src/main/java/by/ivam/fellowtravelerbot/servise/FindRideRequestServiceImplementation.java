@@ -77,8 +77,13 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     }
 
     @Override
-    public void cancelRequestById(int id) {
-
+    public FindRideRequest cancelRequestById(int requestId) {
+        FindRideRequest request = findById(requestId);
+        request.setActive(false)
+                .setCanceled(true)
+                .setCanceledAt(LocalDateTime.now());
+        log.debug("method cancelRequestById");
+        return repository.save(request);
     }
 
     @Override
@@ -96,6 +101,14 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureBefore(), ChronoUnit.SECONDS));
         log.info("method placeInRedis");
         redisService.saveRequest(rideRequestRedis);
+    }
+
+    @Override
+    public FindRideRequest disActivateRequestById(int requestId) {
+        log.info("method disActivateRequestById");
+        FindRideRequest request = findById(requestId);
+        request.setActive(false);
+        return repository.save(request);
     }
 
 }

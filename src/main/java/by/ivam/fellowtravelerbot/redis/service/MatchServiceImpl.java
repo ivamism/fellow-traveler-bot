@@ -1,6 +1,5 @@
-package by.ivam.fellowtravelerbot.servise;
+package by.ivam.fellowtravelerbot.redis.service;
 
-import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     FindPassRequestRedisService findPassRequestRedisService;
+
     @Override
     public void cancelRequestById(int id) {
 

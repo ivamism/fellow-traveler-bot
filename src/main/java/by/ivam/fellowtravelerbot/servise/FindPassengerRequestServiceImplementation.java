@@ -81,8 +81,13 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public void cancelRequestById(int id) {
-
+    public FindPassengerRequest cancelRequestById(int requestId) {
+        FindPassengerRequest request = findById(requestId);
+        request.setActive(false)
+                .setCanceled(true)
+                .setCanceledAt(LocalDateTime.now());
+        log.info("method cancelRequest");
+        return repository.save(request);
     }
 
     @Override

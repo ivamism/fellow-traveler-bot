@@ -22,7 +22,7 @@ public interface FindPassengerRequestService {
 
     List<FindPassengerRequest> usersActiveRequestList(long chatId);
 
-    void cancelRequestById(int id);
+    FindPassengerRequest cancelRequestById(int requestId);
     FindPassengerRequest disActivateRequestById(int requestId);
 
     void cancelAllUsersActiveRequests(List<Integer> requestsIdList);

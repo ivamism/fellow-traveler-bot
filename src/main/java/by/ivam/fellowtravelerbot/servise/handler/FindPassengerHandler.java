@@ -355,7 +355,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             }
             case "CANCEL_REQUEST" -> {
                 FindPassengerRequest request = cancelRequest(extractId(callback, getFIRST_VALUE()));
-                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
+                editMessage = sendCancelRequestSuccessMessage(incomeMessage, request);
             }
 
         }
@@ -995,15 +995,11 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private FindPassengerRequest cancelRequest(int requestId) {
-        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
-        request.setActive(false)
-                .setCanceled(true)
-                .setCanceledAt(LocalDateTime.now());
         log.debug("method cancelRequest");
-        return findPassengerRequestService.updateRequest(request);
+        return findPassengerRequestService.cancelRequestById(requestId);
     }
 
-    private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
+    private EditMessageText sendCancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {
         String requestToString = requestToString(request);
         editMessage = createCancelRequestSuccessMessage(incomeMessage, requestToString);
         log.debug("method: cancelRequestSuccessMessage");
@@ -1167,5 +1163,4 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     private boolean isExpired(int requestId, LocalTime time) {
         return findPassengerRequestService.findById(requestId).getDepartureAt().toLocalDate().isEqual(LocalDate.now()) && time.isBefore(LocalTime.now());
     }
-
 }

@@ -2,13 +2,13 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
+import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindRideDtoOperations;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
-import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
+import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindRideDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -232,7 +232,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
             }
             case "CANCEL_REQUEST" -> {
                 FindRideRequest request = cancelRequest(extractId(callback, getFIRST_VALUE()));
-                editMessage = cancelRequestSuccessMessage(incomeMessage, request);
+                editMessage = sendCancelRequestSuccessMessage(incomeMessage, request);
             }
             case "CHOOSE_REQUEST_TO_EDIT" -> {
                 editMessage = chooseRequestToEditMessage(incomeMessage);
@@ -791,18 +791,21 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private FindRideRequest cancelRequest(int requestId) {
-        FindRideRequest request = findRideRequestService.findById(requestId);
-        request.setActive(false)
-                .setCanceled(true)
-                .setCanceledAt(LocalDateTime.now());
-        log.debug("method cancelRequest");
-        return findRideRequestService.updateRequest(request);
+        log.debug("method sendCancelRequest");
+        return findRideRequestService.cancelRequestById(requestId);
     }
 
-    private EditMessageText cancelRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
+    private EditMessageText sendCancelRequestSuccessMessage(Message incomeMessage, FindRideRequest request) {
         String requestToString = requestToString(request);
         editMessage = createCancelRequestSuccessMessage(incomeMessage, requestToString);
         return editMessage;
+    }
+
+    public void sendExpireDepartureTimeMessage(int requestId) {
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        sendMessage = createExpireRequestTimeMessage(request.getUser().getChatId(), requestToString(request));
+        log.debug("method: sendExpireDepartureTimeMessage");
+        sendBotMessage(sendMessage);
     }
 
 

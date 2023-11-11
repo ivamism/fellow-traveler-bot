@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.servise;
+package by.ivam.fellowtravelerbot.redis.service;
 
 public interface MatchService {
     void cancelRequestById(int id);
