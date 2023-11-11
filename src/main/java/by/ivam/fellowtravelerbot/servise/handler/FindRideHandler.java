@@ -807,7 +807,25 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: sendExpireDepartureTimeMessage");
         sendBotMessage(sendMessage);
     }
+    public void sendAppearedNewFindRideRequestMessage(List<Long> chatIdList, int requestId) {
 
+        FindRideRequest request = findRideRequestService.findById(requestId);
+        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
+
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
+                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
+        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+
+        for (long chatId : chatIdList) {
+            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
+                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
+            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+            sendMessage.setChatId(chatId);
+        }
+        log.debug("method: sendAppearedNewPassengerRequestMessage");
+        sendBotMessage(sendMessage);
+    }
 
 
     private FindRideRequest saveRequest(long chatId) {

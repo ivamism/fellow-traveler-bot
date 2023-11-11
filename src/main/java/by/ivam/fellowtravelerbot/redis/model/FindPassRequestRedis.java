@@ -24,6 +24,7 @@ public class FindPassRequestRedis {
     String direction;
     @Indexed
     LocalDateTime DepartureAt;
+    @Indexed
     int seatsQuantity;
     @TimeToLive
     long expireDuration;

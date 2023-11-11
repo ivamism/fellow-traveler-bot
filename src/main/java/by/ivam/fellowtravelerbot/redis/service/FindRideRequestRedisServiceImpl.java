@@ -10,8 +10,10 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -19,12 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 @Log4j
 public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisService {
-    private final FindRideRequestRedis EMPTY_RIDE = new FindRideRequestRedis();
     @Autowired
     FindRideRequestRedisRepository repository;
-
-//    @Autowired
-//    FindPassengerHandler findPassengerHandler;
 
 
     @Override
@@ -59,15 +57,15 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
         return rides;
     }
 
-    @Override
-    public List<FindRideRequestRedis> findAllByDirection(String direction) {
-        return repository.findAllByDirection(direction);
-    }
-
-    @Override
-    public List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {
-        return repository.findAllByDirectionAndDepartureAt(direction, departureAt);
-    }
+//    @Override
+//    public List<FindRideRequestRedis> findAllByDirection(String direction) {
+//        return repository.findAllByDirection(direction);
+//    }
+//
+//    @Override
+//    public List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {
+//        return repository.findAllByDirectionAndDepartureAt(direction, departureAt);
+//    }
 
     @Override
     public void delete(String id) {
@@ -80,13 +78,22 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     }
 
     @Override
-    public List<FindRideRequestRedis> findMatches(int id){
-        FindRideRequestRedis passRequestRedis = findById(Integer.toString(id));
-        String direction = passRequestRedis.getDirection();
-        LocalDateTime departureAt = passRequestRedis.getDepartureBefore().plusHours(2);
-        List<FindRideRequestRedis> matches = repository.findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(direction, departureAt);
-        log.info("Method findMatches. Matches found: " + matches.toString());
+    public List<Long> findMatches(String direction, LocalDateTime time, int seatsQuantity) {
+//        List<FindRideRequestRedis> matches = repository
+//                .findByDirectionAndDepartureBeforeBeforeAndPassengersQuantityGreaterThanEqual(direction, time, seatsQuantity);
+//        log.info("Method findMatches. Matches found: " + matches.toString());
+//        return matches;
+        LocalDate date = time.toLocalDate();
+        List<Long> matchedChatIdList =
+                repository.findAllByDirection(direction)
+                        .stream()
+                        .filter(request -> request.getDepartureBefore().isBefore(time))
+                        .filter(request -> request.getDepartureBefore().toLocalDate().isEqual(date))
+                        .filter(request -> request.getPassengersQuantity()<=seatsQuantity)
+                        .map(request -> request.getChatId())
+                        .collect(Collectors.toList());
+        log.info("Method findMatches. Matches found: " + matchedChatIdList.toString());
 
-        return matches;
+        return matchedChatIdList;
     }
 }

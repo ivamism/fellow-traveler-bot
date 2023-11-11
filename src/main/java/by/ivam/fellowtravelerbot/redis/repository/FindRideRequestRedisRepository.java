@@ -10,9 +10,13 @@ import java.util.List;
 @Repository
 public interface FindRideRequestRedisRepository extends CrudRepository<FindRideRequestRedis, String> {
     List<FindRideRequestRedis> findAllByDirection(String direction);
+//
+//    List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
+//
+//    List<FindRideRequestRedis> findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(String direction, LocalDateTime DepartureAt);
 
-    List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
+    List<FindRideRequestRedis> findByDirectionAndDepartureBeforeBeforeAndPassengersQuantityGreaterThanEqual(String direction, LocalDateTime DepartureBefore, int passengersQuantity);
 
-    List<FindRideRequestRedis> findByDirectionAndDepartureAtBeforeOrderByDepartureAtAsc(String direction, LocalDateTime DepartureAt);
+    List<FindRideRequestRedis> findByDirectionAndPassengersQuantityLessThanEqual(String direction, int passengersQuantity);
 
 }

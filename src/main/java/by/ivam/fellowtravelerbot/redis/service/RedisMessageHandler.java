@@ -30,6 +30,9 @@ public class RedisMessageHandler {
     private FindPassengerHandler findPassengerHandler;
     @Autowired
     FindRideHandler findRideHandler;
+    @Autowired
+    MatchService matchService;
+
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";
 
@@ -41,9 +44,10 @@ public class RedisMessageHandler {
             case "hset" -> {
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-//                    findPassengerRequestService.findById(requestId);
+                    matchService.getNewFindPassengerRequest(requestIdString);
                 } else if (requestType.equals(FIND_RIDE_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
+                    matchService.getNewFindRideRequest(requestIdString);
                 }
 
             }

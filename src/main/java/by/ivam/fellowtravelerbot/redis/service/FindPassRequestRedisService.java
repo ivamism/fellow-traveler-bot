@@ -12,13 +12,15 @@ public interface FindPassRequestRedisService {
 
     Iterable<FindPassRequestRedis> findAll();
 
-    List<FindPassRequestRedis> findAllByDirection(String direction);
-
-    List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
+//    List<FindPassRequestRedis> findAllByDirection(String direction);
+//
+//    List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
 
     void delete(String id);
 
     void getExpire(int requestId);
 
-    List<FindPassRequestRedis> findMatches(int id);
+//    List<FindPassRequestRedis> findMatches(int id);
+
+    List<Long> findMatches(String direction, LocalDateTime time, int seatsQuantity);
 }
