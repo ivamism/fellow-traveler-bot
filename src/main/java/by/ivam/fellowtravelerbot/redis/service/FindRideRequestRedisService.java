@@ -12,7 +12,7 @@ public interface FindRideRequestRedisService {
 
     Iterable<FindRideRequestRedis> findAll();
 
-//    List<FindRideRequestRedis> findAllByDirection(String direction);
+    List<FindRideRequestRedis> findAllByDirection(String direction);
 //
 //    List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
 

@@ -57,10 +57,10 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
         return rides;
     }
 
-//    @Override
-//    public List<FindRideRequestRedis> findAllByDirection(String direction) {
-//        return repository.findAllByDirection(direction);
-//    }
+    @Override
+    public List<FindRideRequestRedis> findAllByDirection(String direction) {
+        return repository.findAllByDirection(direction);
+    }
 //
 //    @Override
 //    public List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {

@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Log4j
 public class FindRideHandler extends RequestHandler implements HandlerInterface {
     @Autowired
-    private final FindRideDtoOperations storageAccess;
+    private final FindRideDtoOperations findRideDtoOperations;
     @Autowired
     private final AdminHandler adminHandler;
     private final String handlerPrefix = Handlers.FIND_RIDE.getHandlerPrefix();
@@ -304,7 +304,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         FindPassengerRequestDTO dto = new FindPassengerRequestDTO();
         FindRideRequestDTO requestDTO = new FindRideRequestDTO();
         requestDTO.setUser(userService.findUserById(chatId));
-        storageAccess.addFindRideDTO(chatId, requestDTO);
+        findRideDtoOperations.addFindRideDTO(chatId, requestDTO);
         log.debug("method: createFindPassengerRequestDTO - create DTO " + dto + " and save it in storage");
     }
 
@@ -370,51 +370,51 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private void setDTODirection(long chatId, String direction) {
         log.debug("method createNewRequestSetDirection");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDirection(direction);
-        storageAccess.update(chatId, dto);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId).setDirection(direction);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private void setDTODepartureSettlement(long chatId, int settlementId) {
         log.debug("method setDTODepartureSettlement");
         Settlement settlement = settlementService.findById(settlementId);
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDepartureSettlement(settlement);
-        storageAccess.update(chatId, dto);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId).setDepartureSettlement(settlement);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private void setDtoDestinationSettlement(long chatId, int settlementId) {
         log.debug("method createNewRequestSetDestinationSettlement");
         Settlement settlement = settlementService.findById(settlementId);
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setDestinationSettlement(settlement);
-        storageAccess.update(chatId, dto);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId).setDestinationSettlement(settlement);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private void setDtoDate(long chatId, String day) {
         log.debug("method createNewRequestSetDate");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId);
         if (isToday(day)) {
             dto.setDepartureBefore(LocalDate.now().atTime(0, 0));
         } else {
             dto.setDepartureBefore(LocalDate.now().atTime(0, 0).plusDays(1));
         }
-        storageAccess.update(chatId, dto);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private void setEditedDtoDate(long chatId, String day) {
         log.debug("method createNewRequestSetDate");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId);
         if (isToday(day)) {
             dto.setDepartureBefore(dto.getDepartureBefore().withDayOfMonth(LocalDate.now().getDayOfMonth()));
         } else {
             dto.setDepartureBefore(dto.getDepartureBefore().withDayOfMonth(LocalDate.now().getDayOfMonth()).plusDays(1));
         }
-        storageAccess.update(chatId, dto);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private void setDtoTime(long chatId, LocalTime time) {
         log.debug("method createNewRequestSetTime");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId);
         dto.setDepartureBefore(dto.getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()));
-        storageAccess.update(chatId, dto);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private SendMessage createNewRequestSeatsMessage(long chatId) {
@@ -426,8 +426,8 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private void setDtoPassengersQuantity(long chatId, int passengersQuantity) {
         log.debug("method setDtoPassengersQuantity");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setPassengersQuantity(passengersQuantity);
-        storageAccess.update(chatId, dto);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId).setPassengersQuantity(passengersQuantity);
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private SendMessage createNewRequestCommentaryMessage(long chatId) {
@@ -438,20 +438,20 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private void setDtoCommentary(long chatId, String commentary) {
         log.debug("method setDtoCommentary");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId).setCommentary(firstLetterToUpperCase(commentary));
-        storageAccess.update(chatId, dto);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId).setCommentary(firstLetterToUpperCase(commentary));
+        findRideDtoOperations.update(chatId, dto);
     }
 
     private EditMessageText checkDataBeforeSaveMessageSkipComment(Message incomeMessage) {
         log.debug("method checkDataBeforeSaveMessageSkipComment");
-        String messageText = dtoToString(storageAccess.getDTO(incomeMessage.getChatId()));
+        String messageText = dtoToString(findRideDtoOperations.getDTO(incomeMessage.getChatId()));
         editMessage = createCheckDataBeforeSaveMessageSkipComment(incomeMessage, messageText, handlerPrefix);
         return editMessage;
     }
 
     private SendMessage checkDataBeforeSaveMessage(long chatId) {
         log.debug("method checkDataBeforeSaveMessage");
-        String messageText = dtoToString(storageAccess.getDTO(chatId));
+        String messageText = dtoToString(findRideDtoOperations.getDTO(chatId));
         sendMessage = createCheckDataBeforeSaveMessage(chatId, messageText, handlerPrefix);
         return sendMessage;
     }
@@ -528,7 +528,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
 
     private void editBeforeSaveSwapDepartureDestination(long chatId) {
         log.debug("method: editBeforeSaveSwapDepartureDestination");
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId);
         if (dto.getDirection().equals(Direction.FROM_MINSK.getValue())) {
             dto.setDirection(Direction.TOWARDS_MINSK.getValue());
         } else {
@@ -537,7 +537,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         Settlement settlement = dto.getDepartureSettlement();
         dto.setDepartureSettlement(dto.getDestinationSettlement());
         dto.setDestinationSettlement(settlement);
-        storageAccess.update(chatId, dto);
+        findRideDtoOperations.update(chatId, dto);
         log.debug("method: editBeforeSaveSwapDepartureDestination");
     }
 
@@ -807,30 +807,32 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         log.debug("method: sendExpireDepartureTimeMessage");
         sendBotMessage(sendMessage);
     }
-    public void sendAppearedNewFindRideRequestMessage(List<Long> chatIdList, int requestId) {
 
-        FindRideRequest request = findRideRequestService.findById(requestId);
-        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
-
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
-                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-
-        for (long chatId : chatIdList) {
-            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
-                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
-            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-            sendMessage.setChatId(chatId);
-        }
-        log.debug("method: sendAppearedNewPassengerRequestMessage");
-        sendBotMessage(sendMessage);
-    }
+//    public void sendAppearedNewFindRideRequestMessage(List<Long> chatIdList, int requestId) {
+//        log.debug("method: sendAppearedNewPassengerRequestMessage");
+//
+//        FindRideRequest request = findRideRequestService.findById(requestId);
+//        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
+//
+//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+////        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
+////                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
+//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+//        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//
+//        for (long chatId : chatIdList) {
+////            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
+////                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
+////            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//            sendMessage.setChatId(chatId);
+//            sendBotMessage(sendMessage);
+//        }
+//    }
 
 
     private FindRideRequest saveRequest(long chatId) {
-        FindRideRequestDTO dto = storageAccess.getDTO(chatId);
-        storageAccess.delete(chatId);
+        FindRideRequestDTO dto = findRideDtoOperations.getDTO(chatId);
+        findRideDtoOperations.delete(chatId);
         chatStatusOperations.deleteChatStatus(chatId);
         log.debug("method saveRequest");
         FindRideRequest request = findRideRequestService.addNewRequest(dto);
@@ -845,12 +847,12 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
         return findRideRequestService.findLastUserRequestOptional(chatId);
     }
 
-    private List<FindRideRequest> getUserActiveFindPassengerRequestsList(long chatId) {
+    private List<FindRideRequest> getUserActiveFindRideRequestsList(long chatId) {
         return findRideRequestService.usersActiveRequestList(chatId);
     }
 
     public List<Pair<String, String>> requestButtonsAttributesListCreator(String callbackData, long chatId) {
-        List<FindRideRequest> requestList = getUserActiveFindPassengerRequestsList(chatId);
+        List<FindRideRequest> requestList = getUserActiveFindRideRequestsList(chatId);
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
         if (requestList.isEmpty()) {
             buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
@@ -865,7 +867,7 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     public String requestListToString(long chatId) {
-        List<FindRideRequest> requests = getUserActiveFindPassengerRequestsList(chatId);
+        List<FindRideRequest> requests = getUserActiveFindRideRequestsList(chatId);
         if (requests.isEmpty()) {
             return messages.getFIND_RIDE_NO_ACTIVE_REQUEST_MESSAGE();
         } else {
@@ -912,11 +914,11 @@ public class FindRideHandler extends RequestHandler implements HandlerInterface 
     }
 
     private boolean isExpired(long chatId, LocalTime time) {
-        return storageAccess.getDTO(chatId).getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()).isBefore(LocalDateTime.now());
+        return findRideDtoOperations.getDTO(chatId).getDepartureBefore().withHour(time.getHour()).withMinute(time.getMinute()).isBefore(LocalDateTime.now());
     }
 
     private boolean isExpired(long chatId) {
-        return storageAccess.getDTO(chatId).getDepartureBefore().isBefore(LocalDateTime.now());
+        return findRideDtoOperations.getDTO(chatId).getDepartureBefore().isBefore(LocalDateTime.now());
     }
 
     private boolean isExpired(int requestId) {

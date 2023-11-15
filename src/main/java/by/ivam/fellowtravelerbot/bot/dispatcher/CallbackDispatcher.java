@@ -27,7 +27,7 @@ public class CallbackDispatcher extends Dispatcher {
         if (callbackData.contains("-")) {
             String handler = getHandler(callbackData);
             String callback = getProcess(callbackData);
-            log.info("Get callBack: " + callbackData + ", BaseHandler: " + handler);
+            log.info("Get callBack: " + callbackData + ", Handler: " + handler);
             switch (handler) {
                 case "START" -> startHandler.handleReceivedCallback(callback, incomeMessage);
                 case "ADMIN" -> adminHandler.handleReceivedCallback(callback, incomeMessage);
@@ -35,6 +35,7 @@ public class CallbackDispatcher extends Dispatcher {
                 case "CAR" -> carHandler.handleReceivedCallback(callback, incomeMessage);
                 case "FIND_RIDE" -> findRideHandler.handleReceivedCallback(callback, incomeMessage);
                 case "FIND_PAS" -> findPassengerHandler.handleReceivedCallback(callback, incomeMessage);
+                case "MATCHING" -> matchingHandler.handleReceivedCallback(callback, incomeMessage);
             }
         } else {
             String callback = "";

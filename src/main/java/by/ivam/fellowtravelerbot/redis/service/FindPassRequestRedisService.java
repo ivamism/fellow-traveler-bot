@@ -12,7 +12,7 @@ public interface FindPassRequestRedisService {
 
     Iterable<FindPassRequestRedis> findAll();
 
-//    List<FindPassRequestRedis> findAllByDirection(String direction);
+    List<FindPassRequestRedis> findAllByDirection(String direction);
 //
 //    List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
 

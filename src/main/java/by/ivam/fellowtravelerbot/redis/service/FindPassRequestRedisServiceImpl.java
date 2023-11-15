@@ -61,10 +61,10 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
         return rides;
     }
 
-//    @Override
-//    public List<FindPassRequestRedis> findAllByDirection(String direction) {
-//        return repository.findAllByDirection(direction);
-//    }
+    @Override
+    public List<FindPassRequestRedis> findAllByDirection(String direction) {
+        return repository.findAllByDirection(direction);
+    }
 
 //    @Override
 //    public List<FindPassRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt) {

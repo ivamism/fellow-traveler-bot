@@ -69,8 +69,7 @@ public enum FindPassengerRequestOperation {
     EDIT_CHANGE_COMMENTARY_STATUS("EDIT_CHANGE_COMMENTARY:"),
     CHOOSE_REQUEST_TO_CANCEL_CALLBACK("CHOOSE_REQUEST_TO_CANCEL_CALLBACK"),
     CANCEL_REQUEST_CALLBACK("CANCEL_REQUEST:"),
-    ACCEPT_REQUEST_CALLBACK("ACCEPT_REQUEST:"),
-    CHAT_WITH_PASSENGER_CALLBACK("CHAT_WITH_PASSENGER:"), //вынести в отдельный енам для хандлера юзерчата
+
     ;
 
     private final String value;

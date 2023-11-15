@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j
@@ -22,6 +23,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     FindPassengerRequestRepository repository;
     @Autowired
     FindPassRequestRedisService redisService;
+
+//    @Autowired
+//    MatchService matchService;
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -61,7 +65,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
         log.info("method addNewRequest. Saved new request: " + request);
         repository.save(request);
-        placeInRedis(request);
+        onSaveNewRequest(request);
         return request;
     }
 
@@ -73,6 +77,15 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Override
     public List<FindPassengerRequest> usersRequestList(long chatId) {
         return null;
+    }
+
+    @Override
+    public List<FindPassengerRequest> requestListByIdList(List<Integer> requestsIdList) {
+        List<FindPassengerRequest> requestList = requestsIdList
+                .stream()
+                .map(id -> findById(id))
+                .collect(Collectors.toList());
+        return requestList;
     }
 
     @Override
@@ -104,6 +117,11 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
     }
 
+    private void onSaveNewRequest(FindPassengerRequest request){
+        placeInRedis(request);
+//        matchService.getNewFindPassengerRequest(request);
+    }
+
     @Async
     public void placeInRedis(FindPassengerRequest request) {
         FindPassRequestRedis passRequestRedis = new FindPassRequestRedis();
@@ -116,4 +134,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         log.info("method placeInRedis");
         redisService.saveRequest(passRequestRedis);
     }
+
+
+
 }

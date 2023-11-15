@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j
@@ -22,6 +23,8 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     private FindRideRequestRepository repository;
     @Autowired
     private FindRideRequestRedisService redisService;
+//    @Autowired
+//    MatchService matchService;
 
     @Override
     public FindRideRequest findById(int id) {
@@ -55,7 +58,7 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setCreatedAt(LocalDateTime.now());
         log.info("method addNewRequest. Saved new request: " + request);
         repository.save(request);
-        placeInRedis(request);
+        onSaveNewRequest(request);
         return request;
     }
 
@@ -75,6 +78,15 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     public List<FindRideRequest> usersActiveRequestList(long chatId) {
         log.info("method usersActiveRequestList");
         return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
+    }
+
+    @Override
+    public List<FindRideRequest> requestListByIdList(List<Integer> requestIdList) {
+        List<FindRideRequest> requestList = requestIdList
+                .stream()
+                .map(id -> findById(id))
+                .collect(Collectors.toList());
+        return requestList;
     }
 
     @Override
@@ -103,6 +115,11 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureBefore(), ChronoUnit.SECONDS));
         log.info("method placeInRedis");
         redisService.saveRequest(rideRequestRedis);
+    }
+
+    private void onSaveNewRequest(FindRideRequest request){
+        placeInRedis(request);
+//        matchService.getNewFindRideRequest(request);
     }
 
     @Override

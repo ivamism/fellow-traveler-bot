@@ -36,7 +36,8 @@ public class AsyncConfiguration extends AsyncConfigurerSupport {
 
 //                System.out.println("Exception: " + ex.getMessage());
 //                System.out.println("Method Name: " + method.getName());
-//                ex.printStackTrace();
+                ex.printStackTrace();
+
             }
         };
     }

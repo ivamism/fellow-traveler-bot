@@ -20,6 +20,8 @@ public class Dispatcher {
     @Autowired
     FindRideHandler findRideHandler;
     @Autowired
+    MatchingHandler matchingHandler;
+    @Autowired
     ResponseMessageProcessor messageProcessor;
 
     public void sendBotMessage(SendMessage responseMessage){

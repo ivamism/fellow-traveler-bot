@@ -354,25 +354,6 @@ public class RequestHandler extends BaseHandler {
         return sendMessage;
     }
 
-//    protected SendMessage createAppearedNewRequestMessage(List<Long> chatIdList, int requestId, String requestToString, String handlerPrefix) {
-//
-//        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString));
-//
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-//        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
-//                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        for (long chatId : chatIdList) {
-//            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
-//                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
-//            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-//            sendMessage.setChatId(chatId);
-//        }
-//        log.debug("method: createAppearedNewRequestMessage");
-//
-//        return sendMessage;
-//    }
-
     protected boolean isToday(String day) {
 //        TODO добавить проверку day на совпадение со значениями enum Day
         boolean isToday = day.equals(String.valueOf(Day.TODAY));

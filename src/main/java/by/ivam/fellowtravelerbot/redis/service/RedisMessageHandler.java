@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.redis.service;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import by.ivam.fellowtravelerbot.servise.FindPassengerRequestService;
 import by.ivam.fellowtravelerbot.servise.FindRideRequestService;
+import by.ivam.fellowtravelerbot.servise.MatchService;
 import by.ivam.fellowtravelerbot.servise.handler.FindPassengerHandler;
 import by.ivam.fellowtravelerbot.servise.handler.FindRideHandler;
 import lombok.AllArgsConstructor;

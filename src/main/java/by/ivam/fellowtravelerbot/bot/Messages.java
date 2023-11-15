@@ -187,8 +187,6 @@ public class Messages {
             Хотите продолжить?""";
 
 
-
-
     //    FindRideRequest
     private final String CREATE_FIND_RIDE_REQUEST_START_PROCESS_MESSAGE = "Хотите найти попутку?";
     private final String CREATE_FIND_RIDE_REQUEST_TIME_MESSAGE = "Напишите время, до которого вы бы хотели уехать. Сделайте это  в 24х часовом формате.\nРазделите часы и минуты точкой или двоеточием";
@@ -202,7 +200,7 @@ public class Messages {
               Нас. пункт назначения: %s
               Дата выезда: %s
               Время выезда: %s
-              Количество забронированных мест: %d
+              Количество пассажиров: %d
               Комментарий: %s
 
             Для сохранения нажмите "Сохранить"
@@ -214,11 +212,13 @@ public class Messages {
             Нас. пункт назначения: %s
             Дата выезда: %s
             Время выезда: %s
-            Количество мест: %d
+            Количество пассажиров: %d
             Комментарий: %s
-            
+                        
             """;
     private final String ALL_ACTIVE_REQUESTS_TO_STRING_MESSAGE = "Запросы на поиск пассажиров:\n\n%s\nЗапросы на поиск попуток:\n\n%s";
     private final String TIME_EXPIRE_MESSAGE = "Время действия запроса истекло\n\n%s";
-    private final String APPEARED_NEW_REQUEST_MESSAGE = "Появился новый запрос, который вам может подойти:\n\n%s";
+    private final String SUITABLE_REQUESTS_LIST_MESSAGE = "Мы подобрали для вас список подходящих Вам запросов:\n\n%s";
+    private final String NO_SUITABLE_REQUEST_MESSAGE = "К сожалению, в настоящее время подходящих вам запросов не обнаружено.\nЕсли такой появится, мы вас известим";
+
 }

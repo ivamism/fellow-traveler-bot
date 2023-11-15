@@ -6,6 +6,4 @@ public interface HandlerInterface {
 
     void handleReceivedMessage(String chatStatus, Message incomeMessage);
     void handleReceivedCallback(String callback, Message incomeMessage);
-
-
 }

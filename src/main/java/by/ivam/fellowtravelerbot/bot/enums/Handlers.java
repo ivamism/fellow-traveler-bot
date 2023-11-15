@@ -9,7 +9,9 @@ public enum Handlers {
     USER("USER-"),
     CAR("CAR-"),
     FIND_RIDE("FIND_RIDE-"),
-    FIND_PASSENGER("FIND_PAS-");
+    FIND_PASSENGER("FIND_PAS-"),
+    MATCHING("MATCHING-"),
+    ;
 
     private final String handlerPrefix;
     Handlers(String handlerPrefix) {

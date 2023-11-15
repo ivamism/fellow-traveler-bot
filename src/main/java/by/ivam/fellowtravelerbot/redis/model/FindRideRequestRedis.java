@@ -18,9 +18,7 @@ public class FindRideRequestRedis {
     long chatId;
     @Indexed
     String direction;
-    @Indexed
     LocalDateTime DepartureBefore;
-    @Indexed
     int passengersQuantity;
     @TimeToLive
     long expireDuration;

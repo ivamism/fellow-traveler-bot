@@ -1027,24 +1027,26 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         sendBotMessage(sendMessage);
     }
 
-    public void sendAppearedNewPassengerRequestMessage(List<Long> chatIdList, int requestId) {
-
-        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
-        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
-
-        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
-                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
-        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-        for (long chatId : chatIdList) {
-            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
-                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
-            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-            sendMessage.setChatId(chatId);
-        }
-        log.debug("method: sendAppearedNewPassengerRequestMessage");
-        sendBotMessage(sendMessage);
-    }
+//    public void sendAppearedNewPassengerRequestMessage(List<Long> chatIdList, int requestId) {
+//        log.debug("method: sendAppearedNewPassengerRequestMessage");
+//
+//        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
+//        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
+//
+//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
+////        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
+////                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
+//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
+//        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//
+//        for (long chatId : chatIdList) {
+////            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
+////                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
+////            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+//            sendMessage.setChatId(chatId);
+//            sendBotMessage(sendMessage);
+//        }
+//    }
 
     private EditMessageText createChooseCarMessage(Message incomeMessage, String callback) {
 //        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст

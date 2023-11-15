@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rides")
 public class RideController {
@@ -30,10 +32,10 @@ public class RideController {
         return service.findById(id);
     }
 
-//    @GetMapping("direction/{direction}")
-//    public List<FindPassRequestRedis> findByName(@PathVariable String direction) {
-//        return service.findAllByDirection(direction);
-//    }
+    @GetMapping("direction/{direction}")
+    public List<FindPassRequestRedis> findByName(@PathVariable String direction) {
+        return service.findAllByDirection(direction);
+    }
 
     @DeleteMapping("delete/{id}")
     public void delete(@PathVariable String id) {

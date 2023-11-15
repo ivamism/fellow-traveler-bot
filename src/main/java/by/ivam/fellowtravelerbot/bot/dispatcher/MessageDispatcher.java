@@ -127,6 +127,7 @@ public class MessageDispatcher extends Dispatcher {
                 case "CAR" -> carHandler.handleReceivedMessage(process, incomeMessage);
                 case "FIND_RIDE" -> findRideHandler.handleReceivedMessage(process, incomeMessage);
                 case "FIND_PAS" -> findPassengerHandler.handleReceivedMessage(process, incomeMessage);
+                case "MATCHING" -> matchingHandler.handleReceivedMessage(process, incomeMessage);
                 default -> unknownCommandReceived(chatId);
             }
 

@@ -19,6 +19,7 @@ public interface FindPassengerRequestService {
     FindPassengerRequest updateRequest(FindPassengerRequest request);
 
     List<FindPassengerRequest> usersRequestList(long chatId);
+    List<FindPassengerRequest> requestListByIdList(List<Integer> requestsIdList);
 
     List<FindPassengerRequest> usersActiveRequestList(long chatId);
 

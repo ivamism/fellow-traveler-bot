@@ -1,8 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -12,8 +10,6 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @RedisHash("find_passenger_request")
 @Accessors(chain = true)
 public class FindPassRequestRedis {
@@ -22,9 +18,7 @@ public class FindPassRequestRedis {
     long chatId;
     @Indexed
     String direction;
-    @Indexed
     LocalDateTime DepartureAt;
-    @Indexed
     int seatsQuantity;
     @TimeToLive
     long expireDuration;
