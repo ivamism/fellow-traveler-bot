@@ -11,6 +11,8 @@ public class Extractor {
     public static   final int INDEX_ZERO = 0;
     public   static final int INDEX_ONE = 1;
     public   static final int INDEX_TWO = 2;
+    public   static final int INDEX_THREE = 3;
+
     public static  final String REGEX_COLON = ":";
 
     public static String extractParameter(String statusString, int parameterNumber) {

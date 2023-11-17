@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
+import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
@@ -60,10 +61,20 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         }
         switch (process) {
             case "ACCEPT_FIND_RIDE_REQUEST" -> {
-log.debug("");
+                String findRideRequestId = Extractor.extractParameter(process, Extractor.INDEX_ONE);
+                String findPassRequestId = Extractor.extractParameter(process, Extractor.INDEX_TWO);
+                boolean findPassRequestIsInitiator;
             }
-              case "ACCEPT_FIND_PASS_REQUEST" -> {
-
+            case "ACCEPT_FIND_PASS_REQUEST" -> {
+//                String findRideRequestId = Extractor.extractParameter(process, Extractor.INDEX_ONE);
+//                String findPassRequestId = Extractor.extractParameter(process, Extractor.INDEX_TWO);
+//                boolean findPassRequestIsInitiator;
+            }
+            case "BOOK_REQUEST_CALLBACK" -> {
+                String initiator = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
+                String findRideRequestId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
+                String findPassRequestId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
+                matchService.addBooking(findPassRequestId, findRideRequestId, initiator);
             }
 
         }
@@ -73,9 +84,12 @@ log.debug("");
     public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableRideRequestMessage");
         String requestListsToString = findRideRequestListsToString(requestIdList);
-        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
+        String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
+                BookingInitiator.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
+//        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+        sendMessage =
+                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
 
         sendBotMessage(sendMessage);
     }
@@ -83,9 +97,11 @@ log.debug("");
     public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
-        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_PASS_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
+        String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
+                BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_PASS_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+        sendMessage =
+                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
 
         sendBotMessage(sendMessage);
     }

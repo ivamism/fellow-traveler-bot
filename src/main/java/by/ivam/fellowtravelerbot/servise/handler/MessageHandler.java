@@ -34,6 +34,8 @@ public class MessageHandler {
     @Autowired
     FindRideRequestService findRideRequestService;
     @Autowired
+    MatchService matchService;
+    @Autowired
     ChatStatusOperations chatStatusOperations;
     @Autowired
     ResponseMessageProcessor messageProcessor;
