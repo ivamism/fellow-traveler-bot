@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @Log4j
-public class CarHandler extends BaseHandler implements HandlerInterface {
+public class CarHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     CarDTO carDTO;
     @Autowired

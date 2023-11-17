@@ -29,7 +29,7 @@ This class handle operations with User registration process, editing, deleting, 
 @Service
 @Data
 @Log4j
-public class UserHandler extends BaseHandler implements HandlerInterface {
+public class UserHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     UserDtoOperations userDtoOperations;
     @Autowired

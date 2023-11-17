@@ -21,7 +21,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Log4j
 @Data
-public class RequestHandler extends BaseHandler {
+public class RequestHandler extends MessageHandler {
 
     @Autowired
     protected AdminHandler adminHandler;

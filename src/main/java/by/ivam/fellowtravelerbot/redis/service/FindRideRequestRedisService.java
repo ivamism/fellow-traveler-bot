@@ -1,8 +1,8 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
+import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FindRideRequestRedisService {
@@ -13,14 +13,10 @@ public interface FindRideRequestRedisService {
     Iterable<FindRideRequestRedis> findAll();
 
     List<FindRideRequestRedis> findAllByDirection(String direction);
-//
-//    List<FindRideRequestRedis> findAllByDirectionAndDepartureAt(String direction, LocalDateTime departureAt);
 
     void delete(String id);
 
     void getExpire(int requestId);
 
-//    List<FindRideRequestRedis> findMatches(int id);
-
-    List<Long> findMatches(String direction, LocalDateTime time, int seatsQuantity);
+    List<Integer> findMatches(FindPassRequestRedis receivedRequest);
 }

@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Service
 @Data
 @Log4j
-public class StartHandler extends BaseHandler implements HandlerInterface {
+public class StartHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     UserHandler userHandler;
     SendMessage sendMessage = new SendMessage();

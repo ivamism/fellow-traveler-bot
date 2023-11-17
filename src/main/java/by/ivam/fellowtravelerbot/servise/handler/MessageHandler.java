@@ -14,7 +14,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 
 @Log4j
 @Data
-public class BaseHandler {
+public class MessageHandler {
     @Autowired
     Messages messages;
     @Autowired

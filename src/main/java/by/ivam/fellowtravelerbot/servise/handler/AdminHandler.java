@@ -28,7 +28,7 @@ This class handle Admin functional
 @Service
 @Data
 @Log4j
-public class AdminHandler extends BaseHandler implements HandlerInterface {
+public class AdminHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     DepartureLocationDtoOperation departureLocationDtoOperation;
 

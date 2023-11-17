@@ -1,24 +1,31 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
+import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import by.ivam.fellowtravelerbot.servise.FindPassengerRequestService;
 import by.ivam.fellowtravelerbot.servise.FindRideRequestService;
 import by.ivam.fellowtravelerbot.servise.MatchService;
 import by.ivam.fellowtravelerbot.servise.handler.FindPassengerHandler;
 import by.ivam.fellowtravelerbot.servise.handler.FindRideHandler;
+import by.ivam.fellowtravelerbot.servise.handler.MatchingHandler;
+import by.ivam.fellowtravelerbot.servise.handler.MessageHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
+import java.util.List;
 
 @Service
 @Log4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RedisMessageHandler {
+public class RedisMessageHandler extends MessageHandler {
     @Autowired
     FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
@@ -32,10 +39,14 @@ public class RedisMessageHandler {
     @Autowired
     FindRideHandler findRideHandler;
     @Autowired
+    MatchingHandler matchingHandler;
+    @Autowired
     MatchService matchService;
 
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";
+
+    private SendMessage sendMessage;
 
     public void handleMessage(String event, String message) {
         String requestType = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
@@ -45,10 +56,16 @@ public class RedisMessageHandler {
             case "hset" -> {
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                    matchService.getNewFindPassengerRequest(requestIdString);
+//                    matchService.getNewFindPassengerRequest(requestIdString);
+                    FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(requestIdString);
+                    List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
+                    matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest);
                 } else if (requestType.equals(FIND_RIDE_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                    matchService.getNewFindRideRequest(requestIdString);
+//                    matchService.getNewFindRideRequest(requestIdString);
+                    FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
+                    List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
+                    matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest);
                 }
 
             }
@@ -62,7 +79,6 @@ public class RedisMessageHandler {
                     findRideRequestService.disActivateRequestById(requestId);
                     findRideHandler.sendExpireDepartureTimeMessage(requestId);
                 }
-
             }
         }
     }

@@ -4,6 +4,9 @@ import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
+import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
+import by.ivam.fellowtravelerbot.servise.Extractor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,7 @@ import java.util.stream.Collectors;
 @Data
 @Log4j
 @Service
-public class MatchingHandler extends BaseHandler implements HandlerInterface {
+public class MatchingHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     FindRideHandler findRideHandler;
     @Autowired
@@ -35,31 +38,54 @@ public class MatchingHandler extends BaseHandler implements HandlerInterface {
 
     @Override
     public void handleReceivedMessage(String chatStatus, Message incomeMessage) {
-        log.debug(" method : handleReceivedMessage");
+        String messageText = incomeMessage.getText();
+        Long chatId = incomeMessage.getChatId();
+        log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
+        String process = chatStatus;
+        if (chatStatus.contains(":")) process = Extractor.extractProcess(chatStatus);
+//        if (chatStatus.contains(":")) process = extractProcess(chatStatus);
+        switch (process) {
+
+        }
     }
 
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
-        log.debug(" method : handleReceivedCallback");
+        log.debug("method handleReceivedCallback. get callback: " + callback);
+        Long chatId = incomeMessage.getChatId();
+        String process = callback;
+        if (callback.contains(":")) {
+            process = Extractor.extractProcess(callback);
+//            process = extractProcess(callback);
+        }
+        switch (process) {
+            case "ACCEPT_FIND_RIDE_REQUEST" -> {
+log.debug("");
+            }
+              case "ACCEPT_FIND_PASS_REQUEST" -> {
+
+            }
+
+        }
 
     }
 
-    public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, long chatId) {
+    public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableRideRequestMessage");
         String requestListsToString = findRideRequestListsToString(requestIdList);
-        String callback = handlerPrefix + MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue();
+        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage = createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
+        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
 
         sendBotMessage(sendMessage);
     }
 
-    public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, long chatId) {
+    public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
-        String callback = handlerPrefix + MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue();
+        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_PASS_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
-        sendMessage = createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
+        sendMessage = createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
 
         sendBotMessage(sendMessage);
     }
