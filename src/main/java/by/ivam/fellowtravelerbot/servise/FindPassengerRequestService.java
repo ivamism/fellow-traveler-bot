@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public interface FindPassengerRequestService {
 
     FindPassengerRequest cancelRequestById(int requestId);
     FindPassengerRequest disActivateRequestById(int requestId);
+    void disActivateExpiredRequests(LocalDateTime presentTime);
 
     void cancelAllUsersActiveRequests(List<Integer> requestsIdList);
 }

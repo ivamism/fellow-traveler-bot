@@ -24,8 +24,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Autowired
     FindPassRequestRedisService redisService;
 
-//    @Autowired
-//    MatchService matchService;
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -114,12 +112,22 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
+    public void disActivateExpiredRequests(LocalDateTime presentTime) {
+        if (repository.count() != 0) {
+            List<FindPassengerRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureAtBefore(presentTime);
+            if (expiredRequestsList.size() != 0) {
+                log.info("dis-activate " + expiredRequestsList.size() + " FindPassengerRequests");
+                expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
+            }
+        }
+    }
+
+    @Override
     public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
     }
 
-    private void onSaveNewRequest(FindPassengerRequest request){
+    private void onSaveNewRequest(FindPassengerRequest request) {
         placeInRedis(request);
-//        matchService.getNewFindPassengerRequest(request);
     }
 
     @Async
@@ -134,7 +142,5 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         log.info("method placeInRedis");
         redisService.saveRequest(passRequestRedis);
     }
-
-
 
 }

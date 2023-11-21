@@ -73,4 +73,13 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
         return suitableRequestIdList;
     }
 
+    @Override
+    public void removeExpired() {
+        List<FindRideRequestRedis> expiredKeys = repository.findByExpireDuration(-1);
+        if (expiredKeys.size()!=0){
+            log.info("remove expired FindRideRequestRedis - " + expiredKeys.size());
+            expiredKeys.forEach(request -> repository.deleteById(request.getRequestId()));
+        }
+    }
+
 }

@@ -4,4 +4,5 @@ import by.ivam.fellowtravelerbot.redis.model.Booking;
 
 public interface BookingService {
     Booking save (Booking booking);
+    void removeExpired ();
 }

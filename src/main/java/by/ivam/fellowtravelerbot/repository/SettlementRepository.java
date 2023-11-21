@@ -13,5 +13,4 @@ public interface SettlementRepository extends JpaRepository<Settlement, Integer>
 
     List<Settlement> findByNameNotLikeIgnoreCaseAndNameNotLikeIgnoreCase(String name, String name1);
 
-
 }

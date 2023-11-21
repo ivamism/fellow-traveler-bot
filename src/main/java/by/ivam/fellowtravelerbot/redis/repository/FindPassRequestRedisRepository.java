@@ -21,6 +21,8 @@ public interface FindPassRequestRedisRepository extends CrudRepository<FindPassR
 
     List<FindPassRequestRedis> findByDirectionAndSeatsQuantity(String direction, int seatsQuantity);
 
+    List<FindPassRequestRedis> findByExpireDuration(long expireDuration);
+
 
 
 }
