@@ -69,6 +69,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
                 String findPassRequestId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
                 String findRideRequestId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
                 matchService.addBooking(findPassRequestId, findRideRequestId, initiator);
+//                TODO отправить сообщение о том что выслан запрос на бронирование
             }
             case "ACCEPT_BOOKING" -> {
                 log.debug("ACCEPT_BOOKING - " + callback);
@@ -110,8 +111,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getSUITABLE_REQUESTS_LIST_MESSAGE(), requestsList));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
-
-
         return sendMessage;
     }
 

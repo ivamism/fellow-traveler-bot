@@ -61,8 +61,7 @@ public class MatchServiceImpl implements MatchService {
         booking.setFindPassRequestRedis(findPassRequestRedis)
                 .setFindRideRequestRedis(findRideRequestRedis)
                 .setBookedAt(LocalDateTime.now())
-//                .setRemindAt(LocalDateTime.now().plusMinutes(15))
-                .setRemindAt(LocalDateTime.now().plusMinutes(1))
+                .setRemindAt(LocalDateTime.now().plusMinutes(15))
                 .setRemindersQuantity(0);
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
             booking.setInitiator(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())
