@@ -22,7 +22,7 @@ public class ScheduledJobs {
     @Autowired
     private MatchingHandler matchingHandler;
 
-    @Scheduled(cron = "0 */2 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Async
     public void checkBooking() {
         log.info("method checkBooking");

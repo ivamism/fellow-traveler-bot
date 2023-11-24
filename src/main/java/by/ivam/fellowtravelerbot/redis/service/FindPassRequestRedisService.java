@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import java.util.List;
 
 public interface FindPassRequestRedisService {
-    void saveRedisRequest(FindPassRequestRedis request);
+    void saveRequest(FindPassRequestRedis request);
 
     FindPassRequestRedis findById(String id);
 
@@ -19,4 +19,6 @@ public interface FindPassRequestRedisService {
     void getExpire(int requestId);
 
     List<Integer> findMatches(FindRideRequestRedis recentRequest);
+
+    void removeExpired();
 }

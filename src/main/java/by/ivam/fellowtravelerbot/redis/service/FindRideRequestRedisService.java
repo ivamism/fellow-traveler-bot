@@ -19,4 +19,6 @@ public interface FindRideRequestRedisService {
     void getExpire(int requestId);
 
     List<Integer> findMatches(FindPassRequestRedis receivedRequest);
+
+    void removeExpired();
 }

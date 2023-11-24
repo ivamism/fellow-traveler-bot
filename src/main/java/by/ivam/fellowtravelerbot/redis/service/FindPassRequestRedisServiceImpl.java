@@ -24,10 +24,6 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
     @Autowired
     FindPassRequestRedisRepository repository;
 
-//    @Autowired
-//    FindPassengerHandler findPassengerHandler;
-
-
     @Override
     public void saveRequest(FindPassRequestRedis request) {
         log.info("method saveRedisRequest");
@@ -62,7 +58,7 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
 //        findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
     }
 
-    public List<Integer> findMatches (FindRideRequestRedis recentRequest) {
+    public List<Integer> findMatches(FindRideRequestRedis recentRequest) {
 //        FindPassRequestRedis receivedRequest = findPassRequestRedisService.findById(requestId);
         List<Integer> suitableRequestIdList = findAllByDirection(recentRequest.getDirection())
                 .stream()
@@ -73,6 +69,15 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
                 .collect(Collectors.toList());
 //        matchingHandler.sendListOfSuitableFindRideRequestMessage(suitableRequestIdList, receivedRequest);
         return suitableRequestIdList;
+    }
+
+    @Override
+    public void removeExpired() {
+        List<FindPassRequestRedis> expiredKeys = repository.findByExpireDuration(-1);
+        if (expiredKeys.size() != 0) {
+            log.info("remove expired FindPassRequestRedis - " + expiredKeys.size());
+            expiredKeys.forEach(request -> repository.delete(request));
+        }
     }
 
 }
