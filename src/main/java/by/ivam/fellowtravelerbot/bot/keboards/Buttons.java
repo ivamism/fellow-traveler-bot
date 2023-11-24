@@ -26,6 +26,7 @@ public class Buttons {
     private final String CANCEL_BUTTON_TEXT = "Отменить";
     private final String SEND_BUTTON_TEXT = "Отправить";
     private final String ACCEPT_BUTTON_TEXT = "Принять";
+    private final String DENY_BUTTON_TEXT = "Отклонить";
     private final String SKIP_STEP_TEXT = "Пропустить";
     private final String ANOTHER_TEXT = "Другой";
     private final String DELETE_TEXT = "Удалить";
@@ -272,6 +273,10 @@ public class Buttons {
     public Pair<String, String> acceptButtonCreate(String buttonCallback) {
         return Pair.of(ACCEPT_BUTTON_TEXT, buttonCallback);
     }
+        public Pair<String, String> denyButtonCreate(String buttonCallback) {
+        return Pair.of(DENY_BUTTON_TEXT, buttonCallback);
+    }
+
 
     public Pair<String, String> chatToDriverButtonCreate(String buttonCallback) {
         return Pair.of(CHAT_DRIVER_TEXT, buttonCallback);

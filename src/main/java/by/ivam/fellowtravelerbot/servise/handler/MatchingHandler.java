@@ -5,6 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
+import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.servise.Extractor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.polls.Poll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
 
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
+    Poll poll = new Poll();
 
     private final String handlerPrefix = Handlers.MATCHING.getHandlerPrefix();
 
@@ -57,24 +60,21 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String process = callback;
         if (callback.contains(":")) {
             process = Extractor.extractProcess(callback);
-//            process = extractProcess(callback);
+
         }
         switch (process) {
-            case "ACCEPT_FIND_RIDE_REQUEST" -> {
-                String findRideRequestId = Extractor.extractParameter(process, Extractor.INDEX_ONE);
-                String findPassRequestId = Extractor.extractParameter(process, Extractor.INDEX_TWO);
-                boolean findPassRequestIsInitiator;
-            }
-            case "ACCEPT_FIND_PASS_REQUEST" -> {
-//                String findRideRequestId = Extractor.extractParameter(process, Extractor.INDEX_ONE);
-//                String findPassRequestId = Extractor.extractParameter(process, Extractor.INDEX_TWO);
-//                boolean findPassRequestIsInitiator;
-            }
+
             case "BOOK_REQUEST_CALLBACK" -> {
                 String initiator = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                String findRideRequestId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
-                String findPassRequestId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
+                String findPassRequestId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
+                String findRideRequestId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
                 matchService.addBooking(findPassRequestId, findRideRequestId, initiator);
+            }
+            case "ACCEPT_BOOKING" -> {
+                log.debug("ACCEPT_BOOKING - " + callback);
+            }
+            case "DENY_BOOKING" -> {
+                log.debug("DENY_BOOKING - " + callback);
             }
 
         }
@@ -86,7 +86,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String requestListsToString = findRideRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
                 BookingInitiator.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
-//        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_RIDE_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
@@ -98,7 +97,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
-                BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//        String callback = handlerPrefix + String.format(MatchingOperation.ACCEPT_FIND_PASS_REQUEST_CALLBACK.getValue(), receivedRequest.getRequestId());
+                BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
@@ -111,7 +110,32 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getSUITABLE_REQUESTS_LIST_MESSAGE(), requestsList));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+
+
         return sendMessage;
+    }
+
+    public void sendBookingAnnouncementMessage(Booking booking) {
+        String initiator = booking.getInitiator();
+        String bookingId = booking.getId();
+        if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
+            int findPassRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
+            String requestToString = findPassengerHandler.requestToString(findPassengerRequestService.findById(findPassRequestId));
+            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
+        } else {
+            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
+            int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+            String requestToString = findRideHandler.requestToString(findRideRequestService.findById(findRideRequestId));
+            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
+        }
+        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
+        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
+                + MatchingOperation.ACCEPT_BOOKING_CALLBACK.getValue() + bookingId)); // Start create button
+        buttonsAttributesList.add(buttons.denyButtonCreate(handlerPrefix
+                + MatchingOperation.DENY_BOOKING_CALLBACK.getValue() + bookingId)); // Cancel button
+        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
+        sendBotMessage(sendMessage);
     }
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
@@ -157,5 +181,27 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
         }
         return buttonsAttributesList;
+    }
+    protected void editMessageTextGeneralPreset(Message incomeMessage) {
+        long chatId = incomeMessage.getChatId();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(incomeMessage.getMessageId());
+    }
+    protected SendMessage nextStep(long chatId) {
+//        TODO удалить метод по окончании реализации всего функционала
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("nextStep");
+        sendMessage.setReplyMarkup(null);
+        log.debug("method: nextStep");
+        return sendMessage;
+    }
+
+    protected EditMessageText nextStep(Message incomemessage) {
+        //        TODO удалить метод по окончании реализации всего функционала
+        editMessageTextGeneralPreset(incomemessage);
+        editMessage.setText("nextStep");
+        editMessage.setReplyMarkup(null);
+        log.debug("method: nextStep");
+        return editMessage;
     }
 }

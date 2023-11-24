@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
+import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.servise.Extractor;
@@ -34,6 +35,9 @@ public class RedisMessageHandler extends MessageHandler {
     FindPassengerRequestService findPassengerRequestService;
     @Autowired
     FindRideRequestService findRideRequestService;
+
+    @Autowired
+    private  BookingService bookingService;
     @Autowired
     private FindPassengerHandler findPassengerHandler;
     @Autowired
@@ -45,6 +49,8 @@ public class RedisMessageHandler extends MessageHandler {
 
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";
+    private final String BOOKING = "booking";
+
 
     private SendMessage sendMessage;
 
@@ -66,6 +72,11 @@ public class RedisMessageHandler extends MessageHandler {
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
                     matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest);
+                }else if (requestType.equals(BOOKING)) {
+                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
+                    Booking booking = bookingService.findById(requestIdString);
+                    if (bookingService.isNewRequest(booking))
+                        matchingHandler.sendBookingAnnouncementMessage(booking);
                 }
 
             }

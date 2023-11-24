@@ -32,11 +32,11 @@ public class Dispatcher {
     }
 
     public String getHandler(String s) {
-        return s.split("-")[0];
+        return s.split("--")[0];
     }
 
     public String getProcess(String s) {
-        return s.split("-")[1];
+        return s.split("--")[1];
     }
 
 }

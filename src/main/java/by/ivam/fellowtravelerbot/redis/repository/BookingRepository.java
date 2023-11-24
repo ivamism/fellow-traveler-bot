@@ -4,8 +4,13 @@ import by.ivam.fellowtravelerbot.redis.model.Booking;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends CrudRepository<Booking, String>  {
     List<Booking> findByExpireDuration(long expireDuration);
 
+    @Override
+    Optional<Booking> findById(String handlerPrefix);
+
+    List<Booking> findByIdNotNull();
 }

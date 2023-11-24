@@ -2,7 +2,21 @@ package by.ivam.fellowtravelerbot.redis.service;
 
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 
+import java.util.List;
+
 public interface BookingService {
-    Booking save (Booking booking);
-    void removeExpired ();
+
+    Booking save(Booking booking);
+
+    List<Booking> findAll();
+
+    Booking findById(String bookingId);
+
+    void incrementRemindsQuantityAndRemindTime(Booking booking);
+
+    void deleteBooking(Booking booking);
+
+    boolean isNewRequest(Booking booking);
+
+    void removeExpired();
 }
