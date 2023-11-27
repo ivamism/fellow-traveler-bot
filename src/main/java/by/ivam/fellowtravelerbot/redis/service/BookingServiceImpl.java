@@ -22,6 +22,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking save(Booking booking) {
         repository.save(booking);
+        log.debug("save booking: " + booking);
         return booking;
     }
 
@@ -31,20 +32,24 @@ public class BookingServiceImpl implements BookingService {
                 .stream(repository.findAll().spliterator(), false)
                 .filter(booking -> Optional.ofNullable(booking).isPresent())
                 .collect(Collectors.toList());
+        log.debug("findAll. bookings found: " + bookingList.size());
         return bookingList;
     }
 
     @Override
     public Booking findById(String bookingId) {
-        return repository.findById(bookingId).orElseThrow();
+        Booking booking = repository.findById(bookingId).orElseThrow();
+        log.debug("findById: " + booking);
+        return booking;
     }
 
     @Override
     public void incrementRemindsQuantityAndRemindTime(Booking booking) {
         findById(booking.getId());
-        booking.setRemindersQuantity(booking.getRemindersQuantity()+1);
+        booking.setRemindersQuantity(booking.getRemindersQuantity() + 1);
         booking.setRemindAt(LocalDateTime.now().plusMinutes(1));
         repository.save(booking);
+        log.debug("incrementRemindsQuantityAndRemindTime: " + booking);
     }
 
     @Override
@@ -55,10 +60,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public boolean isNewRequest(Booking booking) {
-        return booking.getRemindersQuantity()==0;
+        return booking.getRemindersQuantity() == 0;
     }
 
-@Override
+    @Override
     public void removeExpired() {
         List<Booking> expiredKeys = repository.findByExpireDuration(-1);
         if (expiredKeys.size() != 0) {
@@ -66,6 +71,5 @@ public class BookingServiceImpl implements BookingService {
             expiredKeys.forEach(booking -> deleteBooking(booking));
         }
     }
-
 
 }

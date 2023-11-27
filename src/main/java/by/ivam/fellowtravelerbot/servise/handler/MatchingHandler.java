@@ -47,7 +47,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method handleReceivedMessage. get chatStatus: " + chatStatus + ". message: " + messageText);
         String process = chatStatus;
         if (chatStatus.contains(":")) process = Extractor.extractProcess(chatStatus);
-//        if (chatStatus.contains(":")) process = extractProcess(chatStatus);
         switch (process) {
 
         }
@@ -66,20 +65,23 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
 
             case "BOOK_REQUEST_CALLBACK" -> {
                 String initiator = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                String findPassRequestId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
-                String findRideRequestId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
-                matchService.addBooking(findPassRequestId, findRideRequestId, initiator);
+                String firstId = Extractor.extractParameter(callback, Extractor.INDEX_TWO);
+                String secondId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
+                matchService.addBooking(firstId, secondId, initiator);
+                editMessage = sendNoticeAboutSendingBookingMessage(incomeMessage);
 //                TODO отправить сообщение о том что выслан запрос на бронирование
             }
             case "ACCEPT_BOOKING" -> {
                 log.debug("ACCEPT_BOOKING - " + callback);
+                nextStep(incomeMessage);
             }
             case "DENY_BOOKING" -> {
                 log.debug("DENY_BOOKING - " + callback);
+                nextStep(incomeMessage);
             }
 
         }
-
+        sendEditMessage(editMessage);
     }
 
     public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest) {
@@ -96,6 +98,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
 
     public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest) {
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
+        //Todo изменить сообщение
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
                 BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
@@ -137,6 +140,12 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendBotMessage(sendMessage);
     }
 
+    private EditMessageText sendNoticeAboutSendingBookingMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getNOTICE_ABOUT_SENDING_BOOKING_MESSAGE());
+        return editMessage;
+    }
+
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
     private String findRideRequestListsToString(List<Integer> requestsIdList) {
         List<FindRideRequest> requests = findRideRequestService.requestListByIdList(requestsIdList);
@@ -151,6 +160,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             return text.toString();
         }
     }
+
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
     private String findPassengerRequestListsToString(List<Integer> requestsIdList) {
@@ -181,11 +191,13 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         }
         return buttonsAttributesList;
     }
+
     protected void editMessageTextGeneralPreset(Message incomeMessage) {
         long chatId = incomeMessage.getChatId();
         editMessage.setChatId(chatId);
         editMessage.setMessageId(incomeMessage.getMessageId());
     }
+
     protected SendMessage nextStep(long chatId) {
 //        TODO удалить метод по окончании реализации всего функционала
         sendMessage.setChatId(chatId);

@@ -221,5 +221,8 @@ public class Messages {
     private final String SUITABLE_REQUESTS_LIST_MESSAGE = "Мы подобрали для вас список подходящих Вам запросов:\n\n%s";
     private final String NO_SUITABLE_REQUEST_MESSAGE = "К сожалению, в настоящее время подходящих вам запросов не обнаружено.\nЕсли такой появится, мы вас известим";
     private final String BOOKING_RESPONSE_MESSAGE = "Вместе с вами хотят поехать. Подтвердите или отклоните бронь. \n%s";
+    private final String NOTICE_ABOUT_SENDING_BOOKING_MESSAGE = """
+            Мы известили вторую сторону о том, что вы забронировали
+            Если вторая сторона не подтвердит бронь в течении 30-40 минут мы предложим вам другие варианты""";
 
 }

@@ -71,7 +71,7 @@ public class MatchServiceImpl implements MatchService {
                     .setExpireDuration(findRideRequestRedis.getExpireDuration());
         }
         bookingService.save(booking);
-        log.debug("method addBooking" + booking);
+        log.debug("method addBooking: " + booking);
     }
 
 }

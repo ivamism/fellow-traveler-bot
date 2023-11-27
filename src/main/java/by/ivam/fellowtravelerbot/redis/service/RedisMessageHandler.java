@@ -56,19 +56,16 @@ public class RedisMessageHandler extends MessageHandler {
 
     public void handleMessage(String event, String message) {
         String requestType = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
-        int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);
         String requestIdString = Extractor.extractParameter(message, Extractor.INDEX_ONE);
         switch (event) {
             case "hset" -> {
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-//                    matchService.getNewFindPassengerRequest(requestIdString);
                     FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
                     matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest);
                 } else if (requestType.equals(FIND_RIDE_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-//                    matchService.getNewFindRideRequest(requestIdString);
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
                     matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest);
@@ -81,6 +78,7 @@ public class RedisMessageHandler extends MessageHandler {
 
             }
             case "expired" -> {
+                int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestId);
                     findPassengerRequestService.disActivateRequestById(requestId);
