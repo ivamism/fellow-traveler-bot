@@ -76,8 +76,11 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
                 nextStep(incomeMessage);
             }
             case "DENY_BOOKING" -> {
+                String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
+                sendNoticeAboutDenyBookingMessage(bookingId);
+                matchService.deleteBooking(bookingId);
                 log.debug("DENY_BOOKING - " + callback);
-                nextStep(incomeMessage);
+                sendReplyDenyBookingMessage(incomeMessage);
             }
 
         }
@@ -92,7 +95,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
-
         sendBotMessage(sendMessage);
     }
 
@@ -114,6 +116,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getSUITABLE_REQUESTS_LIST_MESSAGE(), requestsList));
         sendMessage.setReplyMarkup(keyboards.dynamicRangeColumnInlineKeyboard(buttonsAttributesList));
+        log.debug("method: createListOfSuitableRequestsMessage");
         return sendMessage;
     }
 
@@ -144,8 +147,28 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     private EditMessageText sendNoticeAboutSendingBookingMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getNOTICE_ABOUT_SENDING_BOOKING_MESSAGE());
+        log.debug("method sendNoticeAboutSendingBookingMessage");
         return editMessage;
     }
+
+    private void sendNoticeAboutDenyBookingMessage(String bookingId) {
+                Booking booking = matchService.getBooking(bookingId);
+        if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
+        } else sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
+        sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
+        sendBotMessage(sendMessage);
+        log.debug("method sendNoticeAboutDenyBookingMessage");
+    }
+
+    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getBOOKING_DENY_REPLY_MESSAGE());
+        editMessage.setReplyMarkup(null);
+        log.debug("method sendReplyDenyBookingMessage");
+        return editMessage;
+    }
+
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
     private String findRideRequestListsToString(List<Integer> requestsIdList) {

@@ -16,6 +16,8 @@ public interface BookingService {
 
     void deleteBooking(Booking booking);
 
+    void deleteBooking(String bookingId);
+
     boolean isNewRequest(Booking booking);
 
     void removeExpired();

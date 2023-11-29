@@ -221,8 +221,10 @@ public class Messages {
     private final String SUITABLE_REQUESTS_LIST_MESSAGE = "Мы подобрали для вас список подходящих Вам запросов:\n\n%s";
     private final String NO_SUITABLE_REQUEST_MESSAGE = "К сожалению, в настоящее время подходящих вам запросов не обнаружено.\nЕсли такой появится, мы вас известим";
     private final String BOOKING_RESPONSE_MESSAGE = "Вместе с вами хотят поехать. Подтвердите или отклоните бронь. \n%s";
+    private final String BOOKING_DENY_MESSAGE = "Ваше бронирование было отклонено.\nВ следующем сообщении вам будет выслан новый список подходящих вам запросов";
+    private final String BOOKING_DENY_REPLY_MESSAGE = "Вы отказались от предложенного вам запроса на участие в поездке вместе с вами";
     private final String NOTICE_ABOUT_SENDING_BOOKING_MESSAGE = """
-            Мы известили вторую сторону о том, что вы забронировали
+            Мы известили вторую сторону о том, что вы забронировали поездку
             Если вторая сторона не подтвердит бронь в течении 30-40 минут мы предложим вам другие варианты""";
 
 }

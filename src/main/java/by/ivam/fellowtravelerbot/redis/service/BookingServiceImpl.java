@@ -57,6 +57,11 @@ public class BookingServiceImpl implements BookingService {
         log.debug("delete booking: " + booking);
         repository.delete(booking);
     }
+    @Override
+    public void deleteBooking(String bookingId) {
+        log.debug("delete booking: " + bookingId);
+        repository.deleteById(bookingId);
+    }
 
     @Override
     public boolean isNewRequest(Booking booking) {

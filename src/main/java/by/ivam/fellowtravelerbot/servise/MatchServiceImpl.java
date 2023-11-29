@@ -55,13 +55,8 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void addBooking(String firstId, String secondId, String initiator) {
-//        FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(findPassRequestId);
-//        FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(findRideRequestId);
         Booking booking = new Booking();
-        booking
-//                .setFindPassRequestRedis(findPassRequestRedis)
-//                .setFindRideRequestRedis(findRideRequestRedis)
-                .setBookedAt(LocalDateTime.now())
+        booking.setBookedAt(LocalDateTime.now())
                 .setRemindAt(LocalDateTime.now().plusMinutes(15))
                 .setRemindersQuantity(0);
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
@@ -81,6 +76,16 @@ public class MatchServiceImpl implements MatchService {
         }
         bookingService.save(booking);
         log.debug("method addBooking: " + booking);
+    }
+
+    @Override
+    public void deleteBooking(String bookingId) {
+        bookingService.deleteBooking(bookingId);
+    }
+
+    @Override
+    public Booking getBooking(String bookingId) {
+        return bookingService.findById(bookingId);
     }
 
 }
