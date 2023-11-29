@@ -118,15 +118,16 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     }
 
     public void sendBookingAnnouncementMessage(Booking booking) {
+        log.debug("method sendBookingAnnouncementMessage");
         String initiator = booking.getInitiator();
         String bookingId = booking.getId();
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
+            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
             int findPassRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
             String requestToString = findPassengerHandler.requestToString(findPassengerRequestService.findById(findPassRequestId));
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
         } else {
-            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
+            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
             int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
             String requestToString = findRideHandler.requestToString(findRideRequestService.findById(findRideRequestId));
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));

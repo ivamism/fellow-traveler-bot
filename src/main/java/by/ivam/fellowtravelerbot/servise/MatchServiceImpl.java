@@ -54,20 +54,29 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void addBooking(String findPassRequestId, String findRideRequestId, String initiator) {
-        FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(findPassRequestId);
-        FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(findRideRequestId);
+    public void addBooking(String firstId, String secondId, String initiator) {
+//        FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(findPassRequestId);
+//        FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(findRideRequestId);
         Booking booking = new Booking();
-        booking.setFindPassRequestRedis(findPassRequestRedis)
-                .setFindRideRequestRedis(findRideRequestRedis)
+        booking
+//                .setFindPassRequestRedis(findPassRequestRedis)
+//                .setFindRideRequestRedis(findRideRequestRedis)
                 .setBookedAt(LocalDateTime.now())
                 .setRemindAt(LocalDateTime.now().plusMinutes(15))
                 .setRemindersQuantity(0);
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            booking.setInitiator(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())
+            FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(firstId);
+            FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(secondId);
+            booking.setFindPassRequestRedis(findPassRequestRedis)
+                    .setFindRideRequestRedis(findRideRequestRedis)
+                    .setInitiator(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())
                     .setExpireDuration(findPassRequestRedis.getExpireDuration());
         } else {
-            booking.setInitiator(BookingInitiator.FIND_RIDE_REQUEST.getValue())
+            FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(firstId);
+            FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(secondId);
+            booking.setFindPassRequestRedis(findPassRequestRedis)
+                    .setFindRideRequestRedis(findRideRequestRedis)
+                    .setInitiator(BookingInitiator.FIND_RIDE_REQUEST.getValue())
                     .setExpireDuration(findRideRequestRedis.getExpireDuration());
         }
         bookingService.save(booking);
