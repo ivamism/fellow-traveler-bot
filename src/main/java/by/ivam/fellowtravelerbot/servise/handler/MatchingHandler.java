@@ -8,6 +8,8 @@ import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
+import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
+import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.polls.Poll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,14 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     @Autowired
     FindPassengerHandler findPassengerHandler;
 
+    @Autowired
+    FindPassRequestRedisService findPassRequestRedisService;
+    @Autowired
+    FindRideRequestRedisService findRideRequestRedisService;
+
 
     EditMessageText editMessage = new EditMessageText();
     SendMessage sendMessage = new SendMessage();
-    Poll poll = new Poll();
 
     private final String handlerPrefix = Handlers.MATCHING.getHandlerPrefix();
 
@@ -77,12 +82,13 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             }
             case "DENY_BOOKING" -> {
                 String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                sendNoticeAboutDenyBookingMessage(bookingId);
-                matchService.deleteBooking(bookingId);
-                log.debug("DENY_BOOKING - " + callback);
-                sendReplyDenyBookingMessage(incomeMessage);
+                onDenyBookingDeny(incomeMessage, bookingId);
+//                sendNoticeAboutDenyBookingMessage(bookingId);
+//                matchService.deleteBooking(bookingId);
+//                log.debug("DENY_BOOKING - " + callback);
+////                editMessage = sendReplyDenyBookingMessage(incomeMessage);
+//                sendReplyDenyBookingMessage(incomeMessage);
             }
-
         }
         sendEditMessage(editMessage);
     }
@@ -107,7 +113,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
-
         sendBotMessage(sendMessage);
     }
 
@@ -126,13 +131,13 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String bookingId = booking.getId();
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
             sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-            int findPassRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
-            String requestToString = findPassengerHandler.requestToString(findPassengerRequestService.findById(findPassRequestId));
+            int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
+            String requestToString = findRideHandler.requestToString(findRideRequestService.findById(findRideRequestId));
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
         } else {
             sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
-            int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
-            String requestToString = findRideHandler.requestToString(findRideRequestService.findById(findRideRequestId));
+            int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+            String requestToString = findPassengerHandler.requestToString(findPassengerRequestService.findById(findPassRequestId));
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
         }
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
@@ -152,23 +157,36 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     }
 
     private void sendNoticeAboutDenyBookingMessage(String bookingId) {
-                Booking booking = matchService.getBooking(bookingId);
+        Booking booking = matchService.getBooking(bookingId);
         if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-        } else sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
+            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
+        } else sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
         sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
+        sendMessage.setReplyMarkup(null);
         sendBotMessage(sendMessage);
         log.debug("method sendNoticeAboutDenyBookingMessage");
     }
 
-    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
+    //    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
+    private void sendReplyDenyBookingMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getBOOKING_DENY_REPLY_MESSAGE());
         editMessage.setReplyMarkup(null);
         log.debug("method sendReplyDenyBookingMessage");
-        return editMessage;
+//        return editMessage;
+        sendEditMessage(editMessage);
     }
 
+    private void onDenyBookingDeny(Message incomeMessage, String bookingId) {
+        log.debug("method onDenyBookingDeny");
+        sendNoticeAboutDenyBookingMessage(bookingId);
+//                editMessage = sendReplyDenyBookingMessage(incomeMessage);
+        sendReplyDenyBookingMessage(incomeMessage);
+
+
+        matchService.deleteBooking(bookingId);
+
+    }
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
     private String findRideRequestListsToString(List<Integer> requestsIdList) {
