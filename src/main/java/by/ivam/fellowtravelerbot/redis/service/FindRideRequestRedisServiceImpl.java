@@ -61,7 +61,6 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
 
 
     public List<Integer> findMatches (FindPassRequestRedis recentRequest) {
-//        FindPassRequestRedis receivedRequest = findPassRequestRedisService.findById(requestId);
         List<Integer> suitableRequestIdList = findAllByDirection(recentRequest.getDirection())
                 .stream()
                 .filter(request -> request.getDepartureBefore().isAfter(recentRequest.getDepartureAt()))
@@ -69,7 +68,6 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
                 .filter(request -> request.getPassengersQuantity() <= recentRequest.getSeatsQuantity())
                 .map(request -> Integer.parseInt(request.getRequestId()))
                 .collect(Collectors.toList());
-//        matchingHandler.sendListOfSuitableFindRideRequestMessage(suitableRequestIdList, receivedRequest);
         return suitableRequestIdList;
     }
 

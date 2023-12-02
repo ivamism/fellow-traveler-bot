@@ -88,6 +88,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
 //                log.debug("DENY_BOOKING - " + callback);
 ////                editMessage = sendReplyDenyBookingMessage(incomeMessage);
 //                sendReplyDenyBookingMessage(incomeMessage);
+
             }
         }
         sendEditMessage(editMessage);
@@ -130,14 +131,17 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String initiator = booking.getInitiator();
         String bookingId = booking.getId();
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-            int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
-            String requestToString = findRideHandler.requestToString(findRideRequestService.findById(findRideRequestId));
-            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
-        } else {
+
             sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
             int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
-            String requestToString = findPassengerHandler.requestToString(findPassengerRequestService.findById(findPassRequestId));
+            FindPassengerRequest requestToSend = findPassengerRequestService.findById(findPassRequestId);
+            String requestToString = findPassengerHandler.requestToString(requestToSend);
+            sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
+        } else {
+            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
+            int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+            FindRideRequest requestToSend = findRideRequestService.findById(findRideRequestId);
+            String requestToString = findRideHandler.requestToString(requestToSend);
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
         }
         List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and handlerPrefix)
@@ -181,7 +185,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method onDenyBookingDeny");
         sendNoticeAboutDenyBookingMessage(bookingId);
 //                editMessage = sendReplyDenyBookingMessage(incomeMessage);
-        sendReplyDenyBookingMessage(incomeMessage);
+        sendReplyDenyBookingMessage(incomeMessage); //TODO сообщение о бронировании должно отправлятся другому
 
 
         matchService.deleteBooking(bookingId);
