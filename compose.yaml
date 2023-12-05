@@ -1,29 +1,28 @@
+version: 2.23.0
 services:
   postgres:
     image: postgres:16.0-alpine3.18
     environment:
-      POSTGRES_DB: "fellow_travel"
-      POSTGRES_USER: "ftdb_admin"
-      POSTGRES_PASSWORD: "123"
-      PGDATA: "/var/lib/postgresql/data"
-#      PGDATA: "/var/lib/docker/volumes/fellow_travel_db/_data"
+      POSTGRES_DB: fellow_travel
+      POSTGRES_USER: ftdb_admin
+      POSTGRES_PASSWORD: 123
+      PGDATA: "/var/lib/docker/volumes/fellow_travel_db/_data"
     volumes:
-#      - ../2. Init Database:/docker-entrypoint-initdb.d
       - fellow_travel_db:/var/lib/docker/volumes/fellow_travel_db/_data
-#      - /var/lib/docker/volumes/fellow_travel_db/_data
     ports:
-      - "5435:5432"
+      - 5435:5432
 
   redis:
     image: redis:alpine3.18
-#    image: redis:7.2.1-alpine3.18
     restart: always
     ports:
       - 6379:6379
-#    volumes:
-#       - redis_volume:/var/lib/docker/volumes/redis_volume/_data
+    environment:
+      - "REDIS_CONFIG=notify-keyspace-events Ehg"
+    volumes:
+      - redis_volume:/var/lib/docker/volumes/redis_volume/_data
 volumes:
   fellow_travel_db:
-#    - external: true
-#  redis_volume:
-#    - external: true
+    external: true
+  redis_volume:
+    external: true
