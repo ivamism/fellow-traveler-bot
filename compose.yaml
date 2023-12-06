@@ -18,7 +18,7 @@ services:
     ports:
       - 6379:6379
     environment:
-      - "REDIS_CONFIG=notify-keyspace-events Ehg"
+      - REDIS_CONFIG=notify-keyspace-events Ehg
     volumes:
       - redis_volume:/var/lib/docker/volumes/redis_volume/_data
 volumes:
