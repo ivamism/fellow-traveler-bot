@@ -202,9 +202,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
 
         }
 
-
-        //todo высылает сообщение не той стороне
-
         sendReplyDenyBookingMessage(incomeMessage);
 
 
