@@ -23,8 +23,7 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     private FindRideRequestRepository repository;
     @Autowired
     private FindRideRequestRedisService redisService;
-//    @Autowired
-//    MatchService matchService;
+
 
     @Override
     public FindRideRequest findById(int id) {
@@ -117,9 +116,8 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
         redisService.saveRequest(rideRequestRedis);
     }
 
-    private void onSaveNewRequest(FindRideRequest request){
+    private void onSaveNewRequest(FindRideRequest request) {
         placeInRedis(request);
-//        matchService.getNewFindRideRequest(request);
     }
 
     @Override
@@ -130,4 +128,15 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
         return repository.save(request);
     }
 
+    @Override
+    public void disActivateExpiredRequests(LocalDateTime presentTime) {
+        if (repository.count() != 0) {
+            List<FindRideRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureBeforeBefore(presentTime);
+            if (expiredRequestsList.size() != 0) {
+                log.info("dis-activate " + expiredRequestsList.size() + " FindRideRequests");
+                expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
+            }
+        }
+    }
 }
+

@@ -82,7 +82,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             }
             case "DENY_BOOKING" -> {
                 String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                onDenyBookingDeny(incomeMessage, bookingId);
+                onDenyBooking(incomeMessage, bookingId);
 //                sendNoticeAboutDenyBookingMessage(bookingId);
 //                matchService.deleteBooking(bookingId);
 //                log.debug("DENY_BOOKING - " + callback);
@@ -171,6 +171,14 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method sendNoticeAboutDenyBookingMessage");
     }
 
+    private void sendNoticeAboutDenyBookingMessage(long chatId) {
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
+        sendMessage.setReplyMarkup(null);
+        sendBotMessage(sendMessage);
+        log.debug("method sendNoticeAboutDenyBookingMessage");
+    }
+
     //    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
     private void sendReplyDenyBookingMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
@@ -181,15 +189,27 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendEditMessage(editMessage);
     }
 
-    private void onDenyBookingDeny(Message incomeMessage, String bookingId) {
+    private void onDenyBooking(Message incomeMessage, String bookingId) {
         log.debug("method onDenyBookingDeny");
-        sendNoticeAboutDenyBookingMessage(bookingId);
-//                editMessage = sendReplyDenyBookingMessage(incomeMessage);
-        sendReplyDenyBookingMessage(incomeMessage); //TODO сообщение о бронировании должно отправлятся другому
+        Booking booking = matchService.getBooking(bookingId);
+        long driverChatId = booking.getFindPassRequestRedis().getChatId();
+        long passengerChatId = booking.getFindRideRequestRedis().getChatId();
+        if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+            sendNoticeAboutDenyBookingMessage(driverChatId); // send message to booking initiator
+
+        } else {
+            sendNoticeAboutDenyBookingMessage(passengerChatId); // send message to booking initiator
+
+        }
+
+
+        //todo высылает сообщение не той стороне
+
+        sendReplyDenyBookingMessage(incomeMessage);
 
 
         matchService.deleteBooking(bookingId);
-
+        // todo выслать новый список инициатору бронированию
     }
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров
