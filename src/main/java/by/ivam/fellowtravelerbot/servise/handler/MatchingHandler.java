@@ -139,7 +139,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
         } else {
             sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-            int findRideRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+            int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
             FindRideRequest requestToSend = findRideRequestService.findById(findRideRequestId);
             String requestToString = findRideHandler.requestToString(requestToSend);
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
