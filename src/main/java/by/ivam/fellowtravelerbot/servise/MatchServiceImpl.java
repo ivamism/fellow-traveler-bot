@@ -79,6 +79,17 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
+    public List<Integer> getFindPassRequestMatches(FindRideRequestRedis request) {
+        return findPassRequestRedisService.findMatches(request);
+    }
+
+    @Override
+    public List<Integer> getFindRideRequestMatches(FindPassRequestRedis request) {
+        return findRideRequestRedisService.findMatches(request);
+    }
+
+
+    @Override
     public void deleteBooking(String bookingId) {
         bookingService.deleteBooking(bookingId);
     }

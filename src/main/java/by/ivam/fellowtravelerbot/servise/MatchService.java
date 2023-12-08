@@ -1,6 +1,10 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.redis.model.Booking;
+import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
+
+import java.util.List;
 
 public interface MatchService {
 
@@ -14,4 +18,6 @@ public interface MatchService {
     void deleteBooking(String bookingId);
 
     Booking getBooking(String bookingId);
+    List<Integer> getFindPassRequestMatches(FindRideRequestRedis request);
+    List<Integer> getFindRideRequestMatches(FindPassRequestRedis request);
 }

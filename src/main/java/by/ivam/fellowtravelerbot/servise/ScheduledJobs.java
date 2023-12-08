@@ -22,7 +22,7 @@ public class ScheduledJobs {
     @Autowired
     private MatchingHandler matchingHandler;
 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     @Async
     public void checkBooking() {
         log.info("method checkBooking");
@@ -31,7 +31,7 @@ public class ScheduledJobs {
                 .filter(booking -> booking.getRemindAt().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
         if (!bookingList.isEmpty()) onExpireTimeToConfirm(bookingList);
-        else log.debug("No bookings");
+        else log.debug("No bookings to handle");
     }
 
     private void onExpireTimeToConfirm(List<Booking> bookingList) {
@@ -42,8 +42,8 @@ public class ScheduledJobs {
                 matchingHandler.sendBookingAnnouncementMessage(booking);
             } else {
                 log.debug("send announcement two times");
-                bookingService.deleteBooking(booking);
-                //TODO выслать инициатору новый список для резервирования
+                matchingHandler.onDenyBooking(booking.getId());
+//                bookingService.deleteBooking(booking);
             }
         }
     }

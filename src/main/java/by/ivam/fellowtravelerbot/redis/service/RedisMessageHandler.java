@@ -37,7 +37,7 @@ public class RedisMessageHandler extends MessageHandler {
     FindRideRequestService findRideRequestService;
 
     @Autowired
-    private  BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
     private FindPassengerHandler findPassengerHandler;
     @Autowired
@@ -69,7 +69,7 @@ public class RedisMessageHandler extends MessageHandler {
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
                     matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest);
-                }else if (requestType.equals(BOOKING)) {
+                } else if (requestType.equals(BOOKING)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
                     Booking booking = bookingService.findById(requestIdString);
                     if (bookingService.isNewRequest(booking))
@@ -88,6 +88,9 @@ public class RedisMessageHandler extends MessageHandler {
                     findRideRequestService.disActivateRequestById(requestId);
                     findRideHandler.sendExpireDepartureTimeMessage(requestId);
                 }
+            }
+            case "del" -> {
+                log.debug("new event " + event);
             }
         }
     }
