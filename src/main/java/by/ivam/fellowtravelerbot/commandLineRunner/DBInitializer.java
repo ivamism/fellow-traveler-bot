@@ -32,14 +32,16 @@ public class DBInitializer implements CommandLineRunner {
             settlementRepository.save(new Settlement().setName(KOROLEVO));
             settlementRepository.save(new Settlement().setName(MINSK));
         } else log.info("no conditions to save default settlements");
-        if (userRepository.count()==0){
+        if (userRepository.count() == 0) {
             log.info("Table Users is empty. Save default MasterAdminUser");
             User masterAdmin = new User();
             masterAdmin.setChatId(785703113L)
                     .setFirstName("Ivan")
+                    .setUserName("ivam_IM")
                     .setResidence(settlementRepository.findByName(KOROLEVO).get())
                     .setAdmin(true)
                     .setRegisteredAt(LocalDateTime.now());
+            userRepository.save(masterAdmin);
         } else log.info("no conditions to save default MasterAdminUser");
     }
 }
