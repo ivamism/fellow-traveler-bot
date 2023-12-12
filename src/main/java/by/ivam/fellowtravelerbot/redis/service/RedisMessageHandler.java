@@ -63,19 +63,20 @@ public class RedisMessageHandler extends MessageHandler {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
                     FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
-                    matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest);
+                    long chatId = recentRequest.getChatId();
+                    matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest, chatId);
                 } else if (requestType.equals(FIND_RIDE_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
-                    matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest);
+                    long chatId = recentRequest.getChatId();
+                    matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest, chatId);
                 } else if (requestType.equals(BOOKING)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
                     Booking booking = bookingService.findById(requestIdString);
                     if (bookingService.isNewRequest(booking))
                         matchingHandler.sendBookingAnnouncementMessage(booking);
                 }
-
             }
             case "expired" -> {
                 int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);

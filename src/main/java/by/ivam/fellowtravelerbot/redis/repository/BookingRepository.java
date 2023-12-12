@@ -12,5 +12,5 @@ public interface BookingRepository extends CrudRepository<Booking, String>  {
     @Override
     Optional<Booking> findById(String handlerPrefix);
 
-    List<Booking> findByIdNotNull();
+
 }

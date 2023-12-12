@@ -94,18 +94,18 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         sendEditMessage(editMessage);
     }
 
-    public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest) {
+    public void sendListOfSuitableFindRideRequestMessage(List<Integer> requestIdList, FindPassRequestRedis receivedRequest, long chatId) {
         log.debug("method: sendListOfSuitableRideRequestMessage");
         String requestListsToString = findRideRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
                 BookingInitiator.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
-                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+                createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
         sendBotMessage(sendMessage);
     }
 
-    public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest) {
+    public void sendListOfSuitableFindPassengerRequestMessage(List<Integer> requestIdList, FindRideRequestRedis receivedRequest, long chatId) {
         log.debug("method: sendListOfSuitableFindPassengerRequestMessage");
         //Todo изменить сообщение
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
@@ -113,7 +113,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
                 BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
-                createListOfSuitableRequestsMessage(receivedRequest.getChatId(), requestListsToString, buttonsAttributesList);
+                createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
         sendBotMessage(sendMessage);
     }
 
@@ -199,11 +199,11 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
             sendNoticeAboutDenyBookingMessage(driverChatId); // notify booking initiator
             List<Integer> matches = matchService.getFindRideRequestMatches(findPassRequestRedis);
-            sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis);
+            sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, driverChatId);
         } else {
             sendNoticeAboutDenyBookingMessage(passengerChatId); // notify initiator
             List<Integer> matches = matchService.getFindPassRequestMatches(findRideRequestRedis);
-            sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis);
+            sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis, passengerChatId);
         }
         matchService.deleteBooking(bookingId);
     }

@@ -26,9 +26,6 @@ public class FindRideRequest {
     @JoinColumn(name = "destination_settlement_id")
     private Settlement destinationSettlement;
     private LocalDateTime departureBefore;
-//    private LocalDate departureDate;
-//    private LocalTime departureTime;
-//    private Duration departureDuring;
     private String commentary;
     private boolean isActive;
     private LocalDateTime createdAt;
