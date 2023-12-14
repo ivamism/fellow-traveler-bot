@@ -21,4 +21,6 @@ public interface FindPassRequestRedisService {
     List<Integer> findMatches(FindRideRequestRedis recentRequest);
 
     void removeExpired();
+
+    void updateSeatsQuantity(FindPassRequestRedis request, int passengersQuantity);
 }

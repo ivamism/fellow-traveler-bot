@@ -5,6 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
+import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
@@ -23,6 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -78,9 +80,9 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             case "ACCEPT_BOOKING" -> {
                 log.debug("ACCEPT_BOOKING - " + callback);
                 String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
-                Booking booking = matchService.getBooking(bookingId);
-                nextStep(incomeMessage);
-
+                Ride ride = matchService.createOrUpdateRide(bookingId);
+                editMessage = sendCreateRideNoticeMessage(incomeMessage, ride);
+                matchService.deleteBooking(bookingId);
             }
             case "DENY_BOOKING" -> {
                 String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
@@ -128,7 +130,6 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         String initiator = booking.getInitiator();
         String bookingId = booking.getId();
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-
             sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
             int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
             FindPassengerRequest requestToSend = findPassengerRequestService.findById(findPassRequestId);
@@ -155,23 +156,13 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         editMessage.setText(messages.getNOTICE_ABOUT_SENDING_BOOKING_MESSAGE());
         log.debug("method sendNoticeAboutSendingBookingMessage");
         return editMessage;
-    }
-
-    private void sendNoticeAboutDenyBookingMessage(String bookingId) {
-        Booking booking = matchService.getBooking(bookingId);
-        if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
-        } else sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-        sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
-        sendMessage.setReplyMarkup(null);
-        sendBotMessage(sendMessage);
-        log.debug("method sendNoticeAboutDenyBookingMessage");
+//        TODO проверить отсылаемое сообщение
     }
 
     private void sendNoticeAboutDenyBookingMessage(long chatId) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(messages.getBOOKING_DENY_MESSAGE());
-        sendMessage.setReplyMarkup(null);
+        sendMessage.setReplyMarkup(null); // need to set null to remove no longer necessary inline keyboard
         sendBotMessage(sendMessage);
         log.debug("method sendNoticeAboutDenyBookingMessage");
     }
@@ -179,7 +170,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
     private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getBOOKING_DENY_REPLY_MESSAGE());
-        editMessage.setReplyMarkup(null);
+        editMessage.setReplyMarkup(null); // need to set null to remove no longer necessary inline keyboard
         log.debug("method sendReplyDenyBookingMessage");
         return editMessage;
     }
@@ -201,6 +192,51 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis, passengerChatId);
         }
         matchService.deleteBooking(bookingId);
+    }
+
+    private EditMessageText sendCreateRideNoticeMessage(Message incomeMessage, Ride ride) {
+        editMessageTextGeneralPreset(incomeMessage);
+        editMessage.setText(messages.getRIDE_MESSAGE());
+        editMessage.setReplyMarkup(null); // need to set null to remove no longer necessary inline keyboard
+// TODO После создания state machine удалить верхние строки и сделать возврат void
+        String rideToString = String.format(messages.getCREATE_RIDE_MESSAGE(), rideToString(ride));
+        FindPassengerRequest findPassengerRequest = ride.getFindPassengerRequest();
+        Set<FindRideRequest> findRideRequestSet = ride.getFindRideRequests();
+        sendRideToDriver(findPassengerRequest, rideToString);
+        sendRideToPassengers(findRideRequestSet, rideToString);
+        return editMessage;
+    }
+
+
+    private void sendRideToDriver(FindPassengerRequest request, String messageText) {
+        sendMessage.setChatId(request.getUser().getChatId());
+        sendMessage.setText(messageText);
+        sendMessage.setReplyMarkup(null); // TODO создать кнопки
+        sendBotMessage(sendMessage);
+    }
+
+    private void sendRideToPassengers(Set<FindRideRequest> findRideRequestSet, String messageText) {
+        sendMessage.setText(messageText);
+        sendMessage.setReplyMarkup(null); // TODO создать кнопки
+        List<Long> chatIdList = findRideRequestSet.stream()
+                .map(rideRequest -> rideRequest.getUser().getChatId())
+                .collect(Collectors.toList());
+        for (Long chatId : chatIdList) {
+            sendMessage.setChatId(chatId);
+        }
+    }
+
+    private String rideToString(Ride ride) {
+        List<FindRideRequest> findRideRequestList = ride.getFindRideRequests()
+                .stream()
+                .collect(Collectors.toList());
+        StringBuilder text = new StringBuilder();
+        text.append(findPassengerHandler.requestToString(ride.getFindPassengerRequest())).append("\n\n");
+        for (FindRideRequest request : findRideRequestList) {
+            int n = findRideRequestList.indexOf(request) + 1;
+            text.append(n).append(". ").append(findRideHandler.requestToString(request)).append("\n");
+        }
+        return text.toString();
     }
 
     //    TODO сделать рефакторинг одноименных методов в хендлерах поиска поездок и пассажиров

@@ -80,4 +80,10 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
         }
     }
 
+    @Override
+    public void updateSeatsQuantity(FindPassRequestRedis request, int passengersQuantity) {
+        request.setSeatsQuantity(request.getSeatsQuantity() - passengersQuantity);
+        repository.save(request);
+    }
+
 }

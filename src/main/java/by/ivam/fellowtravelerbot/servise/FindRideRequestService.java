@@ -30,6 +30,4 @@ public interface FindRideRequestService {
 
     FindRideRequest disActivateRequestById(int requestId);
     void disActivateExpiredRequests(LocalDateTime presentTime);
-
-
 }

@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Data
@@ -63,26 +65,32 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void addBooking(String firstId, String secondId, String initiator) {
+        FindPassRequestRedis findPassRequestRedis;
+        FindRideRequestRedis findRideRequestRedis;
         Booking booking = new Booking();
         booking.setBookedAt(LocalDateTime.now())
-                .setRemindAt(LocalDateTime.now().plusMinutes(3))
+                .setRemindAt(LocalDateTime.now().plusMinutes(10))
                 .setRemindersQuantity(0);
         if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
-            FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(firstId);
-            FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(secondId);
+            findPassRequestRedis = findPassRequestRedisService.findById(firstId);
+            findRideRequestRedis = findRideRequestRedisService.findById(secondId);
             booking.setFindPassRequestRedis(findPassRequestRedis)
                     .setFindRideRequestRedis(findRideRequestRedis)
                     .setInitiator(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())
                     .setExpireDuration(findPassRequestRedis.getExpireDuration());
+
         } else {
-            FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(firstId);
-            FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(secondId);
+            findRideRequestRedis = findRideRequestRedisService.findById(firstId);
+            findPassRequestRedis = findPassRequestRedisService.findById(secondId);
             booking.setFindPassRequestRedis(findPassRequestRedis)
                     .setFindRideRequestRedis(findRideRequestRedis)
                     .setInitiator(BookingInitiator.FIND_RIDE_REQUEST.getValue())
                     .setExpireDuration(findRideRequestRedis.getExpireDuration());
         }
         bookingService.save(booking);
+        int passengersQuantity = findRideRequestRedis.getPassengersQuantity();
+        findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersQuantity);
+
         log.debug("method addBooking: " + booking);
     }
 
@@ -115,7 +123,8 @@ public class MatchServiceImpl implements MatchService {
         Ride ride;
         if (optionalRide.isPresent()) {
             ride = optionalRide.get();
-            ride.getFindRideRequests().add(findRideRequestService.findById(findPassengerRequestId));
+            Set<FindRideRequest> findRideRequests = ride.getFindRideRequests();
+            findRideRequests.add(findRideRequestService.findById(findPassengerRequestId));
         } else {
             ride = createNewRide(findPassengerRequestId, findRideRequestId);
         }

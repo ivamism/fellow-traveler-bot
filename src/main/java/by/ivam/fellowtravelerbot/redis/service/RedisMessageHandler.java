@@ -91,7 +91,7 @@ public class RedisMessageHandler extends MessageHandler {
                 }
             }
             case "del" -> {
-                log.debug("new event " + event);
+                log.debug("new event " + event + ", request type: " + requestType + ", id: " + requestIdString);
             }
         }
     }

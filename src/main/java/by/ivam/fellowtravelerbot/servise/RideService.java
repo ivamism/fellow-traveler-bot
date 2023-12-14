@@ -14,7 +14,6 @@ public interface RideService {
 
     Ride createNewRide(int findPassengerRequestId, int findRideRequestId);
 
-
     Ride saveRide(Ride ride);
 
 }

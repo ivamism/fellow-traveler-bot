@@ -21,4 +21,5 @@ public interface BookingService {
     boolean isNewRequest(Booking booking);
 
     void removeExpired();
+
 }
