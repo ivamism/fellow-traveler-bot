@@ -13,9 +13,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 //@EnableScheduling
 @Log4j
-public class AsyncConfiguration
-        extends AsyncConfigurerSupport {
-
+public class AsyncConfiguration extends AsyncConfigurerSupport {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -31,8 +29,7 @@ public class AsyncConfiguration
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (ex, method, params) -> {
-            log.error("Exception: " + ex.getMessage()+". Method Name: " + method.getName());
-            ex.printStackTrace();
+            log.error("Exception occurred in async task", ex);
         };
     }
 }

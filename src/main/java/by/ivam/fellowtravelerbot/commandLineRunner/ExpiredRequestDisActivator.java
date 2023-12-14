@@ -6,12 +6,14 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
 @Order(2)
+@Async
 @Log4j
 public class ExpiredRequestDisActivator implements CommandLineRunner {
     @Autowired
@@ -20,9 +22,13 @@ public class ExpiredRequestDisActivator implements CommandLineRunner {
     FindRideRequestService findRideRequestService;
 
     @Override
-    public void run(String... args) throws Exception {
-        log.info("Dis-activation of expired requests");
-        findRideRequestService.disActivateExpiredRequests(LocalDateTime.now());
-        findPassengerRequestService.disActivateExpiredRequests(LocalDateTime.now());
+    public void run(String... args) {
+        try {
+            log.debug("Dis-activation of expired requests");
+            findRideRequestService.disActivateExpiredRequests(LocalDateTime.now());
+            findPassengerRequestService.disActivateExpiredRequests(LocalDateTime.now());
+        } catch (Exception e) {
+            log.error("An error occurred while dis-activating expired requests", e);
+        }
     }
 }

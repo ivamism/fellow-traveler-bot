@@ -1,10 +1,11 @@
 package by.ivam.fellowtravelerbot.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -18,9 +19,10 @@ public class Ride {
 
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "find_passenger_request_id")
+    @Column(nullable = false)
     private FindPassengerRequest findPassengerRequest;
 
     @OneToMany(orphanRemoval = true)
-    private Set<FindRideRequest> findRideRequests = new LinkedHashSet<>();
-
+    @NotNull
+    private Set<FindRideRequest> findRideRequests = new HashSet<>();
 }

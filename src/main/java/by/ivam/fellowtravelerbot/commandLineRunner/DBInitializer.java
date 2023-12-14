@@ -11,6 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Component
 @Order(1)
@@ -38,7 +39,7 @@ public class DBInitializer implements CommandLineRunner {
             masterAdmin.setChatId(785703113L)
                     .setFirstName("Ivan")
                     .setUserName("ivam_IM")
-                    .setResidence(settlementRepository.findByName(KOROLEVO).get())
+                    .setResidence(settlementRepository.findByName(KOROLEVO).orElseThrow(() -> new NoSuchElementException()))
                     .setAdmin(true)
                     .setRegisteredAt(LocalDateTime.now());
             userRepository.save(masterAdmin);

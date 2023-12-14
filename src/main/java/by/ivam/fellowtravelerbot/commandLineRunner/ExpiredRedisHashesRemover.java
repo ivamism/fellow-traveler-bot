@@ -23,9 +23,14 @@ public class ExpiredRedisHashesRemover implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("Dis-activation of expired requests");
-        bookingService.removeExpired();
-        findPassRequestRedisService.removeExpired();
-        findRideRequestRedisService.removeExpired();
+        try {
+            log.debug("Dis-activation of expired requests");
+            bookingService.removeExpired();
+            findPassRequestRedisService.removeExpired();
+            findRideRequestRedisService.removeExpired();
+        } catch (Exception e) {
+            log.error("An error occurred while dis-activating expired requests", e);
+        }
+
     }
 }
