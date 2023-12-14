@@ -74,21 +74,18 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
                 String secondId = Extractor.extractParameter(callback, Extractor.INDEX_THREE);
                 matchService.addBooking(firstId, secondId, initiator);
                 editMessage = sendNoticeAboutSendingBookingMessage(incomeMessage);
-//                TODO отправить сообщение о том что выслан запрос на бронирование
             }
             case "ACCEPT_BOOKING" -> {
                 log.debug("ACCEPT_BOOKING - " + callback);
+                String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
+                Booking booking = matchService.getBooking(bookingId);
                 nextStep(incomeMessage);
+
             }
             case "DENY_BOOKING" -> {
                 String bookingId = Extractor.extractParameter(callback, Extractor.INDEX_ONE);
                 onDenyBooking(bookingId);
-//                sendNoticeAboutDenyBookingMessage(bookingId);
-//                matchService.deleteBooking(bookingId);
-//                log.debug("DENY_BOOKING - " + callback);
                 editMessage = sendReplyDenyBookingMessage(incomeMessage);
-//                sendReplyDenyBookingMessage(incomeMessage);
-
             }
         }
         sendEditMessage(editMessage);
@@ -179,14 +176,12 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method sendNoticeAboutDenyBookingMessage");
     }
 
-        private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
-//    private void sendReplyDenyBookingMessage(Message incomeMessage) {
+    private EditMessageText sendReplyDenyBookingMessage(Message incomeMessage) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getBOOKING_DENY_REPLY_MESSAGE());
         editMessage.setReplyMarkup(null);
         log.debug("method sendReplyDenyBookingMessage");
         return editMessage;
-//        sendEditMessage(editMessage);
     }
 
     public void onDenyBooking(String bookingId) {

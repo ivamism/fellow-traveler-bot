@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Data
@@ -21,11 +23,17 @@ import java.util.List;
 public class MatchServiceImpl implements MatchService {
 
     @Autowired
-    FindPassRequestRedisService findPassRequestRedisService;
+    private FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
-    FindRideRequestRedisService findRideRequestRedisService;
+    private FindRideRequestRedisService findRideRequestRedisService;
     @Autowired
-    BookingService bookingService;
+    private FindPassengerRequestService findPassengerRequestService;
+    @Autowired
+    private FindRideRequestService findRideRequestService;
+    @Autowired
+    private BookingService bookingService;
+    @Autowired
+    private RideService rideService;
 
     @Override
     public void getNewFindPassengerRequest(String requestId) {
@@ -88,7 +96,6 @@ public class MatchServiceImpl implements MatchService {
         return findRideRequestRedisService.findMatches(request);
     }
 
-
     @Override
     public void deleteBooking(String bookingId) {
         bookingService.deleteBooking(bookingId);
@@ -97,6 +104,26 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public Booking getBooking(String bookingId) {
         return bookingService.findById(bookingId);
+    }
+
+    @Override
+    public Ride createOrUpdateRide(String bookingId) {
+        Booking booking = bookingService.findById(bookingId);
+        int findPassengerRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+        int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
+        Optional<Ride> optionalRide = rideService.getRideByFindPassengerRequestId(findPassengerRequestId);
+        Ride ride;
+        if (optionalRide.isPresent()) {
+            ride = optionalRide.get();
+            ride.getFindRideRequests().add(findRideRequestService.findById(findPassengerRequestId));
+        } else {
+            ride = createNewRide(findPassengerRequestId, findRideRequestId);
+        }
+        return rideService.saveRide(ride);
+    }
+
+    private Ride createNewRide(int findPassengerRequestId, int findRideRequestId) {
+        return rideService.createNewRide(findPassengerRequestId, findRideRequestId);
     }
 
 }
