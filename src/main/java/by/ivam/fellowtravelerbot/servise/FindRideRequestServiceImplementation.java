@@ -94,6 +94,7 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
+        removeFromRedis(requestId);
         log.debug("method cancelRequestById");
         return repository.save(request);
     }
@@ -106,7 +107,7 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     @Async
     public void placeInRedis(FindRideRequest request) {
         FindRideRequestRedis rideRequestRedis = new FindRideRequestRedis();
-        rideRequestRedis.setRequestId(Integer.toString(request.getId()))
+        rideRequestRedis.setRequestId(String.valueOf(request.getId()))
                 .setChatId(request.getUser().getChatId())
                 .setDirection(request.getDirection())
                 .setDepartureBefore(request.getDepartureBefore())
@@ -114,6 +115,12 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureBefore(), ChronoUnit.SECONDS));
         log.info("method placeInRedis");
         redisService.saveRequest(rideRequestRedis);
+    }
+
+    private void removeFromRedis(int requestId) {
+        String id = String.valueOf(requestId);
+        redisService.findOptionalById(id).ifPresent(request -> redisService.delete(id));
+        log.debug("delete request with Id :" + id + " from redis");
     }
 
     private void onSaveNewRequest(FindRideRequest request) {
@@ -125,6 +132,7 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
         log.info("method disActivateRequestById");
         FindRideRequest request = findById(requestId);
         request.setActive(false);
+        removeFromRedis(requestId);
         return repository.save(request);
     }
 

@@ -4,11 +4,14 @@ import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FindPassRequestRedisService {
     void saveRequest(FindPassRequestRedis request);
 
     FindPassRequestRedis findById(String id);
+
+    Optional<FindPassRequestRedis> findOptionalById(String id);
 
     Iterable<FindPassRequestRedis> findAll();
 

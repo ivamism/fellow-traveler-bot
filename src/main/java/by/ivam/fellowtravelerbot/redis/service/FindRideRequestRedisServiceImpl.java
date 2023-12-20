@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +61,7 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     }
 
 
-    public List<Integer> findMatches (FindPassRequestRedis recentRequest) {
+    public List<Integer> findMatches(FindPassRequestRedis recentRequest) {
         List<Integer> suitableRequestIdList = findAllByDirection(recentRequest.getDirection())
                 .stream()
                 .filter(request -> request.getDepartureBefore().isAfter(recentRequest.getDepartureAt()))
@@ -74,10 +75,15 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     @Override
     public void removeExpired() {
         List<FindRideRequestRedis> expiredKeys = repository.findByExpireDuration(-1);
-        if (expiredKeys.size()!=0){
+        if (expiredKeys.size() != 0) {
             log.info("remove expired FindRideRequestRedis - " + expiredKeys.size());
             expiredKeys.forEach(request -> repository.delete(request));
         }
+    }
+
+    @Override
+    public Optional<FindRideRequestRedis> findOptionalById(String id) {
+        return repository.findById(id);
     }
 
 }

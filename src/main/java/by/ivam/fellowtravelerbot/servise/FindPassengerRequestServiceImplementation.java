@@ -98,6 +98,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
+        removeFromRedis(requestId);
         log.info("method cancelRequest");
         return repository.save(request);
     }
@@ -108,6 +109,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         FindPassengerRequest request = findById(requestId);
         request.setActive(false);
         repository.save(request);
+        removeFromRedis(requestId);
         return request;
     }
 
@@ -133,7 +135,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Async
     public void placeInRedis(FindPassengerRequest request) {
         FindPassRequestRedis passRequestRedis = new FindPassRequestRedis();
-        passRequestRedis.setRequestId(Integer.toString(request.getId()))
+        passRequestRedis.setRequestId(String.valueOf(request.getId()))
                 .setChatId(request.getUser().getChatId())
                 .setDirection(request.getDirection())
                 .setDepartureAt(request.getDepartureAt())
@@ -141,6 +143,12 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureAt(), ChronoUnit.SECONDS));
         log.info("method placeInRedis");
         redisService.saveRequest(passRequestRedis);
+    }
+
+    private void removeFromRedis(int requestId) {
+        String id = String.valueOf(requestId);
+        redisService.findOptionalById(id).ifPresent(request -> redisService.delete(id));
+        log.debug("delete request with Id :" + id + " from redis");
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +34,11 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
     @Override
     public FindPassRequestRedis findById(String id) {
         return repository.findById(id).orElse(EMPTY_RIDE);
+    }
+
+    @Override
+    public Optional<FindPassRequestRedis> findOptionalById(String id) {
+        return repository.findById(id);
     }
 
 
@@ -59,7 +65,6 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
     }
 
     public List<Integer> findMatches(FindRideRequestRedis recentRequest) {
-//        FindPassRequestRedis receivedRequest = findPassRequestRedisService.findById(requestId);
         List<Integer> suitableRequestIdList = findAllByDirection(recentRequest.getDirection())
                 .stream()
                 .filter(request -> request.getDepartureAt().toLocalDate().isEqual(recentRequest.getDepartureBefore().toLocalDate()))
@@ -67,7 +72,6 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
                 .filter(request -> request.getSeatsQuantity() >= recentRequest.getPassengersQuantity())
                 .map(request -> Integer.parseInt(request.getRequestId()))
                 .collect(Collectors.toList());
-//        matchingHandler.sendListOfSuitableFindRideRequestMessage(suitableRequestIdList, receivedRequest);
         return suitableRequestIdList;
     }
 
