@@ -19,14 +19,14 @@ public interface FindPassengerRequestService {
 
     FindPassengerRequest updateRequest(FindPassengerRequest request);
 
-    List<FindPassengerRequest> usersRequestList(long chatId);
     List<FindPassengerRequest> requestListByIdList(List<Integer> requestsIdList);
 
     List<FindPassengerRequest> usersActiveRequestList(long chatId);
 
     FindPassengerRequest cancelRequestById(int requestId);
+
     FindPassengerRequest disActivateRequestById(int requestId);
+
     void disActivateExpiredRequests(LocalDateTime presentTime);
 
-    void cancelAllUsersActiveRequests(List<Integer> requestsIdList);
 }

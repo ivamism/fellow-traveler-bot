@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.bot.Messages;
 import by.ivam.fellowtravelerbot.bot.ResponseMessageProcessor;
 import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
+import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.servise.*;
 import by.ivam.fellowtravelerbot.DTOoperation.interfaces.ChatStatusOperations;
 import lombok.Data;
@@ -35,6 +36,10 @@ public class MessageHandler {
     FindRideRequestService findRideRequestService;
     @Autowired
     MatchService matchService;
+    @Autowired
+    BookingService bookingService;
+    @Autowired
+    RideService rideService;
     @Autowired
     ChatStatusOperations chatStatusOperations;
     @Autowired

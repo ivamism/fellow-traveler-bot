@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.repository.RideRepository;
 import lombok.extern.log4j.Log4j;
@@ -10,11 +11,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_PASSENGER_REQUEST;
+import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_RIDE_REQUEST;
+
 @Service
 @Log4j
 public class RideServiceImpl implements RideService {
     @Autowired
-    private RideRepository rideRepository;
+    private RideRepository repository;
     @Autowired
     private FindRideRequestService findRideRequestService;
     @Autowired
@@ -22,7 +26,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public Ride findById(int id) {
-        Ride ride = rideRepository.findById(id).orElseThrow();
+        Ride ride = repository.findById(id).orElseThrow();
         log.debug("method findById " + ride);
         return ride;
     }
@@ -30,7 +34,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public Optional<Ride> getRideByFindPassengerRequestId(int id) {
         log.debug("method getRideByFindPassengerRequestId");
-        return rideRepository.findByFindPassengerRequest_Id(id);
+        return repository.findByFindPassengerRequest_Id(id);
     }
 
 
@@ -59,7 +63,18 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride saveRide(Ride ride) {
         log.debug("method saveRide " + ride);
-        return rideRepository.save(ride);
+        return repository.save(ride);
+    }
+
+    @Override
+    public boolean hasRide(BookingInitiator initiator, int requestId) {
+        if (initiator == FIND_PASSENGER_REQUEST) {
+            return repository.existsByFindPassengerRequest_Id(requestId);
+        } else if (initiator == FIND_RIDE_REQUEST) {
+            return repository.existsByFindRideRequests_Id(requestId);
+        } else {
+            throw new IllegalArgumentException("Invalid BookingInitiator value: " + initiator);
+        }
     }
 
 }

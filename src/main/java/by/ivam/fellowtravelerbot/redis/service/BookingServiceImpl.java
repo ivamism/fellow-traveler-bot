@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
+import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
@@ -12,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_PASSENGER_REQUEST;
+import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_RIDE_REQUEST;
 
 @Service
 @Log4j
@@ -83,6 +87,23 @@ public class BookingServiceImpl implements BookingService {
         if (expiredKeys.size() != 0) {
             log.info("remove expired FindRideRequestRedis - " + expiredKeys.size());
             expiredKeys.forEach(booking -> deleteBooking(booking));
+        }
+    }
+
+    @Override
+    public void cancelBooking(BookingInitiator initiator, int requestId) {
+
+    }
+
+    @Override
+    public boolean hasBooking(BookingInitiator initiator, int requestId) {
+        String id = String.valueOf(requestId);
+        if (initiator == FIND_PASSENGER_REQUEST) {
+            return repository.existsByFindPassRequestRedis_RequestId(id);
+        } else if (initiator == FIND_RIDE_REQUEST) {
+            return repository.existsByFindRideRequestRedis_RequestId(id);
+        } else {
+            throw new IllegalArgumentException("Invalid BookingInitiator value: " + initiator);
         }
     }
 

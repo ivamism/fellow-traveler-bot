@@ -68,12 +68,6 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
     }
 
     @Override
-    public List<FindRideRequest> usersRequestList(long chatId) {
-        log.info("method usersRequestList");
-        return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
-    }
-
-    @Override
     public List<FindRideRequest> usersActiveRequestList(long chatId) {
         log.info("method usersActiveRequestList");
         return repository.findByUser_ChatIdAndIsActiveTrueOrderByCreatedAtAsc(chatId);
@@ -97,11 +91,6 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
         removeFromRedis(requestId);
         log.debug("method cancelRequestById");
         return repository.save(request);
-    }
-
-    @Override
-    public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
-
     }
 
     @Async

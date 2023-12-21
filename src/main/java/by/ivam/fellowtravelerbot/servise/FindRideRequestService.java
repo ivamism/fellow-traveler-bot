@@ -19,15 +19,13 @@ public interface FindRideRequestService {
 
     FindRideRequest updateRequest(FindRideRequest request);
 
-    List<FindRideRequest> usersRequestList(long chatId);
-
     List<FindRideRequest> usersActiveRequestList(long chatId);
+
     List<FindRideRequest> requestListByIdList(List<Integer> requestIdList);
 
     FindRideRequest cancelRequestById(int id);
 
-    void cancelAllUsersActiveRequests(List<Integer> requestsIdList);
-
     FindRideRequest disActivateRequestById(int requestId);
+
     void disActivateExpiredRequests(LocalDateTime presentTime);
 }

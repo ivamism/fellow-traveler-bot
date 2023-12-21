@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
 import lombok.extern.log4j.Log4j;
@@ -23,7 +24,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     FindPassengerRequestRepository repository;
     @Autowired
     FindPassRequestRedisService redisService;
-
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -73,11 +73,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public List<FindPassengerRequest> usersRequestList(long chatId) {
-        return null;
-    }
-
-    @Override
     public List<FindPassengerRequest> requestListByIdList(List<Integer> requestsIdList) {
         List<FindPassengerRequest> requestList = requestsIdList
                 .stream()
@@ -122,10 +117,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
             }
         }
-    }
-
-    @Override
-    public void cancelAllUsersActiveRequests(List<Integer> requestsIdList) {
     }
 
     private void onSaveNewRequest(FindPassengerRequest request) {

@@ -1,10 +1,7 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
-import by.ivam.fellowtravelerbot.bot.enums.Day;
-import by.ivam.fellowtravelerbot.bot.enums.Direction;
-import by.ivam.fellowtravelerbot.bot.enums.Handlers;
-import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
+import by.ivam.fellowtravelerbot.bot.enums.*;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
@@ -354,7 +351,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = chooseRequestToCancelMessage(incomeMessage);
             }
             case "CANCEL_REQUEST" -> {
-                FindPassengerRequest request = cancelRequest(extractId(callback, getFIRST_VALUE()));
+                FindPassengerRequest request = onCancelRequestReceived(extractId(callback, getFIRST_VALUE()));
                 editMessage = sendCancelRequestSuccessMessage(incomeMessage, request);
             }
 
@@ -994,8 +991,19 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return editMessage;
     }
 
-    private FindPassengerRequest cancelRequest(int requestId) {
-        log.debug("method cancelRequest");
+    private FindPassengerRequest onCancelRequestReceived(int requestId) {
+        log.debug("method onCancelRequestReceived");
+        if (bookingService.hasBooking(BookingInitiator.FIND_PASSENGER_REQUEST, requestId)) {
+
+//    TODO Удаление брони.
+//     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
+        }
+
+        if (rideService.hasRide(BookingInitiator.FIND_PASSENGER_REQUEST, requestId)) {
+            //    TODO Удаление брони.
+            //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
+        }
+
         return findPassengerRequestService.cancelRequestById(requestId);
     }
 
@@ -1026,27 +1034,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         log.debug("method: sendExpireDepartureTimeMessage");
         sendBotMessage(sendMessage);
     }
-
-//    public void sendAppearedNewPassengerRequestMessage(List<Long> chatIdList, int requestId) {
-//        log.debug("method: sendAppearedNewPassengerRequestMessage");
-//
-//        FindPassengerRequest request = findPassengerRequestService.findById(requestId);
-//        sendMessage.setText(String.format(messages.getAPPEARED_NEW_REQUEST_MESSAGE(), requestToString(request)));
-//
-//        List<Pair<String, String>> buttonsAttributesList = new ArrayList<>(); // List of buttons attributes pairs (text of button name and callback)
-////        buttonsAttributesList.add(buttons.acceptButtonCreate(handlerPrefix
-////                + FindPassengerRequestOperation.ACCEPT_REQUEST_CALLBACK + requestId)); // Accept button
-//        buttonsAttributesList.add(buttons.cancelButtonCreate()); // Cancel button
-//        sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-//
-//        for (long chatId : chatIdList) {
-////            buttonsAttributesList.add(buttons.chatToPassengerButtonCreate(handlerPrefix
-////                    + FindPassengerRequestOperation.CHAT_WITH_PASSENGER_CALLBACK + chatId)); // Chat with passenger button
-////            sendMessage.setReplyMarkup(keyboards.dynamicRangeOneRowInlineKeyboard(buttonsAttributesList));
-//            sendMessage.setChatId(chatId);
-//            sendBotMessage(sendMessage);
-//        }
-//    }
 
     private EditMessageText createChooseCarMessage(Message incomeMessage, String callback) {
 //        TODO Если у пользователя один автомобиль сделать кнопку добавления автомобиля и переделать для соответствия текст
