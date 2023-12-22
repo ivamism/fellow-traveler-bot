@@ -4,7 +4,7 @@ import by.ivam.fellowtravelerbot.DTO.CarDTO;
 import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Car;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.AddCarDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.AddCarDtoOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

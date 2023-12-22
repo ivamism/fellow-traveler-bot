@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.AdminOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.DepartureLocationDtoOperation;
+import by.ivam.fellowtravelerbot.stateful.interfaces.DepartureLocationDtoOperation;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;

@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindRideDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.FindRideDtoOperations;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;

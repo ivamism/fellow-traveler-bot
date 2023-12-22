@@ -1,7 +1,7 @@
-package by.ivam.fellowtravelerbot.DTOoperation.implementation;
+package by.ivam.fellowtravelerbot.stateful.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.AddCarDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.AddCarDtoOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
@@ -13,15 +13,11 @@ import java.util.Optional;
 @Data
 @Log4j
 public class AddCarDtoOperationsImplementation implements AddCarDtoOperations {
-//
-//    @Autowired
-//    Storages storage;
     private HashMap<Long, CarDTO> carDTOStorage = new HashMap<>();
 
     @Override
     public void addCarDTO(Long chatId, CarDTO carDTO) {
         carDTOStorage.put(chatId, carDTO);
-//        storage.CarDTOStorage.put(chatId, carDTO);
         log.debug("add carDTO to storage " + carDTO + " with userId " + chatId);
     }
 

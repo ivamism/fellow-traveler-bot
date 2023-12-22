@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.Ride;
 
 import java.util.Optional;
@@ -16,7 +16,7 @@ public interface RideService {
     Ride createNewRide(int findPassengerRequestId, int findRideRequestId);
 
     Ride saveRide(Ride ride);
-    boolean hasRide(BookingInitiator initiator, int requestId);
+    boolean hasRide(RequestsType cancellationInitiator, int requestId);
 
 
 }

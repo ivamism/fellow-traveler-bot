@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.UserOperation;
 import by.ivam.fellowtravelerbot.model.User;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.UserDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.UserDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;

@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.bot.enums.*;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.FindPassengerDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.FindPassengerDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
@@ -993,14 +993,14 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private FindPassengerRequest onCancelRequestReceived(int requestId) {
         log.debug("method onCancelRequestReceived");
-        if (bookingService.hasBooking(BookingInitiator.FIND_PASSENGER_REQUEST, requestId)) {
+        if (bookingService.hasBooking(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
 
 //    TODO Удаление брони.
 //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
         }
 
-        if (rideService.hasRide(BookingInitiator.FIND_PASSENGER_REQUEST, requestId)) {
-            //    TODO Удаление брони.
+        if (rideService.hasRide(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
+            //    TODO Удаление поездки.
             //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
         }
 

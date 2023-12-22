@@ -3,7 +3,6 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
-import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
 import lombok.extern.log4j.Log4j;

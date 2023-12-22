@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.servise.*;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.ChatStatusOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

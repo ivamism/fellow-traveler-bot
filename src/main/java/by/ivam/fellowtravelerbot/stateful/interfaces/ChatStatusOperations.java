@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.DTOoperation.interfaces;
+package by.ivam.fellowtravelerbot.stateful.interfaces;
 
 public interface ChatStatusOperations {
 

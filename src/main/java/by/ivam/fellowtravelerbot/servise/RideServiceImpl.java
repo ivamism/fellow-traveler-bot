@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.repository.RideRepository;
 import lombok.extern.log4j.Log4j;
@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_PASSENGER_REQUEST;
-import static by.ivam.fellowtravelerbot.bot.enums.BookingInitiator.FIND_RIDE_REQUEST;
+import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_REQUEST;
+import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_RIDE_REQUEST;
 
 @Service
 @Log4j
@@ -67,13 +67,13 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public boolean hasRide(BookingInitiator initiator, int requestId) {
-        if (initiator == FIND_PASSENGER_REQUEST) {
+    public boolean hasRide(RequestsType cancellationInitiator, int requestId) {
+        if (cancellationInitiator == FIND_PASSENGER_REQUEST) {
             return repository.existsByFindPassengerRequest_Id(requestId);
-        } else if (initiator == FIND_RIDE_REQUEST) {
+        } else if (cancellationInitiator == FIND_RIDE_REQUEST) {
             return repository.existsByFindRideRequests_Id(requestId);
         } else {
-            throw new IllegalArgumentException("Invalid BookingInitiator value: " + initiator);
+            throw new IllegalArgumentException("Invalid RequestsType value: " + cancellationInitiator);
         }
     }
 

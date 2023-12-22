@@ -1,8 +1,8 @@
-package by.ivam.fellowtravelerbot.DTOoperation.implementation;
+package by.ivam.fellowtravelerbot.stateful.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.DTOoperation.interfaces.UserDtoOperations;
+import by.ivam.fellowtravelerbot.stateful.interfaces.UserDtoOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
@@ -15,9 +15,6 @@ import java.util.Optional;
 @Log4j
 
 public class UserDtoOperationsImplementation implements UserDtoOperations {
-//    @Autowired
-//    Storages storage;
-
     HashMap<Long, UserDTO> userDTOStorage = new HashMap<>();
 
 
