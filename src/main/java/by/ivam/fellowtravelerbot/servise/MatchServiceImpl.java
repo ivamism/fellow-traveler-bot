@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
+import by.ivam.fellowtravelerbot.model.BookingCash;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
@@ -36,6 +37,8 @@ public class MatchServiceImpl implements MatchService {
     private BookingService bookingService;
     @Autowired
     private RideService rideService;
+    @Autowired
+    private BookingCashService bookingCashService;
 
     @Override
     public void getNewFindPassengerRequest(String requestId) {
@@ -71,12 +74,12 @@ public class MatchServiceImpl implements MatchService {
         booking.setBookedAt(LocalDateTime.now())
                 .setRemindAt(LocalDateTime.now().plusMinutes(15))
                 .setRemindersQuantity(0);
-        if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+        if (initiator.equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
             findPassRequestRedis = findPassRequestRedisService.findById(firstId);
             findRideRequestRedis = findRideRequestRedisService.findById(secondId);
             booking.setFindPassRequestRedis(findPassRequestRedis)
                     .setFindRideRequestRedis(findRideRequestRedis)
-                    .setInitiator(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())
+                    .setInitiator(RequestsType.FIND_PASSENGER_REQUEST.getValue())
                     .setExpireDuration(findPassRequestRedis.getExpireDuration());
 
         } else {
@@ -84,15 +87,20 @@ public class MatchServiceImpl implements MatchService {
             findPassRequestRedis = findPassRequestRedisService.findById(secondId);
             booking.setFindPassRequestRedis(findPassRequestRedis)
                     .setFindRideRequestRedis(findRideRequestRedis)
-                    .setInitiator(BookingInitiator.FIND_RIDE_REQUEST.getValue())
+                    .setInitiator(RequestsType.FIND_RIDE_REQUEST.getValue())
                     .setExpireDuration(findRideRequestRedis.getExpireDuration());
         }
         bookingService.save(booking);
         int passengersQuantity = findRideRequestRedis.getPassengersQuantity();
         findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersQuantity);
-
         log.debug("method addBooking: " + booking);
     }
+    private void createBookingCash(Booking booking){
+        BookingCash bookingCash = new BookingCash();
+//        bookingCash.setId(booking.getId())
+//                .setFindPassengerRequestId(booking.getFindPassRequestRedis().getRequestId())
+    }
+//    TODO сделать рефакторинг методов addBooking() и createBookingCash() а также операций с booking
 
     @Override
     public List<Integer> getFindPassRequestMatches(FindRideRequestRedis request) {

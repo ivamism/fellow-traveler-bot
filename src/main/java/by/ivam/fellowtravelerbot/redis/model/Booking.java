@@ -22,7 +22,7 @@ public class Booking {
     @Reference
     private FindRideRequestRedis findRideRequestRedis;
 
-    private String initiator;
+    private String initiator;  // TODO изменить на Enum RequestsType
 
     private LocalDateTime bookedAt;
 

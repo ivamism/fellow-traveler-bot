@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public interface BookingService {
 
     void removeExpired();
 
-    void cancelBooking(BookingInitiator initiator, int requestId);
+    void cancelBooking(RequestsType initiator, int requestId);
 
-    boolean hasBooking(BookingInitiator initiator, int requestId);
+    boolean hasBooking(RequestsType initiator, int requestId);
 }

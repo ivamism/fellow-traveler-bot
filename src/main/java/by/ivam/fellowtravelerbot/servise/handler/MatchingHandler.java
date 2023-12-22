@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.bot.enums.BookingInitiator;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
@@ -97,7 +97,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method: sendListOfSuitableRideRequestMessage");
         String requestListsToString = findRideRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
-                BookingInitiator.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
+                RequestsType.FIND_PASSENGER_REQUEST.getValue(), receivedRequest.getRequestId());
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
@@ -109,7 +109,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         //Todo изменить сообщение
         String requestListsToString = findPassengerRequestListsToString(requestIdList);
         String callback = handlerPrefix + String.format(MatchingOperation.BOOK_REQUEST_CALLBACK.getValue(),
-                BookingInitiator.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
+                RequestsType.FIND_RIDE_REQUEST.getValue(), receivedRequest.getRequestId());//
         List<Pair<String, String>> buttonsAttributesList = requestButtonsAttributesListCreator(requestIdList, callback);
         sendMessage =
                 createListOfSuitableRequestsMessage(chatId, requestListsToString, buttonsAttributesList);
@@ -129,7 +129,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         log.debug("method sendBookingAnnouncementMessage");
         String initiator = booking.getInitiator();
         String bookingId = booking.getId();
-        if (initiator.equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+        if (initiator.equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
             sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
             int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
             FindPassengerRequest requestToSend = findPassengerRequestService.findById(findPassRequestId);
@@ -182,7 +182,7 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         FindRideRequestRedis findRideRequestRedis = booking.getFindRideRequestRedis();
         long driverChatId = findPassRequestRedis.getChatId();
         long passengerChatId = findRideRequestRedis.getChatId();
-        if (booking.getInitiator().equals(BookingInitiator.FIND_PASSENGER_REQUEST.getValue())) {
+        if (booking.getInitiator().equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
             sendNoticeAboutDenyBookingMessage(driverChatId); // notify booking initiator
             List<Integer> matches = matchService.getFindRideRequestMatches(findPassRequestRedis);
             sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, driverChatId);
