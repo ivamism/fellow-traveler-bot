@@ -95,15 +95,15 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     @Async
     public void placeInRedis(FindRideRequest request) {
-        FindRideRequestRedis rideRequestRedis = new FindRideRequestRedis();
-        rideRequestRedis.setRequestId(String.valueOf(request.getId()))
+        FindRideRequestRedis requestRedis = new FindRideRequestRedis();
+        requestRedis.setRequestId(String.valueOf(request.getId()))
                 .setChatId(request.getUser().getChatId())
                 .setDirection(request.getDirection())
                 .setDepartureBefore(request.getDepartureBefore())
                 .setPassengersQuantity(request.getPassengersQuantity())
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureBefore(), ChronoUnit.SECONDS));
-        log.info("method placeInRedis");
-        redisService.saveRequest(rideRequestRedis);
+        log.info("method placeInRedis: " + requestRedis);
+        redisService.saveRequest(requestRedis);
     }
 
     private void removeFromRedis(int requestId) {
@@ -118,10 +118,9 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     @Override
     public FindRideRequest disActivateRequestById(int requestId) {
-        log.info("method disActivateRequestById");
+        log.info("method disActivateExpiredRequestById");
         FindRideRequest request = findById(requestId);
         request.setActive(false);
-        removeFromRedis(requestId);
         return repository.save(request);
     }
 

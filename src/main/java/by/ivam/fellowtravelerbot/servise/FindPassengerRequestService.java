@@ -25,8 +25,8 @@ public interface FindPassengerRequestService {
 
     FindPassengerRequest cancelRequestById(int requestId);
 
-    FindPassengerRequest disActivateRequestById(int requestId);
+    FindPassengerRequest disActivateExpiredRequestById(int requestId);
 
-    void disActivateExpiredRequests(LocalDateTime presentTime);
+    void disActivateExpiredRequestsOnStart(LocalDateTime presentTime);
 
 }

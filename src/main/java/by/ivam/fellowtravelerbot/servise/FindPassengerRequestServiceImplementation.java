@@ -98,17 +98,16 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     }
 
     @Override
-    public FindPassengerRequest disActivateRequestById(int requestId) {
-        log.info("method disActivateRequestById");
+    public FindPassengerRequest disActivateExpiredRequestById(int requestId) {
+        log.info("method disActivateExpiredRequestById");
         FindPassengerRequest request = findById(requestId);
         request.setActive(false);
         repository.save(request);
-        removeFromRedis(requestId);
         return request;
     }
 
     @Override
-    public void disActivateExpiredRequests(LocalDateTime presentTime) {
+    public void disActivateExpiredRequestsOnStart(LocalDateTime presentTime) {
         if (repository.count() != 0) {
             List<FindPassengerRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureAtBefore(presentTime);
             if (expiredRequestsList.size() != 0) {

@@ -993,16 +993,16 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 
     private FindPassengerRequest onCancelRequestReceived(int requestId) {
         log.debug("method onCancelRequestReceived");
-        if (bookingService.hasBooking(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
-
-//    TODO Удаление брони.
-//     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
-        }
-
-        if (rideService.hasRide(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
-            //    TODO Удаление поездки.
-            //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
-        }
+//        if (bookingService.hasBooking(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
+//
+////    TODO Удаление брони.
+////     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
+//        }
+//
+//        if (rideService.hasRide(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
+//            //    TODO Удаление поездки.
+//            //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
+//        }
 
         return findPassengerRequestService.cancelRequestById(requestId);
     }

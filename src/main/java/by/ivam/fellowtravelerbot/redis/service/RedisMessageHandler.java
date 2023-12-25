@@ -82,7 +82,7 @@ public class RedisMessageHandler extends MessageHandler {
                 int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);
                 if (requestType.equals(FIND_PASSENGER_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestId);
-                    findPassengerRequestService.disActivateRequestById(requestId);
+                    findPassengerRequestService.disActivateExpiredRequestById(requestId);
                     findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
                 } else if (requestType.equals(FIND_RIDE_REQUEST)) {
                     log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);

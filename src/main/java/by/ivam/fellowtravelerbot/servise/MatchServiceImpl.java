@@ -94,13 +94,16 @@ public class MatchServiceImpl implements MatchService {
         int passengersQuantity = findRideRequestRedis.getPassengersQuantity();
         findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersQuantity);
         log.debug("method addBooking: " + booking);
+        createBookingCash(booking);
     }
     private void createBookingCash(Booking booking){
         BookingCash bookingCash = new BookingCash();
-//        bookingCash.setId(booking.getId())
-//                .setFindPassengerRequestId(booking.getFindPassRequestRedis().getRequestId())
+        bookingCash.setId(booking.getId())
+                .setFindPassengerRequestId(Integer.parseInt((booking.getFindPassRequestRedis().getRequestId())))
+                .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
+                .setBookedAt(booking.getBookedAt())
+                .setExpireAt(booking.getBookedAt().plusSeconds(booking.getExpireDuration()));
     }
-//    TODO сделать рефакторинг методов addBooking() и createBookingCash() а также операций с booking
 
     @Override
     public List<Integer> getFindPassRequestMatches(FindRideRequestRedis request) {
