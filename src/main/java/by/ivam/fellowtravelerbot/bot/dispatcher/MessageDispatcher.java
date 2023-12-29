@@ -50,7 +50,7 @@ public class MessageDispatcher extends Dispatcher {
     private void handleBotCommand(Message incomeMessage) {
         String command = incomeMessage.getText();
         long chatId = incomeMessage.getChatId();
-        log.info("Received message: " + command);
+//        log.info("Received message: " + command);
         switch (command) {
             case "/start" -> {
                 startHandler.startCommandReceived(incomeMessage);

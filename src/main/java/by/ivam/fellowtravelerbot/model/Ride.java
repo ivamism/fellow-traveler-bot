@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -21,5 +22,6 @@ public class Ride {
     private FindPassengerRequest findPassengerRequest;
 
     @OneToMany(orphanRemoval = true)
-    private Set<FindRideRequest> findRideRequests = new HashSet<>();
+    private Set<FindRideRequest> findRideRequests = new LinkedHashSet<>();
+
 }

@@ -24,7 +24,7 @@ public class SchedulingConfiguration implements SchedulingConfigurer {
     @Bean
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(10);
+        scheduler.setPoolSize(100);
         scheduler.setThreadNamePrefix("taskScheduler-");
         scheduler.setThreadPriority(Thread.NORM_PRIORITY);
         return scheduler;
@@ -33,7 +33,7 @@ public class SchedulingConfiguration implements SchedulingConfigurer {
     @Bean(destroyMethod = "shutdown")
     public Executor taskExecutor() {
         try {
-            return Executors.newScheduledThreadPool(10);
+            return Executors.newScheduledThreadPool(100);
         } catch (Exception e) {
             log.error("Error creating task executor", e);
             throw e;

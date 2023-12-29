@@ -1,8 +1,6 @@
 package by.ivam.fellowtravelerbot.model;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
-import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
-import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,7 +8,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Entity

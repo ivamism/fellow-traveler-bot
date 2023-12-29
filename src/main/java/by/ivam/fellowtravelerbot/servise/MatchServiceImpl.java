@@ -37,8 +37,8 @@ public class MatchServiceImpl implements MatchService {
     private BookingService bookingService;
     @Autowired
     private RideService rideService;
-    @Autowired
-    private BookingCashService bookingCashService;
+//    @Autowired
+//    private BookingCashService bookingCashService;
 
     @Override
     public void getNewFindPassengerRequest(String requestId) {
@@ -122,12 +122,14 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public Booking getBooking(String bookingId) {
-        return bookingService.findById(bookingId);
+//        return bookingService.findById(bookingId);
+        return bookingService.getBookingOptional(bookingId).orElseThrow();
     }
 
     @Override
     public Ride createOrUpdateRide(String bookingId) {
-        Booking booking = bookingService.findById(bookingId);
+        log.debug("method createOrUpdateRide");
+        Booking booking = getBooking(bookingId);
         int findPassengerRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
         int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
         Optional<Ride> optionalRide = rideService.getRideByFindPassengerRequestId(findPassengerRequestId);
@@ -135,7 +137,7 @@ public class MatchServiceImpl implements MatchService {
         if (optionalRide.isPresent()) {
             ride = optionalRide.get();
             Set<FindRideRequest> findRideRequests = ride.getFindRideRequests();
-            findRideRequests.add(findRideRequestService.findById(findPassengerRequestId));
+            findRideRequests.add(findRideRequestService.findById(findRideRequestId));
         } else {
             ride = createNewRide(findPassengerRequestId, findRideRequestId);
         }

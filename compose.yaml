@@ -20,6 +20,7 @@ services:
     volumes:
       - redis_volume:/var/lib/docker/volumes/redis_volume/_data
     command:
+#      --"notify-keyspace-events EA"
       --"notify-keyspace-events Ehg"
 
 volumes:

@@ -56,7 +56,6 @@ public class RideServiceImpl implements RideService {
         ride.setFindPassengerRequest(findPassengerRequestService.findById(findPassengerRequestId));
         ride.setFindRideRequests(Set.of(findRideRequestService.findById(findRideRequestId)));
         log.debug("method createNewRide " + ride);
-
         return ride;
     }
 

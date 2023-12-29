@@ -28,24 +28,24 @@ import java.util.List;
 @NoArgsConstructor
 public class RedisMessageHandler extends MessageHandler {
     @Autowired
-    FindPassRequestRedisService findPassRequestRedisService;
+    private FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
-    FindRideRequestRedisService findRideRequestRedisService;
+    private FindRideRequestRedisService findRideRequestRedisService;
     @Autowired
-    FindPassengerRequestService findPassengerRequestService;
+    private FindPassengerRequestService findPassengerRequestService;
     @Autowired
-    FindRideRequestService findRideRequestService;
+    private FindRideRequestService findRideRequestService;
 
     @Autowired
     private BookingService bookingService;
     @Autowired
     private FindPassengerHandler findPassengerHandler;
     @Autowired
-    FindRideHandler findRideHandler;
+    private FindRideHandler findRideHandler;
     @Autowired
-    MatchingHandler matchingHandler;
+    private MatchingHandler matchingHandler;
     @Autowired
-    MatchService matchService;
+    private MatchService matchService;
 
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";

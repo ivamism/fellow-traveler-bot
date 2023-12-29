@@ -3,6 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
 import lombok.extern.log4j.Log4j;
@@ -20,9 +21,14 @@ import java.util.stream.Collectors;
 @Log4j
 public class FindPassengerRequestServiceImplementation implements FindPassengerRequestService {
     @Autowired
-    FindPassengerRequestRepository repository;
+    private FindPassengerRequestRepository repository;
     @Autowired
-    FindPassRequestRedisService redisService;
+    private FindPassRequestRedisService redisService;
+//    @Autowired
+//    private MatchService matchService;
+//    private BookingService bookingService;
+//    @Autowired
+//    private RideService rideService;
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -92,6 +98,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
+
         removeFromRedis(requestId);
         log.info("method cancelRequest");
         return repository.save(request);
@@ -103,6 +110,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         FindPassengerRequest request = findById(requestId);
         request.setActive(false);
         repository.save(request);
+        redisService.delete(String.valueOf(requestId));
         return request;
     }
 
@@ -112,7 +120,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
             List<FindPassengerRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureAtBefore(presentTime);
             if (expiredRequestsList.size() != 0) {
                 log.info("dis-activate " + expiredRequestsList.size() + " FindPassengerRequests");
-                expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
+                expiredRequestsList.forEach(request -> disActivateExpiredRequestById(request.getId()));
             }
         }
     }

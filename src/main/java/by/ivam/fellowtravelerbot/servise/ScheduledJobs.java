@@ -17,12 +17,14 @@ import java.util.stream.Collectors;
 @Log4j
 public class ScheduledJobs {
     @Autowired
-    BookingService bookingService;
+    private BookingService bookingService;
+    @Autowired
+    private BookingCashService bookingCashService;
 
     @Autowired
     private MatchingHandler matchingHandler;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     @Async
     public void checkBooking() {
         log.info("method checkBooking");
@@ -36,7 +38,7 @@ public class ScheduledJobs {
 
     private void onExpireTimeToConfirm(List<Booking> bookingList) {
         log.info("method onExpireTimeToConfirm. bookings quantity" + bookingList.size());
-        for (Booking booking: bookingList) {
+        for (Booking booking : bookingList) {
             if (booking.getRemindersQuantity() < 2) {
                 bookingService.incrementRemindsQuantityAndRemindTime(booking);
                 matchingHandler.sendBookingAnnouncementMessage(booking);
@@ -47,4 +49,10 @@ public class ScheduledJobs {
             }
         }
     }
+
+//    @Scheduled (cron = "0 0 3 * * *")
+//    @Async
+//    private void flushBookingCash() {
+////        bookingCashService.flushExpired();
+//    }
 }

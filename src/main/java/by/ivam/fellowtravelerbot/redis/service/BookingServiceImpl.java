@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
+import by.ivam.fellowtravelerbot.servise.BookingCashService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class BookingServiceImpl implements BookingService {
     private FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
     private FindRideRequestRedisService findRideRequestRedisService;
+    @Autowired
+    private BookingCashService bookingCashService;
 
     @Override
     public Booking save(Booking booking) {
@@ -49,8 +52,14 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking findById(String bookingId) {
         Booking booking = repository.findById(bookingId).orElseThrow();
-        log.debug("findById: " + booking);
+        log.debug("method findById: " + booking);
         return booking;
+    }
+
+    @Override
+    public Optional<Booking> getBookingOptional(String bookingId) {
+        log.debug("method getBookingOptional");
+        return repository.findById(bookingId);
     }
 
     @Override

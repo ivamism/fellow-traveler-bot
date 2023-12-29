@@ -4,6 +4,7 @@ import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingService {
 
@@ -12,6 +13,7 @@ public interface BookingService {
     List<Booking> findAll();
 
     Booking findById(String bookingId);
+    Optional<Booking>getBookingOptional(String bookingId);
 
     void incrementRemindsQuantityAndRemindTime(Booking booking);
 
