@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
+import by.ivam.fellowtravelerbot.model.BookingCash;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
@@ -100,8 +101,20 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void cancelBooking(RequestsType initiator, int requestId) {
+    public void removeBookingByCancelRequest(RequestsType cancelInitiator, int requestId) {
+        String stringRequestId = String.valueOf(requestId);
+        List<Booking> bookingList;
+        if (cancelInitiator == FIND_PASSENGER_REQUEST) {
+            bookingList = repository.findByFindPassRequestRedis_RequestId(stringRequestId);
+        } else {
+            bookingList = repository.findByFindRideRequestRedis_RequestId(stringRequestId);
+        }
 
+        bookingList.forEach(booking -> {
+            Optional<BookingCash> bookingCash = bookingCashService.findById(booking.getId());
+            bookingCash.ifPresent(bc -> bc.setCancelInitiator(cancelInitiator));
+            repository.deleteById(booking.getId());
+        });
     }
 
     @Override

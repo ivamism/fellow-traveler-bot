@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 public class ScheduledJobs {
     @Autowired
     private BookingService bookingService;
-    @Autowired
-    private BookingCashService bookingCashService;
+//    @Autowired
+//    private BookingCashService bookingCashService;
 
     @Autowired
     private MatchingHandler matchingHandler;
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Async
     public void checkBooking() {
         log.info("method checkBooking");

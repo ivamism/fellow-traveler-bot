@@ -25,7 +25,7 @@ public interface BookingService {
 
     void removeExpired();
 
-    void cancelBooking(RequestsType initiator, int requestId);
+    void removeBookingByCancelRequest(RequestsType initiator, int requestId);
 
     boolean hasBooking(RequestsType initiator, int requestId);
 }

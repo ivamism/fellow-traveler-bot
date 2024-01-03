@@ -1,6 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.service.BookingService;
@@ -23,12 +24,11 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Autowired
     private FindPassengerRequestRepository repository;
     @Autowired
+    private BookingService bookingService;
+    //    private MatchService matchService;
+    @Autowired
     private FindPassRequestRedisService redisService;
-//    @Autowired
-//    private MatchService matchService;
-//    private BookingService bookingService;
-//    @Autowired
-//    private RideService rideService;
+
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -98,8 +98,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
-
+//        remove ride if exist
         removeFromRedis(requestId);
+        bookingService.removeBookingByCancelRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
         log.info("method cancelRequest");
         return repository.save(request);
     }
