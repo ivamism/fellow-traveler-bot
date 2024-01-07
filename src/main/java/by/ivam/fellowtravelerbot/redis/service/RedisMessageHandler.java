@@ -1,12 +1,11 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
+import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
-import by.ivam.fellowtravelerbot.servise.Extractor;
-import by.ivam.fellowtravelerbot.servise.FindPassengerRequestService;
-import by.ivam.fellowtravelerbot.servise.FindRideRequestService;
-import by.ivam.fellowtravelerbot.servise.MatchService;
+import by.ivam.fellowtravelerbot.servise.*;
 import by.ivam.fellowtravelerbot.servise.handler.FindPassengerHandler;
 import by.ivam.fellowtravelerbot.servise.handler.FindRideHandler;
 import by.ivam.fellowtravelerbot.servise.handler.MatchingHandler;
@@ -31,21 +30,13 @@ public class RedisMessageHandler extends MessageHandler {
     private FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
     private FindRideRequestRedisService findRideRequestRedisService;
-    @Autowired
-    private FindPassengerRequestService findPassengerRequestService;
-    @Autowired
-    private FindRideRequestService findRideRequestService;
 
-    @Autowired
-    private BookingService bookingService;
     @Autowired
     private FindPassengerHandler findPassengerHandler;
     @Autowired
     private FindRideHandler findRideHandler;
     @Autowired
     private MatchingHandler matchingHandler;
-    @Autowired
-    private MatchService matchService;
 
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";
@@ -92,7 +83,28 @@ public class RedisMessageHandler extends MessageHandler {
             }
             case "del" -> {
                 log.debug("new event " + event + ", request type: " + requestType + ", id: " + requestIdString);
+                BookingTemp bookingTemp = bookingCashService.findById(requestIdString).orElseThrow();
+                long chatId;
+                List<Integer> matches;
+                FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+                FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+
+                RequestsType canceledBy = bookingTemp.getCanceledBy();
+                if (canceledBy != null) {
+                    if (canceledBy == RequestsType.FIND_PASSENGER_REQUEST) {                        
+                        matches = findPassRequestRedisService.findMatches(findRideRequestRedis);
+                        chatId = findRideRequestRedis.getChatId();
+                        matchingHandler.sendCancelingBookingMessage(chatId);
+                        matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis, chatId);
+                    } else {
+                        matches = findRideRequestRedisService.findMatches(findPassRequestRedis);
+                        chatId=findPassRequestRedis.getChatId();
+                        matchingHandler.sendCancelingBookingMessage(chatId);
+                        matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, chatId);
+                    }
+                }
             }
+            default -> log.debug("deleted not by canceling or expiring any request");
         }
     }
 }

@@ -194,6 +194,14 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         matchService.deleteBooking(bookingId);
     }
 
+    public void sendCancelingBookingMessage(long chatId){
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(messages.getBOOKING_CANCEL_MESSAGE());
+        sendMessage.setReplyMarkup(null); // need to set null to remove no longer necessary inline keyboard
+        sendBotMessage(sendMessage);
+        log.debug("method sendCancelingBookingMessage");
+    }
+
     private EditMessageText sendCreateRideNoticeMessage(Message incomeMessage, Ride ride) {
         editMessageTextGeneralPreset(incomeMessage);
         editMessage.setText(messages.getRIDE_MESSAGE());

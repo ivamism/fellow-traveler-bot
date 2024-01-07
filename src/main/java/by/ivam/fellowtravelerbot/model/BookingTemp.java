@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Accessors(chain = true)
-public class BookingCash {
+public class BookingTemp {
     @Id
     @Column(name = "id")
     private String id;
     int findPassengerRequestId;
     int findRideRequestId;
     private RequestsType bookingInitiator;
-    private RequestsType cancelInitiator;
+    private RequestsType canceledBy;
     private LocalDateTime bookedAt;
     private LocalDateTime expireAt;
 }

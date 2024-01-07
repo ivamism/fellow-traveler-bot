@@ -21,6 +21,8 @@ public interface BookingService {
 
     void deleteBooking(String bookingId);
 
+    void deleteBookings(List<Booking> bookingsToDelete);
+
     boolean isNewRequest(Booking booking);
 
     void removeExpired();

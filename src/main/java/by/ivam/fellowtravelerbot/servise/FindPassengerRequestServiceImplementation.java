@@ -25,7 +25,6 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     private FindPassengerRequestRepository repository;
     @Autowired
     private BookingService bookingService;
-    //    private MatchService matchService;
     @Autowired
     private FindPassRequestRedisService redisService;
 
@@ -98,9 +97,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
-//        remove ride if exist
-        removeFromRedis(requestId);
+//     TODO   remove ride if exist
         bookingService.removeBookingByCancelRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
+        removeFromRedis(requestId);
         log.info("method cancelRequest");
         return repository.save(request);
     }

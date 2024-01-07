@@ -8,6 +8,7 @@ import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.servise.*;
 import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 
 @Log4j
 @Data
+@NoArgsConstructor
 public class MessageHandler {
     @Autowired
     Messages messages;
@@ -31,15 +33,18 @@ public class MessageHandler {
     @Autowired
     LocationService locationService;
     @Autowired
-    FindPassengerRequestService findPassengerRequestService;
+    public FindPassengerRequestService findPassengerRequestService;
     @Autowired
-    FindRideRequestService findRideRequestService;
+    public FindRideRequestService findRideRequestService;
     @Autowired
-    MatchService matchService;
+    public MatchService matchService;
     @Autowired
-    BookingService bookingService;
+    public BookingService bookingService;
     @Autowired
-    RideService rideService;
+    public RideService rideService;
+
+    @Autowired
+    public BookingCashService bookingCashService;
     @Autowired
     ChatStatusOperations chatStatusOperations;
     @Autowired
@@ -52,7 +57,7 @@ public class MessageHandler {
     public String extractParameter(String statusString, int parameterNumber) {
         String extraction = "";
         try {
-           extraction = statusString.split(REGEX)[parameterNumber];
+            extraction = statusString.split(REGEX)[parameterNumber];
         } catch (Exception e) {
             log.error(e.getMessage());
         }

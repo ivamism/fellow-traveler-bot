@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.model.BookingCash;
+import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.repository.BookingCashRepository;
 import lombok.extern.log4j.Log4j;
@@ -21,18 +21,18 @@ public class BookingCashServiceImpl implements BookingCashService {
 
     @Override
     public void saveBookingState(Booking booking) {
-        BookingCash bookingCash = new BookingCash();
+        BookingTemp bookingTemp = new BookingTemp();
         LocalDateTime bookedAt = booking.getBookedAt();
-        bookingCash.setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
+        bookingTemp.setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
                 .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
                 .setBookedAt(bookedAt)
                 .setExpireAt(bookedAt.plusSeconds(booking.getExpireDuration()));
-        repository.save(bookingCash);
-        log.debug("Save bookingCash to DB: " + bookingCash);
+        repository.save(bookingTemp);
+        log.debug("Save bookingTemp to DB: " + bookingTemp);
     }
 
     @Override
-    public Optional<BookingCash> findById(String id) {
+    public Optional<BookingTemp> findById(String id) {
         log.debug("method findById()");
         return repository.findById(id);
     }

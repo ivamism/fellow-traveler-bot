@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Log4j
 public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisService {
-    private final FindPassRequestRedis EMPTY_RIDE = new FindPassRequestRedis();
+    private final FindPassRequestRedis EMPTY_REQUEST = new FindPassRequestRedis();
     @Autowired
     FindPassRequestRedisRepository repository;
 
@@ -33,7 +33,7 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
 
     @Override
     public FindPassRequestRedis findById(String id) {
-        return repository.findById(id).orElse(EMPTY_RIDE);
+        return repository.findById(id).orElse(EMPTY_REQUEST);
     }
 
     @Override

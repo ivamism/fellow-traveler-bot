@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
-import by.ivam.fellowtravelerbot.model.BookingCash;
+import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
@@ -87,6 +87,31 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public void deleteBookings(List<Booking> bookingsToDelete) {
+        // Suggestion 2: Log the number of bookings to be deleted
+        log.debug("Deleting " + bookingsToDelete.size() + " bookings");
+    
+        // Suggestion 3: Call increaseSeatsQuantity for each booking
+      /*  for (Booking booking : bookingsToDelete) {
+            increaseSeatsQuantity(booking);
+        }*/
+    
+        // Suggestion 1: Use repository.deleteAll to delete all bookings in one operation
+        repository.deleteAll(bookingsToDelete);
+    
+        // Suggestion 4: Handle exceptions that may occur during the deletion process
+//        try {
+//            for (Booking booking : bookingsToDelete) {
+//                repository.delete(booking);
+////                increaseSeatsQuantity(booking);
+//            }
+//        } catch (Exception e) {
+//            log.error("Error occurred during deletion: " + e.getMessage());
+//            // Handle the exception or rethrow it
+//        }
+    }
+
+    @Override
     public boolean isNewRequest(Booking booking) {
         return booking.getRemindersQuantity() == 0;
     }
@@ -109,10 +134,9 @@ public class BookingServiceImpl implements BookingService {
         } else {
             bookingList = repository.findByFindRideRequestRedis_RequestId(stringRequestId);
         }
-
         bookingList.forEach(booking -> {
-            Optional<BookingCash> bookingCash = bookingCashService.findById(booking.getId());
-            bookingCash.ifPresent(bc -> bc.setCancelInitiator(cancelInitiator));
+            Optional<BookingTemp> bookingCash = bookingCashService.findById(booking.getId());
+            bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
             repository.deleteById(booking.getId());
         });
     }

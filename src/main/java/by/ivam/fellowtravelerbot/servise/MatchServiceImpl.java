@@ -1,7 +1,7 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
-import by.ivam.fellowtravelerbot.model.BookingCash;
+import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
@@ -97,8 +97,8 @@ public class MatchServiceImpl implements MatchService {
         createBookingCash(booking);
     }
     private void createBookingCash(Booking booking){
-        BookingCash bookingCash = new BookingCash();
-        bookingCash.setId(booking.getId())
+        BookingTemp bookingTemp = new BookingTemp();
+        bookingTemp.setId(booking.getId())
                 .setFindPassengerRequestId(Integer.parseInt((booking.getFindPassRequestRedis().getRequestId())))
                 .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
                 .setBookedAt(booking.getBookedAt())
