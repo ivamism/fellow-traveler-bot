@@ -44,7 +44,7 @@ public class MessageHandler {
     public RideService rideService;
 
     @Autowired
-    public BookingCashService bookingCashService;
+    public BookingTempService bookingTempService;
     @Autowired
     ChatStatusOperations chatStatusOperations;
     @Autowired

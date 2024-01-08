@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
-import by.ivam.fellowtravelerbot.servise.BookingCashService;
+import by.ivam.fellowtravelerbot.servise.BookingTempService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     private FindRideRequestRedisService findRideRequestRedisService;
     @Autowired
-    private BookingCashService bookingCashService;
+    private BookingTempService bookingTempService;
 
     @Override
     public Booking save(Booking booking) {
@@ -135,7 +135,7 @@ public class BookingServiceImpl implements BookingService {
             bookingList = repository.findByFindRideRequestRedis_RequestId(stringRequestId);
         }
         bookingList.forEach(booking -> {
-            Optional<BookingTemp> bookingCash = bookingCashService.findById(booking.getId());
+            Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
             bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
             repository.deleteById(booking.getId());
         });

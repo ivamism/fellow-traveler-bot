@@ -19,7 +19,7 @@ public class ScheduledJobs {
     @Autowired
     private BookingService bookingService;
 //    @Autowired
-//    private BookingCashService bookingCashService;
+//    private BookingTempService bookingTempService;
 
     @Autowired
     private MatchingHandler matchingHandler;
@@ -53,6 +53,6 @@ public class ScheduledJobs {
 //    @Scheduled (cron = "0 0 3 * * *")
 //    @Async
 //    private void flushBookingCash() {
-////        bookingCashService.flushExpired();
+////        bookingTempService.flushExpired();
 //    }
 }

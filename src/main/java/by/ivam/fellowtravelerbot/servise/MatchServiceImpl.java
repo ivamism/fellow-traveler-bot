@@ -1,7 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
-import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
@@ -37,8 +36,8 @@ public class MatchServiceImpl implements MatchService {
     private BookingService bookingService;
     @Autowired
     private RideService rideService;
-//    @Autowired
-//    private BookingCashService bookingCashService;
+    @Autowired
+    private BookingTempService bookingTempService;
 
     @Override
     public void getNewFindPassengerRequest(String requestId) {
@@ -90,19 +89,11 @@ public class MatchServiceImpl implements MatchService {
                     .setInitiator(RequestsType.FIND_RIDE_REQUEST.getValue())
                     .setExpireDuration(findRideRequestRedis.getExpireDuration());
         }
-        bookingService.save(booking);
+        booking = bookingService.save(booking);
         int passengersQuantity = findRideRequestRedis.getPassengersQuantity();
         findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersQuantity);
         log.debug("method addBooking: " + booking);
-        createBookingCash(booking);
-    }
-    private void createBookingCash(Booking booking){
-        BookingTemp bookingTemp = new BookingTemp();
-        bookingTemp.setId(booking.getId())
-                .setFindPassengerRequestId(Integer.parseInt((booking.getFindPassRequestRedis().getRequestId())))
-                .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
-                .setBookedAt(booking.getBookedAt())
-                .setExpireAt(booking.getBookedAt().plusSeconds(booking.getExpireDuration()));
+        bookingTempService.saveBookingTemp(booking);
     }
 
     @Override

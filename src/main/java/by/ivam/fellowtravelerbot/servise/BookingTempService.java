@@ -5,8 +5,8 @@ import by.ivam.fellowtravelerbot.redis.model.Booking;
 
 import java.util.Optional;
 
-public interface BookingCashService {
-    void saveBookingState (Booking booking);
+public interface BookingTempService {
+    void saveBookingTemp(Booking booking);
     Optional<BookingTemp> findById (String id);
     void flushExpired ();
 }

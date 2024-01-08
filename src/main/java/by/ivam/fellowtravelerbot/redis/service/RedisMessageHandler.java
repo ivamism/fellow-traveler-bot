@@ -12,6 +12,7 @@ import by.ivam.fellowtravelerbot.servise.handler.MatchingHandler;
 import by.ivam.fellowtravelerbot.servise.handler.MessageHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Service
 @Log4j
 @Data
@@ -46,65 +48,71 @@ public class RedisMessageHandler extends MessageHandler {
     private SendMessage sendMessage;
 
     public void handleMessage(String event, String message) {
-        String requestType = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
-        String requestIdString = Extractor.extractParameter(message, Extractor.INDEX_ONE);
+        String type = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
+        String idString = Extractor.extractParameter(message, Extractor.INDEX_ONE);
         switch (event) {
             case "hset" -> {
-                if (requestType.equals(FIND_PASSENGER_REQUEST)) {
-                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                    FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(requestIdString);
-                    List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
-                    long chatId = recentRequest.getChatId();
-                    matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest, chatId);
-                } else if (requestType.equals(FIND_RIDE_REQUEST)) {
-                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                    FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(requestIdString);
-                    List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
-                    long chatId = recentRequest.getChatId();
-                    matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest, chatId);
-                } else if (requestType.equals(BOOKING)) {
-                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                    Booking booking = bookingService.findById(requestIdString);
-                    if (bookingService.isNewRequest(booking))
-                        matchingHandler.sendBookingAnnouncementMessage(booking);
+                switch (type) {
+                    case FIND_PASSENGER_REQUEST -> {
+                        log.debug("new event: " + event + ", request type: " + type + ", id: " + idString);
+                        FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(idString);
+                        List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
+                        long chatId = recentRequest.getChatId();
+                        matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest, chatId);
+                    }
+                    case FIND_RIDE_REQUEST -> {
+                        log.debug("new event: " + event + ", request type: " + type + ", id: " + idString);
+                        FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(idString);
+                        List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
+                        long chatId = recentRequest.getChatId();
+                        matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest, chatId);
+                    }
+                    case BOOKING -> {
+                        log.debug("new event: " + event + ", request type: " + type + ", id: " + idString);
+                        Booking booking = bookingService.findById(idString);
+                        if (bookingService.isNewRequest(booking))
+                            matchingHandler.sendBookingAnnouncementMessage(booking);
+                    }
                 }
             }
             case "expired" -> {
                 int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);
-                if (requestType.equals(FIND_PASSENGER_REQUEST)) {
-                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestId);
+                if (type.equals(FIND_PASSENGER_REQUEST)) {
+                    log.debug("new event: " + event + ", request type: " + type + ", id: " + requestId);
                     findPassengerRequestService.disActivateExpiredRequestById(requestId);
                     findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
-                } else if (requestType.equals(FIND_RIDE_REQUEST)) {
-                    log.debug("new event: " + event + ", request type: " + requestType + ", id: " + requestIdString);
+                } else if (type.equals(FIND_RIDE_REQUEST)) {
+                    log.debug("new event: " + event + ", request type: " + type + ", id: " + idString);
                     findRideRequestService.disActivateRequestById(requestId);
                     findRideHandler.sendExpireDepartureTimeMessage(requestId);
                 }
             }
             case "del" -> {
-                log.debug("new event " + event + ", request type: " + requestType + ", id: " + requestIdString);
-                BookingTemp bookingTemp = bookingCashService.findById(requestIdString).orElseThrow();
-                long chatId;
-                List<Integer> matches;
-                FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-                FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+                log.debug("new event " + event + ", request type: " + type + ", id: " + idString);
+                if (type.equals(BOOKING)) {
+                    BookingTemp bookingTemp = bookingTempService.findById(idString).orElseThrow();
+                    long chatId;
+                    List<Integer> matches;
+                    FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+                    FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
 
-                RequestsType canceledBy = bookingTemp.getCanceledBy();
-                if (canceledBy != null) {
-                    if (canceledBy == RequestsType.FIND_PASSENGER_REQUEST) {                        
-                        matches = findPassRequestRedisService.findMatches(findRideRequestRedis);
-                        chatId = findRideRequestRedis.getChatId();
-                        matchingHandler.sendCancelingBookingMessage(chatId);
-                        matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis, chatId);
-                    } else {
-                        matches = findRideRequestRedisService.findMatches(findPassRequestRedis);
-                        chatId=findPassRequestRedis.getChatId();
-                        matchingHandler.sendCancelingBookingMessage(chatId);
-                        matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, chatId);
+                    RequestsType canceledBy = bookingTemp.getCanceledBy();
+                    if (canceledBy != null) {
+                        if (canceledBy == RequestsType.FIND_PASSENGER_REQUEST) {
+                            matches = findPassRequestRedisService.findMatches(findRideRequestRedis);
+                            chatId = findRideRequestRedis.getChatId();
+                            matchingHandler.sendCancelingBookingMessage(chatId);
+                            matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis, chatId);
+                        } else {
+                            matches = findRideRequestRedisService.findMatches(findPassRequestRedis);
+                            chatId = findPassRequestRedis.getChatId();
+                            matchingHandler.sendCancelingBookingMessage(chatId);
+                            matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, chatId);
+                        }
                     }
                 }
             }
-            default -> log.debug("deleted not by canceling or expiring any request");
         }
     }
 }
+

@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.servise;
 
 import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
-import by.ivam.fellowtravelerbot.repository.BookingCashRepository;
+import by.ivam.fellowtravelerbot.repository.BookingTempRepository;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -14,22 +14,24 @@ import java.util.Optional;
 
 @Service
 @Log4j
-public class BookingCashServiceImpl implements BookingCashService {
+public class BookingTempServiceImpl implements BookingTempService {
 
     @Autowired
-    BookingCashRepository repository;
+    BookingTempRepository repository;
 
     @Override
-    public void saveBookingState(Booking booking) {
+    public void saveBookingTemp(Booking booking) {
         BookingTemp bookingTemp = new BookingTemp();
         LocalDateTime bookedAt = booking.getBookedAt();
-        bookingTemp.setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
+        bookingTemp.setId(booking.getId())
+                .setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
                 .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
                 .setBookedAt(bookedAt)
                 .setExpireAt(bookedAt.plusSeconds(booking.getExpireDuration()));
         repository.save(bookingTemp);
         log.debug("Save bookingTemp to DB: " + bookingTemp);
     }
+
 
     @Override
     public Optional<BookingTemp> findById(String id) {
@@ -41,7 +43,7 @@ public class BookingCashServiceImpl implements BookingCashService {
     @Override
     public void flushExpired() {
         repository.findByExpireAtBefore(LocalDateTime.now())
-                .forEach(bookingCash -> repository.delete(bookingCash));
+                .forEach(bookingTemp -> repository.delete(bookingTemp));
         log.debug("method flushExpired()");
     }
 }
