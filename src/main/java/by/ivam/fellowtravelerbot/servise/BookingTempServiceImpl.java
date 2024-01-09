@@ -42,8 +42,7 @@ public class BookingTempServiceImpl implements BookingTempService {
     @Async
     @Override
     public void flushExpired() {
-        repository.findByExpireAtBefore(LocalDateTime.now())
-                .forEach(bookingTemp -> repository.delete(bookingTemp));
+        repository.deleteByExpireAtBefore(LocalDateTime.now());
         log.debug("method flushExpired()");
     }
 }

@@ -28,5 +28,5 @@ public interface FindPassengerRequestService {
     FindPassengerRequest disActivateExpiredRequestById(int requestId);
 
     void disActivateExpiredRequestsOnStart(LocalDateTime presentTime);
-
+    void removeFromRedis(int requestId);
 }

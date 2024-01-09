@@ -127,18 +127,25 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void removeBookingByCancelRequest(RequestsType cancelInitiator, int requestId) {
+        log.debug(" method removeBookingByCancelRequest");
         String stringRequestId = String.valueOf(requestId);
         List<Booking> bookingList;
-        if (cancelInitiator == FIND_PASSENGER_REQUEST) {
-            bookingList = repository.findByFindPassRequestRedis_RequestId(stringRequestId);
+        if (cancelInitiator.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
+//            bookingList =
+            repository.findByFindPassRequestRedis_RequestId(stringRequestId).ifPresent(booking -> {
+                Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
+                bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
+                deleteBooking(booking);
+            });
+
         } else {
             bookingList = repository.findByFindRideRequestRedis_RequestId(stringRequestId);
         }
-        bookingList.forEach(booking -> {
-            Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
-            bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
-            repository.deleteById(booking.getId());
-        });
+//        bookingList.forEach(booking -> {
+//            Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
+//            bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
+//            repository.deleteById(booking.getId());
+//        });
     }
 
     @Override

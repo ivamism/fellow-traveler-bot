@@ -351,7 +351,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 editMessage = chooseRequestToCancelMessage(incomeMessage);
             }
             case "CANCEL_REQUEST" -> {
-                FindPassengerRequest request = onCancelRequestReceived(extractId(callback, getFIRST_VALUE()));
+                FindPassengerRequest request = onCancelingRequestReceived(extractId(callback, getFIRST_VALUE()));
                 editMessage = sendCancelRequestSuccessMessage(incomeMessage, request);
             }
 
@@ -991,11 +991,13 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return editMessage;
     }
 
-    private FindPassengerRequest onCancelRequestReceived(int requestId) {
-        log.debug("method onCancelRequestReceived");
-//        if (bookingService.hasBooking(RequestsType.FIND_PASSENGER_REQUEST, requestId)) {
-//
-////    TODO Удаление брони.
+    private FindPassengerRequest onCancelingRequestReceived(int requestId) {
+        log.debug("method onCancelingRequestReceived");
+        FindPassengerRequest request = findPassengerRequestService.cancelRequestById(requestId);
+
+//    TODO Удаление брони.
+        bookingService.removeBookingByCancelRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
+        findPassengerRequestService.removeFromRedis(requestId);
 ////     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
 //        }
 //
@@ -1004,7 +1006,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
 //            //     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
 //        }
 
-        return findPassengerRequestService.cancelRequestById(requestId);
+        return request;
     }
 
     private EditMessageText sendCancelRequestSuccessMessage(Message incomeMessage, FindPassengerRequest request) {

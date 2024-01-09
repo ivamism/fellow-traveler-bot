@@ -97,10 +97,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
-//     TODO   remove ride if exist
-        bookingService.removeBookingByCancelRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
-        removeFromRedis(requestId);
-        log.info("method cancelRequest");
+        log.info("method cancelRequest. Request id: "+requestId);
         return repository.save(request);
     }
 
@@ -138,11 +135,12 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
                 .setDepartureAt(request.getDepartureAt())
                 .setSeatsQuantity(request.getSeatsQuantity())
                 .setExpireDuration(LocalDateTime.now().until(request.getDepartureAt(), ChronoUnit.SECONDS));
-        log.info("method placeInRedis");
+        log.debug("method placeInRedis");
         redisService.saveRequest(passRequestRedis);
     }
 
-    private void removeFromRedis(int requestId) {
+    public void removeFromRedis(int requestId) {
+        log.debug("method removeFromRedis");
         String id = String.valueOf(requestId);
         redisService.findOptionalById(id).ifPresent(request -> redisService.delete(id));
         log.debug("delete request with Id :" + id + " from redis");

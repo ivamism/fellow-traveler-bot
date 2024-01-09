@@ -13,9 +13,12 @@ public interface BookingRepository extends CrudRepository<Booking, String>  {
     @Override
     Optional<Booking> findById(String handlerPrefix);
 
-    List<Booking> findByFindPassRequestRedis_RequestId(String requestId);
+    Optional<Booking> findByFindPassRequestRedis_RequestId(String requestId);
+
+//    List<Booking> findByFindPassRequestRedis_RequestId(String requestId);
 
     List<Booking> findByFindRideRequestRedis_RequestId(String requestId);
+
     boolean existsByFindPassRequestRedis_RequestId(String requestId);
 
     boolean existsByFindRideRequestRedis_RequestId(String requestId);

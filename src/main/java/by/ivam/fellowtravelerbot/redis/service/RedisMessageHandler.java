@@ -91,14 +91,14 @@ public class RedisMessageHandler extends MessageHandler {
                 log.debug("new event " + event + ", request type: " + type + ", id: " + idString);
                 if (type.equals(BOOKING)) {
                     BookingTemp bookingTemp = bookingTempService.findById(idString).orElseThrow();
-                    long chatId;
-                    List<Integer> matches;
-                    FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-                    FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-
                     RequestsType canceledBy = bookingTemp.getCanceledBy();
                     if (canceledBy != null) {
-                        if (canceledBy == RequestsType.FIND_PASSENGER_REQUEST) {
+                        long chatId;
+                        List<Integer> matches;
+                        FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+                        FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
+
+                        if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
                             matches = findPassRequestRedisService.findMatches(findRideRequestRedis);
                             chatId = findRideRequestRedis.getChatId();
                             matchingHandler.sendCancelingBookingMessage(chatId);
@@ -110,6 +110,7 @@ public class RedisMessageHandler extends MessageHandler {
                             matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, chatId);
                         }
                     }
+
                 }
             }
         }

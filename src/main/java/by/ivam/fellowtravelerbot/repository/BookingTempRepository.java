@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface BookingTempRepository extends JpaRepository<BookingTemp, String> {
     List<BookingTemp> findByExpireAtBefore(LocalDateTime expireAt);
+    void deleteByExpireAtBefore(LocalDateTime now);
 
 }
