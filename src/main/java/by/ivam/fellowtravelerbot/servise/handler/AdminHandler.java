@@ -182,7 +182,7 @@ public class AdminHandler extends MessageHandler implements HandlerInterface {
     public Map<Integer, String> createSettlementsMap(List<Settlement> settlementList) {
         return settlementList
                 .stream()
-                .collect(Collectors.toMap(Settlement::getId, settlement -> settlement.getName()));
+                .collect(Collectors.toMap(settlement -> settlement.getId(), settlement -> settlement.getName()));
     }
 
     public Map<Integer, String> createLocationsMap(int settlementId) {

@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
 import by.ivam.fellowtravelerbot.model.Car;
 import by.ivam.fellowtravelerbot.repository.CarRepository;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 // TODO кастомизировать exception
 @Service
-@Log4j
+@Log4j2
 public class CarServiceImplementation implements CarService {
     @Autowired
     private CarRepository carRepository;

@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.repository.RideRepository;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_RE
 import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_RIDE_REQUEST;
 
 @Service
-@Log4j
+@Log4j2
 public class RideServiceImpl implements RideService {
     @Autowired
     private RideRepository repository;

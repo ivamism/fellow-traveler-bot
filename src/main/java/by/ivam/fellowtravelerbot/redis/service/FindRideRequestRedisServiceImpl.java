@@ -1,13 +1,12 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
-
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.FindRideRequestRedisRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Log4j
+@Log4j2
 public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisService {
     @Autowired
     FindRideRequestRedisRepository repository;

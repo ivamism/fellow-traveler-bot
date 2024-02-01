@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.stateful.implementation;
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
 import by.ivam.fellowtravelerbot.stateful.interfaces.AddCarDtoOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Component
 @Data
-@Log4j
+@Log4j2
 public class AddCarDtoOperationsImplementation implements AddCarDtoOperations {
     private HashMap<Long, CarDTO> carDTOStorage = new HashMap<>();
 

@@ -43,8 +43,6 @@ public class RedisMessageHandler extends MessageHandler {
     private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
     private final String FIND_RIDE_REQUEST = "find_ride_request";
     private final String BOOKING = "booking";
-
-
     private SendMessage sendMessage;
 
     public void handleMessage(String event, String message) {
@@ -97,7 +95,6 @@ public class RedisMessageHandler extends MessageHandler {
                         List<Integer> matches;
                         FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
                         FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-
                         if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
                             matches = findPassRequestRedisService.findMatches(findRideRequestRedis);
                             chatId = findRideRequestRedis.getChatId();
@@ -110,7 +107,6 @@ public class RedisMessageHandler extends MessageHandler {
                             matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis, chatId);
                         }
                     }
-
                 }
             }
         }

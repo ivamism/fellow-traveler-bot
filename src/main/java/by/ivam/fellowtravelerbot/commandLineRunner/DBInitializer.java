@@ -4,7 +4,7 @@ import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.model.User;
 import by.ivam.fellowtravelerbot.repository.SettlementRepository;
 import by.ivam.fellowtravelerbot.repository.UserRepository;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 @Component
 @Order(1)
-@Log4j
+@Log4j2
 public class DBInitializer implements CommandLineRunner {
     @Autowired
     UserRepository userRepository;

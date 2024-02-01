@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Data
-@Log4j
+@Log4j2
 public class MessageDispatcher extends Dispatcher {
     @Autowired
     Keyboards keyboards;

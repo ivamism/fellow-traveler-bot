@@ -1,6 +1,5 @@
 package by.ivam.fellowtravelerbot.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;

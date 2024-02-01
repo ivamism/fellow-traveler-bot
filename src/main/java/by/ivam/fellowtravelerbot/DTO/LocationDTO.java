@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-
 public class LocationDTO {
     private String name;
     private Settlement settlement;

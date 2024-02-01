@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.bot.dispatcher;
 import by.ivam.fellowtravelerbot.servise.FindPassengerRequestService;
 import by.ivam.fellowtravelerbot.servise.FindRideRequestService;
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Data
-@Log4j
+@Log4j2
 public class CallbackDispatcher extends Dispatcher {
     @Autowired
     FindRideRequestService findRideRequestService;

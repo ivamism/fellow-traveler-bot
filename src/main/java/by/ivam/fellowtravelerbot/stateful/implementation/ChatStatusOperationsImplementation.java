@@ -3,14 +3,14 @@ package by.ivam.fellowtravelerbot.stateful.implementation;
 import by.ivam.fellowtravelerbot.bot.enums.ChatStatus;
 import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 @Component
 @Data
-@Log4j
+@Log4j2
 public class ChatStatusOperationsImplementation implements ChatStatusOperations {
     private HashMap<Long, String> chatsStatusStorage = new HashMap<>();
 

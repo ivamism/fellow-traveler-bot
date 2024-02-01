@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
 import by.ivam.fellowtravelerbot.servise.BookingTempService;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_RE
 import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_RIDE_REQUEST;
 
 @Service
-@Log4j
+@Log4j2
 public class BookingServiceImpl implements BookingService {
 
     @Autowired
@@ -132,7 +132,8 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList;
         if (cancelInitiator.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
 //            bookingList =
-            repository.findByFindPassRequestRedis_RequestId(stringRequestId).ifPresent(booking -> {
+            repository.findByFindPassRequestRedis_RequestId(stringRequestId) //;
+                    .ifPresent(booking -> {
                 Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
                 bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
                 deleteBooking(booking);

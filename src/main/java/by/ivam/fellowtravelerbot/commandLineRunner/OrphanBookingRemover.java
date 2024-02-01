@@ -2,9 +2,7 @@ package by.ivam.fellowtravelerbot.commandLineRunner;
 
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.service.BookingService;
-import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
-import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -15,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Order(4)
-@Log4j
+@Log4j2
 public class OrphanBookingRemover implements CommandLineRunner {
     @Autowired
     BookingService bookingService;

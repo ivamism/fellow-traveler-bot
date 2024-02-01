@@ -5,7 +5,6 @@ import by.ivam.fellowtravelerbot.model.User;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Data

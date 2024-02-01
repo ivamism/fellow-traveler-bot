@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.config;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 @Configuration
 @EnableScheduling
-@Log4j
+@Log4j2
 public class SchedulingConfiguration implements SchedulingConfigurer {
 
     @Override

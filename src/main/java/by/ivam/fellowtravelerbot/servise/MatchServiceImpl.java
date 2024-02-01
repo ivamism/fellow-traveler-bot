@@ -10,7 +10,7 @@ import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import java.util.Set;
 
 @Service
 @Data
-@Log4j
+@Log4j2
 public class MatchServiceImpl implements MatchService {
 
     @Autowired
