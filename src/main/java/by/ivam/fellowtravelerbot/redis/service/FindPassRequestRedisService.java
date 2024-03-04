@@ -15,15 +15,16 @@ public interface FindPassRequestRedisService {
 
     Iterable<FindPassRequestRedis> findAll();
 
+    List<FindPassRequestRedis> findAllNotExpired();
+
     List<FindPassRequestRedis> findAllByDirection(String direction);
 
     void delete(String id);
-
-    void getExpire(int requestId);
 
     List<Integer> findMatches(FindRideRequestRedis recentRequest);
 
     void removeExpired();
 
     void updateSeatsQuantity(FindPassRequestRedis request, int passengersQuantity);
+
 }

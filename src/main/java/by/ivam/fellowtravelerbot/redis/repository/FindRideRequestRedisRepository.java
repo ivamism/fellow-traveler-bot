@@ -21,4 +21,5 @@ public interface FindRideRequestRedisRepository extends CrudRepository<FindRideR
 
     List<FindRideRequestRedis> findByExpireDuration(long expireDuration);
 
+    List<FindRideRequestRedis> findByExpireDurationGreaterThan(long expireDuration);
 }

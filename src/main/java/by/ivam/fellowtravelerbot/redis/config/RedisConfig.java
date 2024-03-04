@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.config;
 
-import by.ivam.fellowtravelerbot.redis.subscriber.MessageListener;
+import by.ivam.fellowtravelerbot.redis.messageListener.MessageListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

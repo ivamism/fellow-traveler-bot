@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindPassengerRequestRepository;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Log4j2
+@Log4j
 public class FindPassengerRequestServiceImplementation implements FindPassengerRequestService {
     @Autowired
     private FindPassengerRequestRepository repository;
@@ -30,7 +30,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
 
     @Override
     public FindPassengerRequest findById(int id) {
-        return repository.findById(id).get();
+        return repository.findById(id).orElseThrow();
     }
 
     @Override

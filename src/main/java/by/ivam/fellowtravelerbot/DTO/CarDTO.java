@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 @Data
-@ToString
 @Component
 
 public class CarDTO {

@@ -1,6 +1,6 @@
 package by.ivam.fellowtravelerbot.config;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
@@ -12,7 +12,7 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 //@EnableScheduling
-@Log4j2
+@Log4j
 public class AsyncConfiguration extends AsyncConfigurerSupport {
     @Override
     public Executor getAsyncExecutor() {

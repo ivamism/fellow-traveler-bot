@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.commandLineRunner;
 
 import by.ivam.fellowtravelerbot.servise.FindPassengerRequestService;
 import by.ivam.fellowtravelerbot.servise.FindRideRequestService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Component
 @Order(2)
 @Async
-@Log4j2
+@Log4j
 public class ExpiredRequestDisActivator implements CommandLineRunner {
     @Autowired
     FindPassengerRequestService findPassengerRequestService;

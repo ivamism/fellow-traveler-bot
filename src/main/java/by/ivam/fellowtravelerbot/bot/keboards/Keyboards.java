@@ -4,7 +4,7 @@ Main menu and inline keyboards
  */
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Component
 @Data
-@Log4j2
+@Log4j
 public class Keyboards {
     @Autowired
     Buttons buttons;

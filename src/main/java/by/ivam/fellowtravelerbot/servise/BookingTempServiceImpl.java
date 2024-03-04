@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.repository.BookingTempRepository;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Log4j
 public class BookingTempServiceImpl implements BookingTempService {
 
     @Autowired
@@ -42,7 +42,6 @@ public class BookingTempServiceImpl implements BookingTempService {
     @Async
     @Override
     public void flushExpired() {
-
         long deleted = repository.deleteByExpireAtBefore(LocalDateTime.now());
         log.debug("method flushExpired(), deleted entities: " + deleted);
     }

@@ -1,14 +1,11 @@
-package by.ivam.fellowtravelerbot.redis.subscriber;
+package by.ivam.fellowtravelerbot.redis.messageListener;
 
 import by.ivam.fellowtravelerbot.redis.service.RedisMessageHandler;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 
-
-@Log4j2
 @Data
 public class MessageListener implements org.springframework.data.redis.connection.MessageListener {
     @Autowired

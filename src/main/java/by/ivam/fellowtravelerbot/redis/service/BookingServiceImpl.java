@@ -4,10 +4,12 @@ import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
+import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.redis.repository.BookingRepository;
 import by.ivam.fellowtravelerbot.servise.BookingTempService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,21 +19,36 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_REQUEST;
-import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_RIDE_REQUEST;
+
 
 @Service
-@Log4j2
+@Log4j
 public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private BookingRepository repository;
-
     @Autowired
     private FindPassRequestRedisService findPassRequestRedisService;
     @Autowired
     private FindRideRequestRedisService findRideRequestRedisService;
     @Autowired
     private BookingTempService bookingTempService;
+
+    @Override
+    public void addBooking(Pair<FindPassRequestRedis, FindRideRequestRedis> pairOfRequests, String initiator) {
+        Booking booking = new Booking();
+        booking.setFindPassRequestRedis(pairOfRequests.getFirst())
+                .setFindRideRequestRedis(pairOfRequests.getSecond())
+                .setBookedAt(LocalDateTime.now())
+                .setRemindAt(LocalDateTime.now().plusMinutes(15))
+                .setRemindersQuantity(0)
+                .setInitiator(initiator);
+        repository.save(booking);
+        log.debug("addBooking: " + booking);
+        reduceSeatsQuantity(booking);
+        bookingTempService.saveBookingTemp(booking);
+
+    }
 
     @Override
     public Booking save(Booking booking) {
@@ -63,6 +80,7 @@ public class BookingServiceImpl implements BookingService {
         return repository.findById(bookingId);
     }
 
+    // Increment reminds counter and set new time of reminder to accept booking
     @Override
     public void incrementRemindsQuantityAndRemindTime(Booking booking) {
         findById(booking.getId());
@@ -80,6 +98,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public void deleteBookingDueToExpiredRequest(String requestId, RequestsType requestsType) {
+
+    }
+
+    @Override
     public void deleteBooking(String bookingId) {
         log.debug("delete booking: " + bookingId);
         increaseSeatsQuantity(repository.findById(bookingId).orElseThrow());
@@ -88,43 +111,35 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void deleteBookings(List<Booking> bookingsToDelete) {
-        // Suggestion 2: Log the number of bookings to be deleted
         log.debug("Deleting " + bookingsToDelete.size() + " bookings");
-    
-        // Suggestion 3: Call increaseSeatsQuantity for each booking
-      /*  for (Booking booking : bookingsToDelete) {
-            increaseSeatsQuantity(booking);
-        }*/
-    
-        // Suggestion 1: Use repository.deleteAll to delete all bookings in one operation
-        repository.deleteAll(bookingsToDelete);
-    
-        // Suggestion 4: Handle exceptions that may occur during the deletion process
-//        try {
-//            for (Booking booking : bookingsToDelete) {
-//                repository.delete(booking);
-////                increaseSeatsQuantity(booking);
-//            }
-//        } catch (Exception e) {
-//            log.error("Error occurred during deletion: " + e.getMessage());
-//            // Handle the exception or rethrow it
-//        }
+        bookingsToDelete
+                .stream()
+
+                .forEach(booking -> deleteBooking(booking));
+//        repository.deleteAll(bookingsToDelete);
     }
 
+    // Return true if bot still haven't sent any reminders to accept Booking
     @Override
-    public boolean isNewRequest(Booking booking) {
+    public boolean isNewBooking(Booking booking) {
         return booking.getRemindersQuantity() == 0;
     }
 
+    // Check on start of application and remove any Bookings with expired TTL
     @Override
     public void removeExpired() {
-        List<Booking> expiredKeys = repository.findByExpireDuration(-1);
-        if (expiredKeys.size() != 0) {
+        int expireDuration = -1; // this value sets by Redis to @TimeToLive field if time is expired
+        List<Booking> expiredKeys = repository.findByExpireDuration(expireDuration);
+        if (!expiredKeys.isEmpty()) {
             log.info("remove expired FindRideRequestRedis - " + expiredKeys.size());
-            expiredKeys.forEach(booking -> deleteBooking(booking));
+//            expiredKeys.forEach(booking -> deleteBooking(booking));
+            deleteBookings(expiredKeys);
         }
     }
 
+
+
+    //Remove Booking if any side cancel request
     @Override
     public void removeBookingByCancelRequest(RequestsType cancelInitiator, int requestId) {
         log.debug(" method removeBookingByCancelRequest");
@@ -149,28 +164,43 @@ public class BookingServiceImpl implements BookingService {
 //        });
     }
 
+    // Return true if Request of this type included to some Booking
     @Override
-    public boolean hasBooking(RequestsType initiator, int requestId) {
-        String id = String.valueOf(requestId);
-        if (initiator == FIND_PASSENGER_REQUEST) {
-            return repository.existsByFindPassRequestRedis_RequestId(id);
-        } else if (initiator == FIND_RIDE_REQUEST) {
-            return repository.existsByFindRideRequestRedis_RequestId(id);
-        } else {
-            throw new IllegalArgumentException("Invalid RequestsType value: " + initiator);
-        }
+    public boolean hasBooking(RequestsType requestsType, String requestId) {
+        return findAll()
+                .stream()
+                .anyMatch(booking -> {
+                    if (requestsType == FIND_PASSENGER_REQUEST)
+                        return booking.getFindPassRequestRedis().getRequestId().equals(requestId);
+                    return booking.getFindRideRequestRedis().getRequestId().equals(requestId);
+                });
     }
 
+    // increase seats quantity of FindPassRequestRedis due to deletion of the Booking
     private void increaseSeatsQuantity(Booking booking) {
-        FindPassRequestRedis findPassRequestRedis = booking.getFindPassRequestRedis();
-        int passengersSeatsQuantity = -booking.getFindRideRequestRedis().getPassengersQuantity();
-        findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersSeatsQuantity);
+        int passengersSeatsQuantity = getPassengersQuantity(booking);
+        changeSeatsQuantity(booking, passengersSeatsQuantity);
+        log.debug("method increaseSeatsQuantity");
     }
 
+    // reduce seats quantity in the FindPassRequestRedis due to booking
     private void reduceSeatsQuantity(Booking booking) {
-        FindPassRequestRedis findPassRequestRedis = booking.getFindPassRequestRedis();
-        int passengersSeatsQuantity = booking.getFindRideRequestRedis().getPassengersQuantity();
-        findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersSeatsQuantity);
+        int passengersSeatsQuantity = -getPassengersQuantity(booking);
+        changeSeatsQuantity(booking, passengersSeatsQuantity);
+        log.debug("method reduceSeatsQuantity");
+    }
+
+    //  change seats quantity in the FindPassRequestRedis depending on the booking or deletion of the booking
+    private void changeSeatsQuantity(Booking booking, int passengersSeatsQuantity) {
+        Optional<FindPassRequestRedis> optionalFindPassRequestRedis = Optional.of(booking.getFindPassRequestRedis());
+        optionalFindPassRequestRedis.ifPresent(findPassRequestRedis ->
+                findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersSeatsQuantity));
+    }
+
+    // get passengers quantity to reduce or increase seats quantity depending on the booking or deletion of the booking
+    private int getPassengersQuantity(Booking booking) {
+        return Optional.ofNullable(booking.getFindRideRequestRedis())
+                .map(findRideRequestRedis -> findRideRequestRedis.getPassengersQuantity()).orElse(0);
     }
 
 }

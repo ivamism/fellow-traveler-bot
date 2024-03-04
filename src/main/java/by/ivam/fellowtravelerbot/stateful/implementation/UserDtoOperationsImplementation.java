@@ -4,7 +4,7 @@ import by.ivam.fellowtravelerbot.DTO.UserDTO;
 import by.ivam.fellowtravelerbot.model.Settlement;
 import by.ivam.fellowtravelerbot.stateful.interfaces.UserDtoOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 @Data
-@Log4j2
+@Log4j
 
 public class UserDtoOperationsImplementation implements UserDtoOperations {
     HashMap<Long, UserDTO> userDTOStorage = new HashMap<>();

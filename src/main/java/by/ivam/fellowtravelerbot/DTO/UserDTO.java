@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Accessors(chain = true)
-@Component
+//@Component
 public class UserDTO {
     private long chatId;
     private String firstName;

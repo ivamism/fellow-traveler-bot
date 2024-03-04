@@ -5,7 +5,7 @@ import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
 import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.repository.FindRideRequestRepository;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Log4j2
+@Log4j
 public class FindRideRequestServiceImplementation implements FindRideRequestService {
     @Autowired
     private FindRideRequestRepository repository;

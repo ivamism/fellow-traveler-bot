@@ -13,6 +13,8 @@ public interface FindRideRequestRedisService {
 
     Iterable<FindRideRequestRedis> findAll();
 
+    List<FindRideRequestRedis> findAllNotExpired();
+
     List<FindRideRequestRedis> findAllByDirection(String direction);
 
     void delete(String id);
@@ -23,5 +25,6 @@ public interface FindRideRequestRedisService {
 
     void removeExpired();
 
-    Optional<FindRideRequestRedis> findOptionalById(String id);
+    Optional<FindRideRequestRedis> findOptionalById(String requestId);
+
 }

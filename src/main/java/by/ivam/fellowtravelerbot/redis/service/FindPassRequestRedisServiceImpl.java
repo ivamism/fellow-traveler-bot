@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.redis.repository.FindPassRequestRedisRepository
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Log4j2
+@Log4j
 public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisService {
     private final FindPassRequestRedis EMPTY_REQUEST = new FindPassRequestRedis();
     @Autowired
@@ -32,7 +32,7 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
 
     @Override
     public FindPassRequestRedis findById(String id) {
-        return repository.findById(id).orElse(EMPTY_REQUEST);
+        return repository.findById(id).orElseThrow();
     }
 
     @Override
@@ -43,8 +43,12 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
 
     @Override
     public Iterable<FindPassRequestRedis> findAll() {
-        Iterable<FindPassRequestRedis> rides = repository.findAll();
-        return rides;
+        return repository.findAll();
+    }
+
+    @Override
+    public List<FindPassRequestRedis> findAllNotExpired() {
+        return repository.findByExpireDurationGreaterThan(-1); // -1 - value set by redis to expired TTL keys
     }
 
     @Override
@@ -58,10 +62,10 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
         repository.deleteById(id);
     }
 
-    @Override
-    public void getExpire(int requestId) {
-//        findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
-    }
+//    @Override
+//    public void getExpire(int requestId) {
+////        findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
+//    }
 
     public List<Integer> findMatches(FindRideRequestRedis recentRequest) {
         List<Integer> suitableRequestIdList = findAllByDirection(recentRequest.getDirection())
@@ -79,13 +83,14 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
         List<FindPassRequestRedis> expiredKeys = repository.findByExpireDuration(-1);
         if (expiredKeys.size() != 0) {
             log.info("remove expired FindPassRequestRedis - " + expiredKeys.size());
-            expiredKeys.forEach(request -> repository.delete(request));
+//            expiredKeys.forEach(request -> repository.delete(request));
+            repository.deleteAll(expiredKeys);
         }
     }
 
     @Override
     public void updateSeatsQuantity(FindPassRequestRedis request, int passengersQuantity) {
-        request.setSeatsQuantity(request.getSeatsQuantity() - passengersQuantity);
+        request.setSeatsQuantity(request.getSeatsQuantity() + passengersQuantity);
         repository.save(request);
         log.debug("method updateSeatsQuantity. Request " + request);
     }

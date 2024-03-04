@@ -3,14 +3,14 @@ package by.ivam.fellowtravelerbot.stateful.implementation;
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.stateful.interfaces.FindPassengerDtoOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 @Component
 @Data
-@Log4j2
+@Log4j
 public class FindPassengerDtoOperationsImplementation implements FindPassengerDtoOperations {
 
     private HashMap<Long, FindPassengerRequestDTO> findPassengerRequestDTOStorage = new HashMap<>();

@@ -1,11 +1,11 @@
 package by.ivam.fellowtravelerbot.servise;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 @Data
-@Log4j2
+@Log4j
 @Component
 public class Extractor {
     public static   final int INDEX_ZERO = 0;

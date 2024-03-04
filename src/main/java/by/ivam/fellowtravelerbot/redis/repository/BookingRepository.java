@@ -7,19 +7,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository
-public interface BookingRepository extends CrudRepository<Booking, String>  {
+public interface BookingRepository extends  CrudRepository<Booking, String>  {
     List<Booking> findByExpireDuration(long expireDuration);
 
-    @Override
+//    @Override
     Optional<Booking> findById(String handlerPrefix);
-
+//
     Optional<Booking> findByFindPassRequestRedis_RequestId(String requestId);
 
 //    List<Booking> findByFindPassRequestRedis_RequestId(String requestId);
 
     List<Booking> findByFindRideRequestRedis_RequestId(String requestId);
 
-    boolean existsByFindPassRequestRedis_RequestId(String requestId);
 
-    boolean existsByFindRideRequestRedis_RequestId(String requestId);
+
 }

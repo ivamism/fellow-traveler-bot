@@ -4,7 +4,7 @@ import by.ivam.fellowtravelerbot.bot.dispatcher.CallbackDispatcher;
 import by.ivam.fellowtravelerbot.bot.dispatcher.MessageDispatcher;
 import by.ivam.fellowtravelerbot.config.BotConfig;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@Log4j2
+@Log4j
 public class Bot extends TelegramLongPollingBot {
     public Bot(String botToken) {
         super(botToken);

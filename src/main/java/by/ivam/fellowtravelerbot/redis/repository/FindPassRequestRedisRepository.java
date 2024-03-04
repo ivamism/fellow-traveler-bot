@@ -23,6 +23,7 @@ public interface FindPassRequestRedisRepository extends CrudRepository<FindPassR
 
     List<FindPassRequestRedis> findByExpireDuration(long expireDuration);
 
+    List<FindPassRequestRedis> findByExpireDurationGreaterThan(long expireDuration);
 
 
 }

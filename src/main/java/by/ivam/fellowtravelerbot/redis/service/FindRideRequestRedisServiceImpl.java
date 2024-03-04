@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.redis.repository.FindRideRequestRedisRepository
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Log4j2
+@Log4j
 public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisService {
     @Autowired
     FindRideRequestRedisRepository repository;
@@ -31,6 +31,7 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     }
 
 
+
     @Override
     public FindRideRequestRedis findById(String id) {
         return repository.findById(id).orElseThrow();
@@ -41,6 +42,11 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     public Iterable<FindRideRequestRedis> findAll() {
         Iterable<FindRideRequestRedis> rides = repository.findAll();
         return rides;
+    }
+
+    @Override
+    public List<FindRideRequestRedis> findAllNotExpired() {
+        return repository.findByExpireDurationGreaterThan(-1); // -1 - value set by redis to expired TTL keys
     }
 
     @Override
@@ -84,5 +90,6 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
     public Optional<FindRideRequestRedis> findOptionalById(String id) {
         return repository.findById(id);
     }
+
 
 }

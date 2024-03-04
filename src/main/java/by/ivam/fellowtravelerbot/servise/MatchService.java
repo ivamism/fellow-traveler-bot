@@ -12,7 +12,6 @@ public interface MatchService {
 
     void getNewFindRideRequest(String requestId);
 
-    void addBooking(String findPassRequestId, String findRideRequestId, String initiator);
 
     void deleteBooking(String bookingId);
 

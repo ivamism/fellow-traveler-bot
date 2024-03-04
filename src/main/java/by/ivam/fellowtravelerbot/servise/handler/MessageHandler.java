@@ -10,11 +10,12 @@ import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Log4j
+@Log4j2
 @Data
 @NoArgsConstructor
 public class MessageHandler {

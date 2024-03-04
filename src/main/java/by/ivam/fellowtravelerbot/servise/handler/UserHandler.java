@@ -9,6 +9,7 @@ import by.ivam.fellowtravelerbot.stateful.interfaces.UserDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ This class handle operations with User registration process, editing, deleting, 
 @EqualsAndHashCode(callSuper = true)
 @Service
 @Data
-@Log4j
+@Log4j2
 public class UserHandler extends MessageHandler implements HandlerInterface {
     @Autowired
     UserDtoOperations userDtoOperations;

@@ -7,6 +7,7 @@ import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Log4j
+@Log4j2
 @Data
 public class RequestHandler extends MessageHandler {
 

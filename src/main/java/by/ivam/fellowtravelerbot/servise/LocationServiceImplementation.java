@@ -3,7 +3,7 @@ package by.ivam.fellowtravelerbot.servise;
 import by.ivam.fellowtravelerbot.DTO.LocationDTO;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.repository.LocationRepository;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Log4j
 public class LocationServiceImplementation implements LocationService {
 
     @Autowired

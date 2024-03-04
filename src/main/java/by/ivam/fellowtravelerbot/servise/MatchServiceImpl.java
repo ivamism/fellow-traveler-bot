@@ -1,6 +1,5 @@
 package by.ivam.fellowtravelerbot.servise;
 
-import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
@@ -10,18 +9,17 @@ import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.redis.service.FindPassRequestRedisService;
 import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 @Data
-@Log4j2
+@Log4j
 public class MatchServiceImpl implements MatchService {
 
     @Autowired
@@ -65,36 +63,7 @@ public class MatchServiceImpl implements MatchService {
         log.debug("method getNewFindRideRequest. Found matches: " + suitableRequestIdList.size());
     }
 
-    @Override
-    public void addBooking(String firstId, String secondId, String initiator) {
-        FindPassRequestRedis findPassRequestRedis;
-        FindRideRequestRedis findRideRequestRedis;
-        Booking booking = new Booking();
-        booking.setBookedAt(LocalDateTime.now())
-                .setRemindAt(LocalDateTime.now().plusMinutes(15))
-                .setRemindersQuantity(0);
-        if (initiator.equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
-            findPassRequestRedis = findPassRequestRedisService.findById(firstId);
-            findRideRequestRedis = findRideRequestRedisService.findById(secondId);
-            booking.setFindPassRequestRedis(findPassRequestRedis)
-                    .setFindRideRequestRedis(findRideRequestRedis)
-                    .setInitiator(RequestsType.FIND_PASSENGER_REQUEST.getValue())
-                    .setExpireDuration(findPassRequestRedis.getExpireDuration());
 
-        } else {
-            findRideRequestRedis = findRideRequestRedisService.findById(firstId);
-            findPassRequestRedis = findPassRequestRedisService.findById(secondId);
-            booking.setFindPassRequestRedis(findPassRequestRedis)
-                    .setFindRideRequestRedis(findRideRequestRedis)
-                    .setInitiator(RequestsType.FIND_RIDE_REQUEST.getValue())
-                    .setExpireDuration(findRideRequestRedis.getExpireDuration());
-        }
-        booking = bookingService.save(booking);
-        int passengersQuantity = findRideRequestRedis.getPassengersQuantity();
-        findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersQuantity);
-        log.debug("method addBooking: " + booking);
-        bookingTempService.saveBookingTemp(booking);
-    }
 
     @Override
     public List<Integer> getFindPassRequestMatches(FindRideRequestRedis request) {

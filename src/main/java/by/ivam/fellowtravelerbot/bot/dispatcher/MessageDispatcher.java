@@ -6,7 +6,7 @@ import by.ivam.fellowtravelerbot.bot.enums.CarOperation;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Data
-@Log4j2
+@Log4j
 public class MessageDispatcher extends Dispatcher {
     @Autowired
     Keyboards keyboards;
@@ -89,14 +89,14 @@ public class MessageDispatcher extends Dispatcher {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
                     findRideHandler.startCreateNewRequest(chatId);
-                    log.debug("got request to find a car");
+                    log.debug("got request to findById a car");
                 }
             }
             case "Найти попутчика" -> {
                 if (startHandler.checkRegistration(chatId)) {
                     startHandler.noRegistrationMessage(chatId);
                 } else {
-                    log.debug("got request to find a fellow");
+                    log.debug("got request to findById a fellow");
                     findPassengerHandler.startCreateNewRequest(chatId);
                 }
             }
