@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -347,7 +348,7 @@ public class RequestHandler extends MessageHandler {
         return editMessage;
     }
 
-    protected SendMessage createExpireRequestTimeMessage(long chatId, String requestToString){
+    protected SendMessage createExpireRequestTimeMessage(long chatId, String requestToString) {
         sendMessage.setChatId(chatId);
         sendMessage.setText(String.format(messages.getTIME_EXPIRE_MESSAGE(), requestToString));
         sendMessage.setReplyMarkup(null); //set null to remove no longer necessary inline keyboard
@@ -363,34 +364,34 @@ public class RequestHandler extends MessageHandler {
     }
 
     protected LocalTime getTime(String timeString) {
-        LocalTime time = LocalTime.of(0, 0, 0, 100);
-        if (timeString.contains(("."))) {
-            DateTimeFormatter dotFormatter = DateTimeFormatter.ofPattern("H.m");
-            time = parseTime(timeString, dotFormatter);
-        } else if (timeString.contains((":"))) {
-            DateTimeFormatter colonFormatter = DateTimeFormatter.ofPattern("H:m");
-            time = parseTime(timeString, colonFormatter);
-        } else if (timeString.contains(("-"))) {
-            DateTimeFormatter dashFormatter = DateTimeFormatter.ofPattern("H-m");
-            time = parseTime(timeString, dashFormatter);
-        }
-        log.debug("method getTime. time = " + time);
+        LocalTime timeOnIncorrectTimeString = LocalTime.of(0, 0, 0, 100);
+        String[] splitters = {".", ":", "-", ","};
+
+        LocalTime time = Arrays.stream(splitters)
+                .filter(splitter -> timeString.contains(splitter))
+                .map(splitter -> DateTimeFormatter.ofPattern("H" + splitter + "m"))
+                .map(formatter -> LocalTime.parse(timeString, formatter))
+                .findFirst()
+                .orElse(timeOnIncorrectTimeString);
+
+        log.debug("method getTime. Time = " + time);
         return time;
     }
 
-    private LocalTime parseTime(String timeString, DateTimeFormatter formatter) {
-        LocalTime time = LocalTime.of(0, 0, 0, 100);
-        try {
-            time = LocalTime.parse(timeString, formatter);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        log.debug("method parseTime. time = " + time);
-        return time;
-    }
+//    private LocalTime parseTime(String timeString, DateTimeFormatter formatter) {
+//        LocalTime time = LocalTime.of(0, 0, 0, 100);
+//        try {
+//            time = LocalTime.parse(timeString, formatter);
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//        }
+//        log.debug("method parseTime. time = " + time);
+//        return time;
+//    }
 
     protected boolean seatsQuantityIsValid(String s) {
-        return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) < 5);
+        int maxSeatsQuantity = 4;
+        return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) <= maxSeatsQuantity);
     }
 
     protected void editMessageTextGeneralPreset(Message incomeMessage) {

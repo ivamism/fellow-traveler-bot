@@ -50,7 +50,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         switch (process) {
             case "CREATE_REQUEST_TIME_STATUS" -> {
                 LocalTime time = getTime(messageText);
-                if (time.toNanoOfDay() == 100 || isExpired(chatId, time)) {
+                if (isaCorrectTimeMessageOrTime(time, chatId)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
@@ -73,7 +73,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             }
             case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
                 LocalTime time = getTime(messageText);
-                if (time.toNanoOfDay() == 100 || isExpired(chatId, time)) {
+                if (isaCorrectTimeMessageOrTime(time, chatId)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
@@ -116,6 +116,8 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         }
         sendBotMessage(sendMessage);
     }
+
+
 
     @Override
     public void handleReceivedCallback(String callback, Message incomeMessage) {
@@ -1138,7 +1140,12 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
     }
 
     private boolean isRequestQuantityLimit(long chatId) {
-        return getUserActiveFindPassengerRequestsList(chatId).size() > 2;
+        int maxRequestsQuantity = 3;
+        return getUserActiveFindPassengerRequestsList(chatId).size() >= maxRequestsQuantity;
+    }
+    // return true if User send message with the time in correct regex, it correctly parsed to the time and this time still not expired
+    private boolean isaCorrectTimeMessageOrTime(LocalTime time, Long chatId) {
+        return time.toNanoOfDay() == 100 || isExpired(chatId, time);
     }
 
     private boolean isExpired(long chatId, LocalTime time) {
