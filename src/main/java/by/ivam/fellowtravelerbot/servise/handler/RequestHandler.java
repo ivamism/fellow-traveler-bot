@@ -378,17 +378,6 @@ public class RequestHandler extends MessageHandler {
         return time;
     }
 
-//    private LocalTime parseTime(String timeString, DateTimeFormatter formatter) {
-//        LocalTime time = LocalTime.of(0, 0, 0, 100);
-//        try {
-//            time = LocalTime.parse(timeString, formatter);
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//        }
-//        log.debug("method parseTime. time = " + time);
-//        return time;
-//    }
-
     protected boolean seatsQuantityIsValid(String s) {
         int maxSeatsQuantity = 4;
         return Character.isDigit(s.charAt(0)) && s.length() == 1 && (Integer.parseInt(s) > 0 & Integer.parseInt(s) <= maxSeatsQuantity);
