@@ -47,24 +47,20 @@ public class RedisMessageHandler extends MessageHandler {
 
     private SendMessage sendMessage;
 
-
-    public void handleMessage(String event, String message) {
-        String type = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
-        String id = Extractor.extractParameter(message, Extractor.INDEX_ONE);
-//        log.debug("new event: " + event + ", request type: " + type + ", id: " + id);
-        log.debug("new event: %s, request type: %s, id: %s".formatted(event, type, id) );
+    // Handle events caught by Redis MessageListener
+    public void handleEvent(String event, String message) {
+        String type = extractParameter(message, Extractor.INDEX_ZERO);
+//        String type = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
+//        String id = Extractor.extractParameter(message, Extractor.INDEX_ONE);
+        String id = extractParameter(message, Extractor.INDEX_ONE);
+        log.debug("new event: %s, request type: %s, id: %s".formatted(event, type, id));
         switch (event) {
-            case "hset" -> {
-                handleHset(type, id);
-            }
-            case "expired" -> {
-                handleExpired(type, id);
-            }
-            case "del" -> {
-                handleDel(type, id);
-            }
+            case "hset" -> handleHset(type, id);
+            case "expired" -> handleExpired(type, id);
+            case "del" -> handleDel(type, id);
         }
     }
+
     // Handle events of creating new Redis hashes
     private void handleHset(String type, String id) {
         log.debug("method handleHset");
@@ -92,21 +88,21 @@ public class RedisMessageHandler extends MessageHandler {
             }
         }
     }
+
     // Handle events of expire Time To Live keys
     private void handleExpired(String type, String idString) {
 // TODO Удаление брони если существует с посланием соответствующего сообщения
         log.debug("method handleExpired");
-//                int requestId = Extractor.extractId(message, Extractor.INDEX_ONE);
         int requestId = Integer.valueOf(idString);
         if (type.equals(FIND_PASSENGER_REQUEST)) {
             findPassengerRequestService.disActivateExpiredRequestById(requestId);
             findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
         } else if (type.equals(FIND_RIDE_REQUEST)) {
-
             findRideRequestService.disActivateRequestById(requestId);
             findRideHandler.sendExpireDepartureTimeMessage(requestId);
         }
     }
+
     // Handle events of deleting of Redis hashes
     private void handleDel(String type, String id) {
         log.debug("method handleDel");
@@ -115,11 +111,13 @@ public class RedisMessageHandler extends MessageHandler {
             RequestsType canceledBy = bookingTemp.getCanceledBy();
             if (canceledBy != null) { // TODO Проверить как сетится это значение
                 if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
-                    FindRideRequestRedis findRideRequestRedis = findRideRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-                    onCancelBookingByDriver(findRideRequestRedis);
+//                    FindRideRequestRedis findRideRequestRedis =
+                            findRideRequestRedisService.getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId())).ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
+//                    onCancelBookingByDriver(findRideRequestRedis);
                 } else {
-                    FindPassRequestRedis findPassRequestRedis = findPassRequestRedisService.findById(String.valueOf(bookingTemp.getFindPassengerRequestId()));
-                    onCancelBookingByPassenger(findPassRequestRedis);
+//                    FindPassRequestRedis findPassRequestRedis =
+                            findPassRequestRedisService.getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId())).ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
+//                    onCancelBookingByPassenger(findPassRequestRedis);
                 }
             }
         }
@@ -129,7 +127,7 @@ public class RedisMessageHandler extends MessageHandler {
         RequestsType requestsType = RequestsType.NOT_REQUEST;
         if (type.equals(FIND_PASSENGER_REQUEST)) requestsType = RequestsType.FIND_PASSENGER_REQUEST;
         else if (type.equals(FIND_RIDE_REQUEST)) requestsType = RequestsType.FIND_RIDE_REQUEST;
-        else log.error("type %s mismatch any request type");
+        else log.error("type %s mismatch any request type".formatted(type));
         return requestsType;
     }
 
@@ -146,6 +144,5 @@ public class RedisMessageHandler extends MessageHandler {
         matchingHandler.sendCancelingBookingMessage(chatId);
         matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis.getRequestId(), chatId);
     }
-
 }
 

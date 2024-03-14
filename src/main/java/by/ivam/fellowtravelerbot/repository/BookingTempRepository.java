@@ -6,13 +6,16 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface BookingTempRepository extends JpaRepository<BookingTemp, String> {
     List<BookingTemp> findByExpireAtBefore(LocalDateTime expireAt);
 
     long deleteByExpireAtBefore(LocalDateTime now);
 
+    Optional<BookingTemp> findByFindRideRequestId(int findRideRequestId);
 
-//    void deleteByExpireAtBefore(LocalDateTime now);
+    List<BookingTemp> findByFindPassengerRequestId(int findPassengerRequestId);
 
 }

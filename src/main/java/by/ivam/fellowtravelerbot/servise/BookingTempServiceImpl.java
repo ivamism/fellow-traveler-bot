@@ -1,5 +1,6 @@
 package by.ivam.fellowtravelerbot.servise;
 
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.repository.BookingTempRepository;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,20 +26,37 @@ public class BookingTempServiceImpl implements BookingTempService {
         BookingTemp bookingTemp = new BookingTemp();
         LocalDateTime bookedAt = booking.getBookedAt();
         bookingTemp.setId(booking.getId())
-                .setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
-                .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
+                .setFindPassengerRequestId(Integer.valueOf(booking.getFindPassRequestRedis().getRequestId()))
+                .setFindRideRequestId(Integer.valueOf(booking.getFindRideRequestRedis().getRequestId()))
                 .setBookedAt(bookedAt)
                 .setExpireAt(bookedAt.plusSeconds(booking.getExpireDuration()));
         repository.save(bookingTemp);
         log.debug("Save bookingTemp to DB: " + bookingTemp);
     }
 
-
     @Override
     public Optional<BookingTemp> findById(String id) {
         log.debug("method findById()");
         return repository.findById(id);
     }
+
+    @Override
+    public void setCanceledBy(RequestsType type, int requestId) {
+        log.debug("method setCanceledBy");
+        if (type == RequestsType.FIND_PASSENGER_REQUEST) {
+            repository.findByFindPassengerRequestId(requestId)
+                    .stream()
+                    .peek(bookingTemp -> bookingTemp.setCanceledBy(type))
+                    .forEach(bookingTemp -> repository.save(bookingTemp));
+        } else if (type == RequestsType.FIND_RIDE_REQUEST) {
+            repository.findByFindRideRequestId(requestId).ifPresent(bookingTemp -> {
+                bookingTemp.setCanceledBy(type);
+                repository.save(bookingTemp);
+            });
+        }
+    }
+
+
     @Scheduled(cron = "0 0 3 * * *")
     @Async
     @Override

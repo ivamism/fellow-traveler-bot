@@ -20,8 +20,8 @@ public class OrphanBookingRemover implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.debug("Dis-activation of expired requests");
         try {
-            log.debug("Dis-activation of expired requests");
             List<Booking> bookingsToDelete = bookingService.findAll()
                     .stream()
                     .filter(booking -> booking.getFindPassRequestRedis() == null || booking.getFindRideRequestRedis() == null)

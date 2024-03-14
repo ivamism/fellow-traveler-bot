@@ -11,7 +11,7 @@ public interface FindPassRequestRedisService {
 
     FindPassRequestRedis findById(String id);
 
-    Optional<FindPassRequestRedis> findOptionalById(String id);
+    Optional<FindPassRequestRedis> getOptionalById(String id);
 
     Iterable<FindPassRequestRedis> findAll();
 

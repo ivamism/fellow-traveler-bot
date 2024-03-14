@@ -1,8 +1,8 @@
 package by.ivam.fellowtravelerbot.servise.handler;
 
-import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.bot.enums.Handlers;
 import by.ivam.fellowtravelerbot.bot.enums.MatchingOperation;
+import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.FindRideRequest;
 import by.ivam.fellowtravelerbot.model.Ride;
@@ -14,7 +14,6 @@ import by.ivam.fellowtravelerbot.redis.service.FindRideRequestRedisService;
 import by.ivam.fellowtravelerbot.servise.Extractor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@Log4j2
+@Log4j
 @Service
 public class MatchingHandler extends MessageHandler implements HandlerInterface {
     @Autowired
@@ -133,13 +132,14 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         //TODO содержимое if-else вынести в отдельные методы
         if (initiator.equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
             sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
-            int findPassRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
+            int findPassRequestId = Integer.valueOf(booking.getFindPassRequestRedis().getRequestId());
             FindPassengerRequest requestToSend = findPassengerRequestService.findById(findPassRequestId);
             String requestToString = findPassengerHandler.requestToString(requestToSend);
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
+
         } else {
             sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
-            int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
+            int findRideRequestId = Integer.valueOf(booking.getFindRideRequestRedis().getRequestId());
             FindRideRequest requestToSend = findRideRequestService.findById(findRideRequestId);
             String requestToString = findRideHandler.requestToString(requestToSend);
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
@@ -184,8 +184,9 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
         FindRideRequestRedis findRideRequestRedis = booking.getFindRideRequestRedis();
         long driverChatId = findPassRequestRedis.getChatId();
         long passengerChatId = findRideRequestRedis.getChatId();
+
         if (booking.getInitiator().equals(RequestsType.FIND_PASSENGER_REQUEST.getValue())) {
-            sendNoticeAboutDenyBookingMessage(driverChatId); // notify booking initiator
+            sendNoticeAboutDenyBookingMessage(driverChatId);                 // notify booking initiator
             List<Integer> matches = matchService.getFindRideRequestMatches(findPassRequestRedis);
             sendListOfSuitableFindRideRequestMessage(matches, findPassRequestRedis.getRequestId(), driverChatId);
         } else {
@@ -193,6 +194,8 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             List<Integer> matches = matchService.getFindPassRequestMatches(findRideRequestRedis);
             sendListOfSuitableFindPassengerRequestMessage(matches, findRideRequestRedis.getRequestId(), passengerChatId);
         }
+
+        // TODO Set cancel initiator to BookingTemp
         matchService.deleteBooking(bookingId);
     }
 

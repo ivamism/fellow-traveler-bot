@@ -6,16 +6,15 @@ import by.ivam.fellowtravelerbot.bot.keboards.Buttons;
 import by.ivam.fellowtravelerbot.bot.keboards.Keyboards;
 import by.ivam.fellowtravelerbot.redis.service.BookingService;
 import by.ivam.fellowtravelerbot.servise.*;
-import by.ivam.fellowtravelerbot.stateful.interfaces.ChatStatusOperations;
+import by.ivam.fellowtravelerbot.DTO.stateOperations.interfaces.ChatStatusOperations;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Log4j2
+@Log4j
 @Data
 @NoArgsConstructor
 public class MessageHandler {
@@ -43,13 +42,13 @@ public class MessageHandler {
     public BookingService bookingService;
     @Autowired
     public RideService rideService;
-
     @Autowired
     public BookingTempService bookingTempService;
     @Autowired
     ChatStatusOperations chatStatusOperations;
     @Autowired
     ResponseMessageProcessor messageProcessor;
+
     private final int PROCESS = 0;
     private final int FIRST_VALUE = 1;
     private final int SECOND_VALUE = 2;

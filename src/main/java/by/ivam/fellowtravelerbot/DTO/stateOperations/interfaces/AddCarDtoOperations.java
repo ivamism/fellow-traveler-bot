@@ -1,4 +1,4 @@
-package by.ivam.fellowtravelerbot.stateful.interfaces;
+package by.ivam.fellowtravelerbot.DTO.stateOperations.interfaces;
 
 import by.ivam.fellowtravelerbot.DTO.CarDTO;
 

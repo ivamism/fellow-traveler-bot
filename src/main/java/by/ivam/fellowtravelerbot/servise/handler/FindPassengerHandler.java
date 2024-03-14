@@ -5,10 +5,9 @@ import by.ivam.fellowtravelerbot.bot.enums.*;
 import by.ivam.fellowtravelerbot.model.FindPassengerRequest;
 import by.ivam.fellowtravelerbot.model.Location;
 import by.ivam.fellowtravelerbot.model.Settlement;
-import by.ivam.fellowtravelerbot.stateful.interfaces.FindPassengerDtoOperations;
+import by.ivam.fellowtravelerbot.DTO.stateOperations.interfaces.FindPassengerDtoOperations;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -50,7 +49,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         switch (process) {
             case "CREATE_REQUEST_TIME_STATUS" -> {
                 LocalTime time = getTime(messageText);
-                if (isaCorrectTimeMessageOrTime(time, chatId)) {
+                if (isACorrectTimeMessageOrTime(time, chatId)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
@@ -73,7 +72,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
             }
             case "EDIT_BEFORE_SAVE_CHANGE_TIME" -> {
                 LocalTime time = getTime(messageText);
-                if (isaCorrectTimeMessageOrTime(time, chatId)) {
+                if (isACorrectTimeMessageOrTime(time, chatId)) {
                     sendMessage = handleReceivedIncorrectTime(time, chatId);
                 } else {
                     createNewRequestSetTime(chatId, time);
@@ -112,7 +111,6 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
                 else sendMessage = editRequestSuccessSendMessage(chatId, request);
 //                TODO добавить сообщение если комментарий слишком длинный
             }
-
         }
         sendBotMessage(sendMessage);
     }
@@ -1144,7 +1142,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         return getUserActiveFindPassengerRequestsList(chatId).size() >= maxRequestsQuantity;
     }
     // return true if User send message with the time in correct regex, it correctly parsed to the time and this time still not expired
-    private boolean isaCorrectTimeMessageOrTime(LocalTime time, Long chatId) {
+    private boolean isACorrectTimeMessageOrTime(LocalTime time, Long chatId) {
         return time.toNanoOfDay() == 100 || isExpired(chatId, time);
     }
 

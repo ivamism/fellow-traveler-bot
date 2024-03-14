@@ -112,11 +112,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void deleteBookings(List<Booking> bookingsToDelete) {
         log.debug("Deleting " + bookingsToDelete.size() + " bookings");
-        bookingsToDelete
-                .stream()
-
-                .forEach(booking -> deleteBooking(booking));
-//        repository.deleteAll(bookingsToDelete);
+//        bookingsToDelete
+//                .stream()
+//                .forEach(booking -> deleteBooking(booking));
+        repository.deleteAll(bookingsToDelete);
     }
 
     // Return true if bot still haven't sent any reminders to accept Booking

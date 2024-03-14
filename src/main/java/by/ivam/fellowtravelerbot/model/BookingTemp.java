@@ -22,4 +22,5 @@ public class BookingTemp {
     private RequestsType canceledBy;
     private LocalDateTime bookedAt;
     private LocalDateTime expireAt;
+    private boolean isExpired;
 }

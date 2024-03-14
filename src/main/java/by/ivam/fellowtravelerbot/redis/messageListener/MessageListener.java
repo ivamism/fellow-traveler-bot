@@ -14,7 +14,7 @@ public class MessageListener implements org.springframework.data.redis.connectio
     public void onMessage(Message message, byte[] pattern) {
         String event = Extractor.extractParameter(new String(message.getChannel()), Extractor.INDEX_ONE);
         String receivedMessage = message.toString();
-        messageHandler.handleMessage(event, receivedMessage);
+        messageHandler.handleEvent(event, receivedMessage);
     }
 }
 

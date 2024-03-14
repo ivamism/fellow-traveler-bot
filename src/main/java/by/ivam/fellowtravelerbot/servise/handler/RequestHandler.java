@@ -366,14 +366,12 @@ public class RequestHandler extends MessageHandler {
     protected LocalTime getTime(String timeString) {
         LocalTime timeOnIncorrectTimeString = LocalTime.of(0, 0, 0, 100);
         String[] splitters = {".", ":", "-", ","};
-
         LocalTime time = Arrays.stream(splitters)
                 .filter(splitter -> timeString.contains(splitter))
                 .map(splitter -> DateTimeFormatter.ofPattern("H" + splitter + "m"))
                 .map(formatter -> LocalTime.parse(timeString, formatter))
                 .findFirst()
                 .orElse(timeOnIncorrectTimeString);
-
         log.debug("method getTime. Time = " + time);
         return time;
     }

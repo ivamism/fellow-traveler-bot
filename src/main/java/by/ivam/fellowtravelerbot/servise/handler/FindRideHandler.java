@@ -2,7 +2,7 @@ package by.ivam.fellowtravelerbot.servise.handler;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
 import by.ivam.fellowtravelerbot.DTO.FindRideRequestDTO;
-import by.ivam.fellowtravelerbot.stateful.interfaces.FindRideDtoOperations;
+import by.ivam.fellowtravelerbot.DTO.stateOperations.interfaces.FindRideDtoOperations;
 import by.ivam.fellowtravelerbot.bot.enums.Day;
 import by.ivam.fellowtravelerbot.bot.enums.Direction;
 import by.ivam.fellowtravelerbot.bot.enums.FindPassengerRequestOperation;
@@ -12,7 +12,6 @@ import by.ivam.fellowtravelerbot.model.Settlement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;

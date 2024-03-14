@@ -37,6 +37,11 @@ public class FindRideRequestRedisServiceImpl implements FindRideRequestRedisServ
         return repository.findById(id).orElseThrow();
     }
 
+    @Override
+    public Optional<FindRideRequestRedis> getOptionalById(String id) {
+        return repository.findById(id);
+    }
+
 
     @Override
     public Iterable<FindRideRequestRedis> findAll() {

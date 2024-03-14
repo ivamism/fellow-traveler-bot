@@ -11,6 +11,8 @@ public interface FindRideRequestRedisService {
 
     FindRideRequestRedis findById(String id);
 
+    Optional<FindRideRequestRedis> getOptionalById(String id);
+
     Iterable<FindRideRequestRedis> findAll();
 
     List<FindRideRequestRedis> findAllNotExpired();

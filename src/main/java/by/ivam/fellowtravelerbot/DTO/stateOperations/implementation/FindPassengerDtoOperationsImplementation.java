@@ -1,7 +1,7 @@
-package by.ivam.fellowtravelerbot.stateful.implementation;
+package by.ivam.fellowtravelerbot.DTO.stateOperations.implementation;
 
 import by.ivam.fellowtravelerbot.DTO.FindPassengerRequestDTO;
-import by.ivam.fellowtravelerbot.stateful.interfaces.FindPassengerDtoOperations;
+import by.ivam.fellowtravelerbot.DTO.stateOperations.interfaces.FindPassengerDtoOperations;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;

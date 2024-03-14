@@ -36,7 +36,7 @@ public class FindPassRequestRedisServiceImpl implements FindPassRequestRedisServ
     }
 
     @Override
-    public Optional<FindPassRequestRedis> findOptionalById(String id) {
+    public Optional<FindPassRequestRedis> getOptionalById(String id) {
         return repository.findById(id);
     }
 

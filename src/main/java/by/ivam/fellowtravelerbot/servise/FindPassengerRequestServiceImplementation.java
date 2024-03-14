@@ -27,6 +27,9 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Autowired
     private FindPassRequestRedisService redisService;
 
+    @Autowired
+    BookingTempService bookingTempService;
+
 
     @Override
     public FindPassengerRequest findById(int id) {
@@ -96,6 +99,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
         request.setActive(false)
                 .setCanceled(true)
                 .setCanceledAt(LocalDateTime.now());
+//        bookingTempService.setCanceledBy(RequestsType.FIND_PASSENGER_REQUEST, requestId);
         log.info("method cancelRequest. Request id: "+requestId);
         return repository.save(request);
     }
@@ -141,7 +145,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     public void removeFromRedis(int requestId) {
         log.debug("method removeFromRedis");
         String id = String.valueOf(requestId);
-        redisService.findOptionalById(id).ifPresent(request -> redisService.delete(id));
+        redisService.getOptionalById(id).ifPresent(request -> redisService.delete(id));
         log.debug("delete request with Id :" + id + " from redis");
     }
 
