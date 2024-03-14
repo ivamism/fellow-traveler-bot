@@ -16,11 +16,18 @@ public class BookingTemp {
     @Id
     @Column(name = "id")
     private String id;
+
     int findPassengerRequestId;
+
     int findRideRequestId;
+
     private RequestsType bookingInitiator;
+
     private RequestsType canceledBy;
+
     private LocalDateTime bookedAt;
+
     private LocalDateTime expireAt;
+
     private boolean isExpired;
 }

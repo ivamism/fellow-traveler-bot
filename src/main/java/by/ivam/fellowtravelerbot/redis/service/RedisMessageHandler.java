@@ -112,11 +112,15 @@ public class RedisMessageHandler extends MessageHandler {
             if (canceledBy != null) { // TODO Проверить как сетится это значение
                 if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
 //                    FindRideRequestRedis findRideRequestRedis =
-                            findRideRequestRedisService.getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId())).ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
+                            findRideRequestRedisService
+                                    .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
+                                    .ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
 //                    onCancelBookingByDriver(findRideRequestRedis);
                 } else {
 //                    FindPassRequestRedis findPassRequestRedis =
-                            findPassRequestRedisService.getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId())).ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
+                            findPassRequestRedisService
+                                    .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
+                                    .ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
 //                    onCancelBookingByPassenger(findPassRequestRedis);
                 }
             }

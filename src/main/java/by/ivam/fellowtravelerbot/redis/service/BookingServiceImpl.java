@@ -13,8 +13,10 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -59,7 +61,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> findAll() {
-        List<Booking> bookingList = StreamSupport
+        List<Booking> bookingList =
+                StreamSupport
                 .stream(repository.findAll().spliterator(), false)
                 .filter(booking -> Optional.ofNullable(booking).isPresent())
                 .collect(Collectors.toList());
@@ -127,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
     // Check on start of application and remove any Bookings with expired TTL
     @Override
     public void removeExpired() {
-        int expireDuration = -1; // this value sets by Redis to @TimeToLive field if time is expired
+        int expireDuration = -1; // this value sets by Redis to expired @TimeToLive keys
         List<Booking> expiredKeys = repository.findByExpireDuration(expireDuration);
         if (!expiredKeys.isEmpty()) {
             log.info("remove expired FindRideRequestRedis - " + expiredKeys.size());
@@ -137,30 +140,32 @@ public class BookingServiceImpl implements BookingService {
     }
 
 
-
     //Remove Booking if any side cancel request
     @Override
     public void removeBookingByCancelRequest(RequestsType cancelInitiator, int requestId) {
+        // TODO соотнести с bookingTempService.setCanceledBy выбрать лучшую реализацию
         log.debug(" method removeBookingByCancelRequest");
         String stringRequestId = String.valueOf(requestId);
-        List<Booking> bookingList;
-        if (cancelInitiator.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
-//            bookingList =
-            repository.findByFindPassRequestRedis_RequestId(stringRequestId) //;
-                    .ifPresent(booking -> {
-                Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
-                bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
-                deleteBooking(booking);
-            });
+        List<Booking> bookingList = new ArrayList<>();
+        if (cancelInitiator.equals(FIND_PASSENGER_REQUEST))
+            bookingList = findAll()
+                .stream()
+                .filter(booking -> booking.getFindPassRequestRedis().getRequestId().equals(stringRequestId))
+                .collect(Collectors.toList());
+        else if (cancelInitiator.equals(RequestsType.FIND_RIDE_REQUEST))
+            bookingList = findAll()
+                    .stream()
+                    .filter(booking -> booking.getFindRideRequestRedis().getRequestId().equals(stringRequestId))
+                    .collect(Collectors.toList());
 
-        } else {
-            bookingList = repository.findByFindRideRequestRedis_RequestId(stringRequestId);
-        }
-//        bookingList.forEach(booking -> {
-//            Optional<BookingTemp> bookingCash = bookingTempService.findById(booking.getId());
-//            bookingCash.ifPresent(bc -> bc.setCanceledBy(cancelInitiator));
-//            repository.deleteById(booking.getId());
-//        });
+        List<BookingTemp> bookingTemps = bookingList.stream()
+                .peek(booking -> increaseSeatsQuantity(booking))
+                .map(booking -> bookingTempService.findById(booking.getId()))
+                .map(bookingTemp -> bookingTemp.get())
+                .collect(Collectors.toList());
+
+                bookingTemps.forEach(bookingTemp -> bookingTempService.setCanceledBy(cancelInitiator, requestId));
+        deleteBookings(bookingList);
     }
 
     // Return true if Request of this type included to some Booking

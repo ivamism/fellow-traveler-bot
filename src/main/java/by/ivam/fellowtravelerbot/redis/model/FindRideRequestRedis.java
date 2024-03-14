@@ -15,11 +15,16 @@ import java.time.LocalDateTime;
 public class FindRideRequestRedis {
     @Id
     private String requestId;
+
     private long chatId;
+
     @Indexed
     private String direction;
+
     private LocalDateTime DepartureBefore;
+
     private int passengersQuantity;
+
     @TimeToLive
     private long expireDuration;
 }

@@ -15,12 +15,16 @@ import java.time.LocalDateTime;
 public class FindPassRequestRedis {
     @Id
     private String requestId;
+
     private long chatId;
+
     @Indexed
     private String direction;
+
     private LocalDateTime DepartureAt;
+
     private int seatsQuantity;
-    @Indexed
+
     @TimeToLive
     private long expireDuration;
 }
