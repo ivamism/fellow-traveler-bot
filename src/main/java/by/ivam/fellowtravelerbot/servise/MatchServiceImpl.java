@@ -90,6 +90,8 @@ public class MatchServiceImpl implements MatchService {
     public Ride createOrUpdateRide(String bookingId) {
         log.debug("method createOrUpdateRide");
         Booking booking = getBooking(bookingId);
+
+        // TODO реализовать через оптионал
         int findPassengerRequestId = Integer.parseInt(booking.getFindPassRequestRedis().getRequestId());
         int findRideRequestId = Integer.parseInt(booking.getFindRideRequestRedis().getRequestId());
         Optional<Ride> optionalRide = rideService.getRideByFindPassengerRequestId(findPassengerRequestId);

@@ -138,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
     //Remove Booking if any side cancel request
     @Override
     public void removeBookingByCancelingRequest(RequestsType cancelInitiator, int requestId) {
-        log.debug(" method removeBookingByCancelingRequest");
+        log.debug("method removeBookingByCancelingRequest");
         String stringRequestId = String.valueOf(requestId);
 
         List<Booking> bookingList = getBookingsToDeleteOnCancelingRequest(cancelInitiator, stringRequestId);
@@ -153,9 +153,11 @@ public class BookingServiceImpl implements BookingService {
      set RequestType, which initiate canceling.
     */
     private void preDeleteActionByCancelingRequest(RequestsType cancelInitiator, List<Booking> bookingList) {
+        log.debug("method preDeleteActionByCancelingRequest");
         bookingList.stream()
                 .peek(booking -> increaseSeatsQuantity(booking))
                 .map(booking -> bookingTempService.findById(booking.getId()))
+                .filter(bookingTemp -> bookingTemp.isPresent())
                 .map(bookingTemp -> bookingTemp.get())
                 .peek(bookingTemp -> bookingTemp.setCanceledBy(cancelInitiator))
                 .forEach(bookingTemp -> bookingTempService.saveBookingTemp(bookingTemp));
@@ -174,6 +176,7 @@ public class BookingServiceImpl implements BookingService {
                     .stream()
                     .filter(booking -> booking.getFindRideRequestRedis().getRequestId().equals(stringRequestId))
                     .collect(Collectors.toList());
+        log.debug("method getBookingsToDeleteOnCancelingRequest. %d collected Bookings".formatted(bookingList.size()));
         return bookingList;
     }
 

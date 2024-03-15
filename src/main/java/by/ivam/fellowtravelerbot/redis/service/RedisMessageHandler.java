@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -107,23 +108,31 @@ public class RedisMessageHandler extends MessageHandler {
     private void handleDel(String type, String id) {
         log.debug("method handleDel");
         if (type.equals(BOOKING)) {
-            BookingTemp bookingTemp = bookingTempService.findById(id).orElseThrow();
-            RequestsType canceledBy = bookingTemp.getCanceledBy();
-            if (canceledBy != null) { // TODO Проверить как сетится это значение
-                if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
-//                    FindRideRequestRedis findRideRequestRedis =
-                            findRideRequestRedisService
-                                    .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
-                                    .ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
-//                    onCancelBookingByDriver(findRideRequestRedis);
-                } else {
-//                    FindPassRequestRedis findPassRequestRedis =
-                            findPassRequestRedisService
-                                    .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
-                                    .ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
-//                    onCancelBookingByPassenger(findPassRequestRedis);
-                }
-            }
+            handleBookingDeletion(id);
+        }
+    }
+
+    private void handleBookingDeletion(String bookingId) {
+        log.debug("method handleBookingDeletion");
+
+        BookingTemp bookingTemp = bookingTempService.findById(bookingId).orElseThrow();
+        RequestsType canceledBy = bookingTemp.getCanceledBy();
+
+        if (canceledBy != null) {
+            deleteBookingByCanceling(canceledBy, bookingTemp);
+        }
+    }
+
+    private void deleteBookingByCanceling(RequestsType canceledBy, BookingTemp bookingTemp) {
+        log.debug("method deleteBookingByCanceling");
+        if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
+            findRideRequestRedisService
+                    .getOptionalById(String.valueOf(bookingTemp.getFindRideRequestId()))
+                    .ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
+        } else {
+            findPassRequestRedisService
+                    .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
+                    .ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
         }
     }
 

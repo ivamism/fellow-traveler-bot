@@ -26,8 +26,8 @@ public class BookingTempServiceImpl implements BookingTempService {
         BookingTemp bookingTemp = new BookingTemp();
         LocalDateTime bookedAt = booking.getBookedAt();
         bookingTemp.setId(booking.getId())
-                .setFindPassengerRequestId(Integer.valueOf(booking.getFindPassRequestRedis().getRequestId()))
-                .setFindRideRequestId(Integer.valueOf(booking.getFindRideRequestRedis().getRequestId()))
+                .setFindPassengerRequestId(Integer.parseInt(booking.getFindPassRequestRedis().getRequestId()))
+                .setFindRideRequestId(Integer.parseInt(booking.getFindRideRequestRedis().getRequestId()))
                 .setBookedAt(bookedAt)
                 .setExpireAt(bookedAt.plusSeconds(booking.getExpireDuration()));
         repository.save(bookingTemp);

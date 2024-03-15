@@ -35,6 +35,7 @@ public class ScheduledJobs {
     }
 
     private void onExpireTimeToConfirm(List<Booking> bookingList) {
+        //TODO проработать вариант с пропавшими запросами
         log.info("method onExpireTimeToConfirm. bookings quantity" + bookingList.size());
         for (Booking booking : bookingList) {
             if (booking.getRemindersQuantity() < 2) {
