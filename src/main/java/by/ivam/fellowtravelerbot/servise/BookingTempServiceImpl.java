@@ -35,6 +35,12 @@ public class BookingTempServiceImpl implements BookingTempService {
     }
 
     @Override
+    public void saveBookingTemp(BookingTemp bookingTemp) {
+        repository.save(bookingTemp);
+        log.debug("Save bookingTemp to DB: " + bookingTemp);
+    }
+
+    @Override
     public Optional<BookingTemp> findById(String id) {
         log.debug("method findById()");
         return repository.findById(id);

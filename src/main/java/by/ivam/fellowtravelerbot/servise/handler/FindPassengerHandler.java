@@ -997,7 +997,7 @@ public class FindPassengerHandler extends RequestHandler implements HandlerInter
         FindPassengerRequest request = findPassengerRequestService.cancelRequestById(requestId);
 
 //    TODO Удаление брони.
-        bookingService.removeBookingByCancelRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
+        bookingService.removeBookingByCancelingRequest(RequestsType.FIND_PASSENGER_REQUEST, requestId);
         findPassengerRequestService.removeFromRedis(requestId);
 ////     Сообщение об удалении брони обеим сторонам и новые варианты для второй стороны
 //        }

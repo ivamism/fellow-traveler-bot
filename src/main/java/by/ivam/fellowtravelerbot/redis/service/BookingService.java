@@ -34,7 +34,7 @@ public interface BookingService {
 
     void removeExpired();
 
-    void removeBookingByCancelRequest(RequestsType initiator, int requestId);
+    void removeBookingByCancelingRequest(RequestsType initiator, int requestId);
 
     boolean hasBooking(RequestsType initiator, String requestId);
 

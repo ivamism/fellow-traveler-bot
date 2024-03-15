@@ -1,7 +1,6 @@
 package by.ivam.fellowtravelerbot.redis.service;
 
 import by.ivam.fellowtravelerbot.bot.enums.RequestsType;
-import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -63,9 +61,9 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> findAll() {
         List<Booking> bookingList =
                 StreamSupport
-                .stream(repository.findAll().spliterator(), false)
-                .filter(booking -> Optional.ofNullable(booking).isPresent())
-                .collect(Collectors.toList());
+                        .stream(repository.findAll().spliterator(), false)
+                        .filter(booking -> Optional.ofNullable(booking).isPresent())
+                        .collect(Collectors.toList());
         log.debug("findAll. bookings found: " + bookingList.size());
         return bookingList;
     }
@@ -115,9 +113,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void deleteBookings(List<Booking> bookingsToDelete) {
         log.debug("Deleting " + bookingsToDelete.size() + " bookings");
-//        bookingsToDelete
-//                .stream()
-//                .forEach(booking -> deleteBooking(booking));
         repository.deleteAll(bookingsToDelete);
     }
 
@@ -142,30 +137,44 @@ public class BookingServiceImpl implements BookingService {
 
     //Remove Booking if any side cancel request
     @Override
-    public void removeBookingByCancelRequest(RequestsType cancelInitiator, int requestId) {
-        // TODO соотнести с bookingTempService.setCanceledBy выбрать лучшую реализацию
-        log.debug(" method removeBookingByCancelRequest");
+    public void removeBookingByCancelingRequest(RequestsType cancelInitiator, int requestId) {
+        log.debug(" method removeBookingByCancelingRequest");
         String stringRequestId = String.valueOf(requestId);
+
+        List<Booking> bookingList = getBookingsToDeleteOnCancelingRequest(cancelInitiator, stringRequestId);
+
+        preDeleteActionByCancelingRequest(cancelInitiator, bookingList);
+        deleteBookings(bookingList);
+    }
+
+    /*
+     Performs actions before deleting Bookings by canceling the request:
+     increasing seats quantity,
+     set RequestType, which initiate canceling.
+    */
+    private void preDeleteActionByCancelingRequest(RequestsType cancelInitiator, List<Booking> bookingList) {
+        bookingList.stream()
+                .peek(booking -> increaseSeatsQuantity(booking))
+                .map(booking -> bookingTempService.findById(booking.getId()))
+                .map(bookingTemp -> bookingTemp.get())
+                .peek(bookingTemp -> bookingTemp.setCanceledBy(cancelInitiator))
+                .forEach(bookingTemp -> bookingTempService.saveBookingTemp(bookingTemp));
+    }
+
+    // Return List of Bookings where canceled Request was used
+    private List<Booking> getBookingsToDeleteOnCancelingRequest(RequestsType cancelInitiator, String stringRequestId) {
         List<Booking> bookingList = new ArrayList<>();
         if (cancelInitiator.equals(FIND_PASSENGER_REQUEST))
             bookingList = findAll()
-                .stream()
-                .filter(booking -> booking.getFindPassRequestRedis().getRequestId().equals(stringRequestId))
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(booking -> booking.getFindPassRequestRedis().getRequestId().equals(stringRequestId))
+                    .collect(Collectors.toList());
         else if (cancelInitiator.equals(RequestsType.FIND_RIDE_REQUEST))
             bookingList = findAll()
                     .stream()
                     .filter(booking -> booking.getFindRideRequestRedis().getRequestId().equals(stringRequestId))
                     .collect(Collectors.toList());
-
-        List<BookingTemp> bookingTemps = bookingList.stream()
-                .peek(booking -> increaseSeatsQuantity(booking))
-                .map(booking -> bookingTempService.findById(booking.getId()))
-                .map(bookingTemp -> bookingTemp.get())
-                .collect(Collectors.toList());
-
-                bookingTemps.forEach(bookingTemp -> bookingTempService.setCanceledBy(cancelInitiator, requestId));
-        deleteBookings(bookingList);
+        return bookingList;
     }
 
     // Return true if Request of this type included to some Booking
@@ -201,7 +210,7 @@ public class BookingServiceImpl implements BookingService {
                 findPassRequestRedisService.updateSeatsQuantity(findPassRequestRedis, passengersSeatsQuantity));
     }
 
-    // get passengers quantity to reduce or increase seats quantity depending on the booking or deletion of the booking
+    // get passengers quantity to reduce or increase seats quantity depending on the creation or deletion of the booking
     private int getPassengersQuantity(Booking booking) {
         return Optional.ofNullable(booking.getFindRideRequestRedis())
                 .map(findRideRequestRedis -> findRideRequestRedis.getPassengersQuantity()).orElse(0);

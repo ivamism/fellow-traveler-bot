@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface BookingTempService {
     void saveBookingTemp(Booking booking);
+    void saveBookingTemp(BookingTemp bookingTemp);
+
     Optional<BookingTemp> findById (String id);
     void setCanceledBy(RequestsType type, int requestId);
     void flushExpired ();
