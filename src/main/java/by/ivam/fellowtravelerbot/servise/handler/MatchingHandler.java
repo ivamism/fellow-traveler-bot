@@ -137,12 +137,13 @@ public class MatchingHandler extends MessageHandler implements HandlerInterface 
             String requestToString = findPassengerHandler.requestToString(requestToSend);
             sendMessage.setText(String.format(messages.getBOOKING_RESPONSE_MESSAGE(), requestToString));
 
-        } else {
+        } else if (initiator.equals(RequestsType.FIND_RIDE_REQUEST.getValue())){
             /*
             TODO вызывает java.lang.NullPointerException: Cannot invoke "by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis.getChatId()" because the return value of "by.ivam.fellowtravelerbot.redis.model.Booking.getFindPassRequestRedis()" is null
              при бронипрвании со стороны пассажира
+             роверить работу изменений
             */
-            sendMessage.setChatId(booking.getFindPassRequestRedis().getChatId());
+            sendMessage.setChatId(booking.getFindRideRequestRedis().getChatId());
             int findRideRequestId = Integer.valueOf(booking.getFindRideRequestRedis().getRequestId());
             FindRideRequest requestToSend = findRideRequestService.findById(findRideRequestId);
             String requestToString = findRideHandler.requestToString(requestToSend);
