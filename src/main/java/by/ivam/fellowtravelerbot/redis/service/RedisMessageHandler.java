@@ -10,10 +10,8 @@ import by.ivam.fellowtravelerbot.servise.handler.FindPassengerHandler;
 import by.ivam.fellowtravelerbot.servise.handler.FindRideHandler;
 import by.ivam.fellowtravelerbot.servise.handler.MatchingHandler;
 import by.ivam.fellowtravelerbot.servise.handler.MessageHandler;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +25,6 @@ import java.util.Optional;
 @Service
 @Log4j
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class RedisMessageHandler extends MessageHandler {
     @Autowired
     private FindPassRequestRedisService findPassRequestRedisService;
@@ -45,14 +41,11 @@ public class RedisMessageHandler extends MessageHandler {
     private final String FIND_RIDE_REQUEST = "find_ride_request";
     private final String BOOKING = "booking";
 
-
     private SendMessage sendMessage;
 
     // Handle events caught by Redis MessageListener
     public void handleEvent(String event, String message) {
         String type = extractParameter(message, Extractor.INDEX_ZERO);
-//        String type = Extractor.extractParameter(message, Extractor.INDEX_ZERO);
-//        String id = Extractor.extractParameter(message, Extractor.INDEX_ONE);
         String id = extractParameter(message, Extractor.INDEX_ONE);
         log.debug("new event: %s, request type: %s, id: %s".formatted(event, type, id));
         switch (event) {
@@ -104,7 +97,7 @@ public class RedisMessageHandler extends MessageHandler {
         }
     }
 
-    // Handle events of deleting of Redis hashes
+    // Handles events of deleting of Redis hashes
     private void handleDel(String type, String id) {
         log.debug("method handleDel");
         if (type.equals(BOOKING)) {
@@ -112,24 +105,25 @@ public class RedisMessageHandler extends MessageHandler {
         }
     }
 
+    // Handles events related to the deletion of bookings
     private void handleBookingDeletion(String bookingId) {
         log.debug("method handleBookingDeletion");
-
-        BookingTemp bookingTemp = bookingTempService.findById(bookingId).orElseThrow();
-        RequestsType canceledBy = bookingTemp.getCanceledBy();
-
-        if (canceledBy != null) {
-            deleteBookingByCanceling(canceledBy, bookingTemp);
-        }
+        BookingTemp bookingTemp;
+        Optional<BookingTemp> bookingTempOptional = bookingTempService.findById(bookingId);
+        if (bookingTempOptional.isPresent()) {
+            bookingTemp = bookingTempOptional.get();
+            Optional.ofNullable(bookingTemp.getCanceledBy()).ifPresent(requestsType -> deleteBookingByCanceling(requestsType, bookingTemp));
+        } else log.debug("No further actions to handle on deleting booking: %s".formatted(bookingId));
     }
 
+    // Actions if the booking is deleted due to cancellation of the request
     private void deleteBookingByCanceling(RequestsType canceledBy, BookingTemp bookingTemp) {
         log.debug("method deleteBookingByCanceling");
         if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
             findRideRequestRedisService
                     .getOptionalById(String.valueOf(bookingTemp.getFindRideRequestId()))
                     .ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
-        } else {
+        } else if (canceledBy.equals(RequestsType.FIND_RIDE_REQUEST)) {
             findPassRequestRedisService
                     .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
                     .ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));

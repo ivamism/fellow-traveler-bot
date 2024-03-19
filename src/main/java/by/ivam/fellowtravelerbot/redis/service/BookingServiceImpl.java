@@ -215,8 +215,9 @@ public class BookingServiceImpl implements BookingService {
 
     // get passengers quantity to reduce or increase seats quantity depending on the creation or deletion of the booking
     private int getPassengersQuantity(Booking booking) {
+        int defaultPassengersQuantity = 0;
         return Optional.ofNullable(booking.getFindRideRequestRedis())
-                .map(findRideRequestRedis -> findRideRequestRedis.getPassengersQuantity()).orElse(0);
+                .map(findRideRequestRedis -> findRideRequestRedis.getPassengersQuantity()).orElse(defaultPassengersQuantity);
     }
 
 }
