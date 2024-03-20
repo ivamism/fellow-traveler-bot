@@ -5,7 +5,6 @@ import by.ivam.fellowtravelerbot.model.BookingTemp;
 import by.ivam.fellowtravelerbot.redis.model.Booking;
 import by.ivam.fellowtravelerbot.redis.model.FindPassRequestRedis;
 import by.ivam.fellowtravelerbot.redis.model.FindRideRequestRedis;
-import by.ivam.fellowtravelerbot.servise.Extractor;
 import by.ivam.fellowtravelerbot.servise.handler.FindPassengerHandler;
 import by.ivam.fellowtravelerbot.servise.handler.FindRideHandler;
 import by.ivam.fellowtravelerbot.servise.handler.MatchingHandler;
@@ -15,7 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,21 +35,25 @@ public class RedisMessageHandler extends MessageHandler {
     @Autowired
     private MatchingHandler matchingHandler;
 
-    private final String FIND_PASSENGER_REQUEST = "find_passenger_request";
-    private final String FIND_RIDE_REQUEST = "find_ride_request";
-    private final String BOOKING = "booking";
 
-    private SendMessage sendMessage;
+    private final String EVENT_NEW_HSET = "hset"; //
+    private final String EVENT_EXPIRED = "expired";
+    private final String EVENT_DELETED = "del";
+
+    private final String TYPE_FIND_PASSENGER_REQUEST = "find_passenger_request";
+    private final String TYPE_FIND_RIDE_REQUEST = "find_ride_request";
+    private final String TYPE_BOOKING = "booking";
 
     // Handle events caught by Redis MessageListener
     public void handleEvent(String event, String message) {
-        String type = extractParameter(message, Extractor.INDEX_ZERO);
-        String id = extractParameter(message, Extractor.INDEX_ONE);
-        log.debug("new event: %s, request type: %s, id: %s".formatted(event, type, id));
+
+        String type = extractParameter(message, ZERO_VALUE);
+        String id = extractParameter(message, FIRST_VALUE);
+        log.debug("new event: %s, type: %s, id: %s".formatted(event, type, id));
         switch (event) {
-            case "hset" -> handleHset(type, id);
-            case "expired" -> handleExpired(type, id);
-            case "del" -> handleDel(type, id);
+            case EVENT_NEW_HSET -> handleHset(type, id);
+            case EVENT_EXPIRED -> handleExpired(type, id);
+            case EVENT_DELETED -> handleDel(type, id);
         }
     }
 
@@ -59,7 +61,7 @@ public class RedisMessageHandler extends MessageHandler {
     private void handleHset(String type, String id) {
         log.debug("method handleHset");
         switch (type) {
-            case FIND_PASSENGER_REQUEST -> {
+            case TYPE_FIND_PASSENGER_REQUEST -> {
                 if (!bookingService.hasBooking(getRequestType(type), id)) {
                     FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(id);
                     List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
@@ -67,7 +69,7 @@ public class RedisMessageHandler extends MessageHandler {
                     matchingHandler.sendListOfSuitableFindRideRequestMessage(matches, recentRequest.getRequestId(), chatId);
                 }
             }
-            case FIND_RIDE_REQUEST -> {
+            case TYPE_FIND_RIDE_REQUEST -> {
                 if (!bookingService.hasBooking(getRequestType(type), id)) {
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(id);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
@@ -75,7 +77,7 @@ public class RedisMessageHandler extends MessageHandler {
                     matchingHandler.sendListOfSuitableFindPassengerRequestMessage(matches, recentRequest.getRequestId(), chatId);
                 }
             }
-            case BOOKING -> {
+            case TYPE_BOOKING -> {
                 Booking booking = bookingService.findById(id);
                 if (bookingService.isNewBooking(booking))
                     matchingHandler.sendBookingAnnouncementMessage(booking);
@@ -88,10 +90,10 @@ public class RedisMessageHandler extends MessageHandler {
 // TODO Удаление брони если существует с посланием соответствующего сообщения
         log.debug("method handleExpired");
         int requestId = Integer.valueOf(idString);
-        if (type.equals(FIND_PASSENGER_REQUEST)) {
+        if (type.equals(TYPE_FIND_PASSENGER_REQUEST)) {
             findPassengerRequestService.disActivateExpiredRequestById(requestId);
             findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
-        } else if (type.equals(FIND_RIDE_REQUEST)) {
+        } else if (type.equals(TYPE_FIND_RIDE_REQUEST)) {
             findRideRequestService.disActivateRequestById(requestId);
             findRideHandler.sendExpireDepartureTimeMessage(requestId);
         }
@@ -100,7 +102,7 @@ public class RedisMessageHandler extends MessageHandler {
     // Handles events of deleting of Redis hashes
     private void handleDel(String type, String id) {
         log.debug("method handleDel");
-        if (type.equals(BOOKING)) {
+        if (type.equals(TYPE_BOOKING)) {
             handleBookingDeletion(id);
         }
     }
@@ -132,8 +134,8 @@ public class RedisMessageHandler extends MessageHandler {
 
     private RequestsType getRequestType(String type) {
         RequestsType requestsType = RequestsType.NOT_REQUEST;
-        if (type.equals(FIND_PASSENGER_REQUEST)) requestsType = RequestsType.FIND_PASSENGER_REQUEST;
-        else if (type.equals(FIND_RIDE_REQUEST)) requestsType = RequestsType.FIND_RIDE_REQUEST;
+        if (type.equals(TYPE_FIND_PASSENGER_REQUEST)) requestsType = RequestsType.FIND_PASSENGER_REQUEST;
+        else if (type.equals(TYPE_FIND_RIDE_REQUEST)) requestsType = RequestsType.FIND_RIDE_REQUEST;
         else log.error("type %s mismatch any request type".formatted(type));
         return requestsType;
     }

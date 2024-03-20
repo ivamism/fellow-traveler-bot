@@ -63,8 +63,6 @@ public class MatchServiceImpl implements MatchService {
         log.debug("method getNewFindRideRequest. Found matches: " + suitableRequestIdList.size());
     }
 
-
-
     @Override
     public List<Integer> getFindPassRequestMatches(FindRideRequestRedis request) {
         return findPassRequestRedisService.findMatches(request);

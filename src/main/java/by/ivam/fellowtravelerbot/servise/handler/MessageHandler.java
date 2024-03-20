@@ -49,8 +49,8 @@ public class MessageHandler {
     @Autowired
     ResponseMessageProcessor messageProcessor;
 
-    private final int PROCESS = 0;
-    private final int FIRST_VALUE = 1;
+    public final int ZERO_VALUE = 0;
+    public final int FIRST_VALUE = 1;
     private final int SECOND_VALUE = 2;
     private final String REGEX = ":";
 
@@ -65,7 +65,7 @@ public class MessageHandler {
     }
 
     public String extractProcess(String s) {
-        return extractParameter(s, PROCESS);
+        return extractParameter(s, ZERO_VALUE);
     }
 
     public int extractId(String s, int parameterNumber) {
