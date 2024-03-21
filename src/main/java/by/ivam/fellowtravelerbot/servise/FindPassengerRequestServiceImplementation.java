@@ -107,10 +107,22 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
     @Override
     public FindPassengerRequest disActivateExpiredRequestById(int requestId) {
         log.info("method disActivateExpiredRequestById");
-        FindPassengerRequest request = findById(requestId);
+        FindPassengerRequest request = disActivateRequest(findById(requestId));
+//        request.setActive(false);
+//        repository.save(request);
+//        String redisId = String.valueOf(requestId);
+//        redisService.getOptionalById(redisId).ifPresent(requestRedis -> redisService.delete(redisId));
+////        redisService.delete(redisId);
+        return request;
+    }
+
+    private FindPassengerRequest disActivateRequest(FindPassengerRequest request) {
+        log.info("method disActivateRequest");
         request.setActive(false);
         repository.save(request);
-        redisService.delete(String.valueOf(requestId));
+        String redisId = String.valueOf(request.getId());
+        redisService.getOptionalById(redisId).ifPresent(requestRedis -> redisService.delete(redisId));
+//        redisService.delete(redisId);
         return request;
     }
 
@@ -120,7 +132,7 @@ public class FindPassengerRequestServiceImplementation implements FindPassengerR
             List<FindPassengerRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureAtBefore(presentTime);
             if (expiredRequestsList.size() != 0) {
                 log.info("dis-activate " + expiredRequestsList.size() + " FindPassengerRequests");
-                expiredRequestsList.forEach(request -> disActivateExpiredRequestById(request.getId()));
+                expiredRequestsList.forEach(request -> disActivateRequest(request));
             }
         }
     }

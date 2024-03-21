@@ -23,10 +23,11 @@ public class ExpiredRequestDisActivator implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        LocalDateTime now = LocalDateTime.now();
         try {
             log.debug("Dis-activation of expired requests");
-            findRideRequestService.disActivateExpiredRequests(LocalDateTime.now());
-            findPassengerRequestService.disActivateExpiredRequestsOnStart(LocalDateTime.now());
+            findRideRequestService.disActivateExpiredRequests(now);
+            findPassengerRequestService.disActivateExpiredRequestsOnStart(now);
         } catch (Exception e) {
             log.error("An error occurred while dis-activating expired requests", e);
         }

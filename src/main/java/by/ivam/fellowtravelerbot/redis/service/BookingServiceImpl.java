@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_REQUEST;
+import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_RIDE_REQUEST;
 
 
 @Service
@@ -146,6 +147,15 @@ public class BookingServiceImpl implements BookingService {
         preDeleteActionByCancelingRequest(cancelInitiator, bookingList);
         deleteBookings(bookingList);
     }
+    @Override
+    public void removeBookingByCancelingRequest(RequestsType cancelInitiator, String requestId) {
+        log.debug("method removeBookingByCancelingRequest");
+
+        List<Booking> bookingList = getBookingsToDeleteOnCancelingRequest(cancelInitiator, requestId);
+
+        preDeleteActionByCancelingRequest(cancelInitiator, bookingList);
+        deleteBookings(bookingList);
+    }
 
     /*
      Performs actions before deleting Bookings by canceling the request:
@@ -164,14 +174,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     // Return List of Bookings where canceled Request was used
-    private List<Booking> getBookingsToDeleteOnCancelingRequest(RequestsType cancelInitiator, String stringRequestId) {
+    @Override
+    public List<Booking> getBookingsToDeleteOnCancelingRequest(RequestsType cancelInitiator, String stringRequestId) {
         List<Booking> bookingList = new ArrayList<>();
         if (cancelInitiator.equals(FIND_PASSENGER_REQUEST))
             bookingList = findAll()
                     .stream()
                     .filter(booking -> booking.getFindPassRequestRedis().getRequestId().equals(stringRequestId))
                     .collect(Collectors.toList());
-        else if (cancelInitiator.equals(RequestsType.FIND_RIDE_REQUEST))
+        else if (cancelInitiator.equals(FIND_RIDE_REQUEST))
             bookingList = findAll()
                     .stream()
                     .filter(booking -> booking.getFindRideRequestRedis().getRequestId().equals(stringRequestId))
@@ -182,13 +193,18 @@ public class BookingServiceImpl implements BookingService {
 
     // Return true if Request of this type included to some Booking
     @Override
+// TODO при истекших запросах выбрасывает исключение, потому что getRequestId() - выдает нал. может через bookingtemp?
+
     public boolean hasBooking(RequestsType requestsType, String requestId) {
         return findAll()
                 .stream()
                 .anyMatch(booking -> {
                     if (requestsType == FIND_PASSENGER_REQUEST)
                         return booking.getFindPassRequestRedis().getRequestId().equals(requestId);
-                    return booking.getFindRideRequestRedis().getRequestId().equals(requestId);
+                    else if (requestsType == FIND_RIDE_REQUEST) {
+                        return booking.getFindRideRequestRedis().getRequestId().equals(requestId);
+                    }
+                    return false;
                 });
     }
 

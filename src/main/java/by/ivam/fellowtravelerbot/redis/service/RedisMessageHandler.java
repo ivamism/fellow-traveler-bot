@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.*;
+import static by.ivam.fellowtravelerbot.bot.enums.RequestsType.FIND_PASSENGER_REQUEST;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Service
@@ -50,9 +53,11 @@ public class RedisMessageHandler extends MessageHandler {
         String type = extractParameter(message, ZERO_VALUE);
         String id = extractParameter(message, FIRST_VALUE);
         log.debug("new event: %s, type: %s, id: %s".formatted(event, type, id));
+        final RequestsType requestType = getRequestType(type);
+
         switch (event) {
             case EVENT_NEW_HSET -> handleHset(type, id);
-            case EVENT_EXPIRED -> handleExpired(type, id);
+            case EVENT_EXPIRED -> handleExpired(requestType, id);
             case EVENT_DELETED -> handleDel(type, id);
         }
     }
@@ -60,9 +65,11 @@ public class RedisMessageHandler extends MessageHandler {
     // Handle events of creating new Redis hashes
     private void handleHset(String type, String id) {
         log.debug("method handleHset");
+        final RequestsType requestType = getRequestType(type);
+//        if (!bookingService.hasBooking(requestType, id))
         switch (type) {
             case TYPE_FIND_PASSENGER_REQUEST -> {
-                if (!bookingService.hasBooking(getRequestType(type), id)) {
+                if (!bookingService.hasBooking(requestType, id)) {
                     FindPassRequestRedis recentRequest = findPassRequestRedisService.findById(id);
                     List<Integer> matches = findRideRequestRedisService.findMatches(recentRequest);
                     long chatId = recentRequest.getChatId();
@@ -70,7 +77,7 @@ public class RedisMessageHandler extends MessageHandler {
                 }
             }
             case TYPE_FIND_RIDE_REQUEST -> {
-                if (!bookingService.hasBooking(getRequestType(type), id)) {
+                if (!bookingService.hasBooking(requestType, id)) {
                     FindRideRequestRedis recentRequest = findRideRequestRedisService.findById(id);
                     List<Integer> matches = findPassRequestRedisService.findMatches(recentRequest);
                     long chatId = recentRequest.getChatId();
@@ -90,14 +97,39 @@ public class RedisMessageHandler extends MessageHandler {
 // TODO Удаление брони если существует с посланием соответствующего сообщения
         log.debug("method handleExpired");
         int requestId = Integer.valueOf(idString);
+        final RequestsType requestType = getRequestType(type);
+//        if (!bookingService.hasBooking(requestType, id))
         if (type.equals(TYPE_FIND_PASSENGER_REQUEST)) {
             findPassengerRequestService.disActivateExpiredRequestById(requestId);
             findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
+//            if (bookingService.hasBooking(FIND_PASSENGER_REQUEST, idString))
+//                onExpiringRequest(FIND_PASSENGER_REQUEST, requestId);
         } else if (type.equals(TYPE_FIND_RIDE_REQUEST)) {
             findRideRequestService.disActivateRequestById(requestId);
             findRideHandler.sendExpireDepartureTimeMessage(requestId);
         }
     }
+
+    // Handle events of expire Time To Live keys
+    private void handleExpired(RequestsType requestsType, String idString) {
+// TODO Удаление брони если существует с посланием соответствующего сообщения
+        log.debug("method handleExpired");
+        int requestId = Integer.parseInt(idString);
+
+        if (requestsType == FIND_PASSENGER_REQUEST) {
+            findPassengerRequestService.disActivateExpiredRequestById(requestId);
+            findPassengerHandler.sendExpireDepartureTimeMessage(requestId);
+
+        } else if (requestsType == FIND_RIDE_REQUEST) {
+            findRideRequestService.disActivateRequestById(requestId);
+            findRideHandler.sendExpireDepartureTimeMessage(requestId);
+        }
+
+        if (bookingService.hasBooking(requestsType, idString))
+            onExpiringRequest(requestsType, requestId);
+//bookingService.removeBookingByCancelingRequest(requestsType, idString);
+    }
+
 
     // Handles events of deleting of Redis hashes
     private void handleDel(String type, String id) {
@@ -121,11 +153,11 @@ public class RedisMessageHandler extends MessageHandler {
     // Actions if the booking is deleted due to cancellation of the request
     private void deleteBookingByCanceling(RequestsType canceledBy, BookingTemp bookingTemp) {
         log.debug("method deleteBookingByCanceling");
-        if (canceledBy.equals(RequestsType.FIND_PASSENGER_REQUEST)) {
+        if (canceledBy.equals(FIND_PASSENGER_REQUEST)) {
             findRideRequestRedisService
                     .getOptionalById(String.valueOf(bookingTemp.getFindRideRequestId()))
                     .ifPresent(findRideRequestRedis -> onCancelBookingByDriver(findRideRequestRedis));
-        } else if (canceledBy.equals(RequestsType.FIND_RIDE_REQUEST)) {
+        } else if (canceledBy.equals(FIND_RIDE_REQUEST)) {
             findPassRequestRedisService
                     .getOptionalById(String.valueOf(bookingTemp.getFindPassengerRequestId()))
                     .ifPresent(findPassRequestRedis -> onCancelBookingByPassenger(findPassRequestRedis));
@@ -133,11 +165,19 @@ public class RedisMessageHandler extends MessageHandler {
     }
 
     private RequestsType getRequestType(String type) {
-        RequestsType requestsType = RequestsType.NOT_REQUEST;
-        if (type.equals(TYPE_FIND_PASSENGER_REQUEST)) requestsType = RequestsType.FIND_PASSENGER_REQUEST;
-        else if (type.equals(TYPE_FIND_RIDE_REQUEST)) requestsType = RequestsType.FIND_RIDE_REQUEST;
+        RequestsType requestsType = NOT_REQUEST;
+        if (type.equals(TYPE_FIND_PASSENGER_REQUEST)) requestsType = FIND_PASSENGER_REQUEST;
+        else if (type.equals(TYPE_FIND_RIDE_REQUEST)) requestsType = FIND_RIDE_REQUEST;
         else log.error("type %s mismatch any request type".formatted(type));
         return requestsType;
+    }
+
+    private void onExpiringRequest(RequestsType requestsType, int requestId) {
+//bookingService.getBookingsToDeleteOnCancelingRequest(requestsType, String.valueOf(requestId))
+//        .stream()
+//        .forEach(booking -> bookingService.);
+//        bookingService.removeBookingByCancelingRequest(requestsType, requestId);
+
     }
 
     private void onCancelBookingByDriver(FindRideRequestRedis findRideRequestRedis) {

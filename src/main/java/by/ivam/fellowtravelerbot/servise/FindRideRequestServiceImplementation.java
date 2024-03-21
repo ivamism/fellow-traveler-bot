@@ -118,10 +118,24 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
 
     @Override
     public FindRideRequest disActivateRequestById(int requestId) {
+        log.info("method disActivateRequestById");
+        FindRideRequest request = disActivateRequest(findById(requestId));;
+
+//        request.setActive(false);
+//        repository.save(request);
+//        String redisId = String.valueOf(requestId);
+//        redisService.getOptionalById(redisId).ifPresent(requestRedis -> redisService.delete(redisId));
+//        return request;
+        return request;
+    }
+
+    private FindRideRequest disActivateRequest(FindRideRequest request) {
         log.info("method disActivateExpiredRequestById");
-        FindRideRequest request = findById(requestId);
         request.setActive(false);
-        return repository.save(request);
+        repository.save(request);
+        String redisId = String.valueOf(request.getId());
+        redisService.getOptionalById(redisId).ifPresent(requestRedis -> redisService.delete(redisId));
+        return request;
     }
 
     @Override
@@ -130,7 +144,8 @@ public class FindRideRequestServiceImplementation implements FindRideRequestServ
             List<FindRideRequest> expiredRequestsList = repository.findByIsActiveTrueAndDepartureBeforeBefore(presentTime);
             if (expiredRequestsList.size() != 0) {
                 log.info("dis-activate " + expiredRequestsList.size() + " FindRideRequests");
-                expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
+                expiredRequestsList.forEach(request -> disActivateRequest(request));
+//                expiredRequestsList.forEach(request -> repository.save(request.setActive(false)));
             }
         }
     }
